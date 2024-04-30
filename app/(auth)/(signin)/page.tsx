@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import UserAuthForm from "@/components/forms/user-auth-form";
 
 export const metadata: Metadata = {
-  title: "Login | Trango",
+  title: "Login | Transgo",
   description: "Please Login before access the dashboard",
 };
 
