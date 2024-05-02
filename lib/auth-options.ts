@@ -31,10 +31,13 @@ export const authOptions: NextAuthOptions = {
 
           const user = await res.json();
 
+          if (!res) {
+            throw new Error("error login");
+          }
+
           if (res.ok && user) {
-            console.log("user", user.data.user);
             // Any object returned will be saved in `user` property of the JWT
-            return user.data.user;
+            return user.data;
           } else {
             // If you return null then an error will be displayed advising the user to check their details.
             return null;
@@ -47,27 +50,15 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.email = token.email;
-        session.user.name = token.name;
-        session.user.id = token.id;
-        session.user.access_token = token.access_token;
-        session.user.role = token.role;
-      }
+      session.user = token;
+
       return session;
     },
     async jwt({ token, user }: { token: any; user: any }) {
-      if (user) {
-        token.email = user.email;
-        token.name = user.name;
-        token.id = user.id;
-        token.access_token = user.access_token;
-        token.role = user.role;
-      }
-      return token;
+      return { ...token, ...user };
     },
   },
-  // session: { strategy: "jwt" },
+  session: { strategy: "jwt" },
   pages: {
     signIn: "/", //sigin page
   },

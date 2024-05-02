@@ -111,6 +111,17 @@ export type Employee = {
   profile_picture?: string | null; // Profile picture can be a string (URL) or null (if no picture)
 };
 
+export type Drivers = {
+  id: number;
+  name: string;
+  status: string;
+  email: string;
+  date_of_birth: string;
+  nik: string;
+  role: string;
+  id_photo: string;
+};
+
 export const navItems: NavItem[] = [
   {
     title: "Dashboard",
@@ -132,7 +143,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: "Driver",
-    href: "/dashboard/profile",
+    href: "/dashboard/driver",
     icon: "profile",
     label: "profile",
   },

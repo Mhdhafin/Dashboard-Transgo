@@ -48,7 +48,7 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-export function EmployeeTable<TData, TValue>({
+export function DriverTable<TData, TValue>({
   columns,
   data,
   pageNo,
@@ -125,7 +125,8 @@ export function EmployeeTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
   });
-  console.log("table", table.getRowModel().rows?.length);
+
+  console.log("table", table.getRowModel().rows);
 
   const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
 
@@ -224,14 +225,20 @@ export function EmployeeTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    console.log(
+                      "cell",
+                      flexRender(cell.column.columnDef.cell, cell.getContext()),
+                    );
+                    return (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -251,10 +258,10 @@ export function EmployeeTable<TData, TValue>({
 
       <div className="flex flex-col gap-2 sm:flex-row items-center justify-end space-x-2 py-4">
         <div className="flex items-center justify-between w-full">
-          <div className="flex-1 text-sm text-muted-foreground">
+          {/* <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
+          </div> */}
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
             <div className="flex items-center space-x-2">
               <p className="whitespace-nowrap text-sm font-medium">
