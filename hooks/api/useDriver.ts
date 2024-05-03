@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 export const useGetDriver = (params) => {
@@ -13,5 +13,17 @@ export const useGetDriver = (params) => {
   return useQuery({
     queryKey: ["drivers"],
     queryFn: getDrivers,
+  });
+};
+
+export const usePostDriver = () => {
+  const axiosAuth = useAxiosAuth();
+
+  const postDriver = (body) => {
+    return axiosAuth.post("/drivers", body);
+  };
+
+  return useMutation({
+    mutationFn: postDriver,
   });
 };
