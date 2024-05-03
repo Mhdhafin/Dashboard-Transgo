@@ -20,10 +20,10 @@ export function UserNav() {
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={session.user?.user?.image ?? ""}
-                alt={session.user?.user?.name ?? ""}
+                src={session.user?.image ?? ""}
+                alt={session.user?.name ?? ""}
               />
-              <AvatarFallback>{session.user?.user?.name?.[0]}</AvatarFallback>
+              <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -31,10 +31,10 @@ export function UserNav() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {session.user?.user?.name}
+                {session.user?.name}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {session.user?.user?.email}
+                {session.user?.email}
               </p>
             </div>
           </DropdownMenuLabel>
