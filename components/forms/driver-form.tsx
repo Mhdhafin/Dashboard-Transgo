@@ -30,7 +30,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "../ui/use-toast";
 import FileUpload from "../file-upload";
 import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { usePostDriver } from "@/hooks/api/useDriver";
+import { useQueryClient } from "@tanstack/react-query";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -44,16 +47,14 @@ const ImgSchema = z.object({
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-  imgUrl: z
-    .array(ImgSchema)
-    .max(IMG_MAX_LIMIT, { message: "You can only add up to 3 images" })
-    .min(1, { message: "At least one image must be added." }),
+  imgUrl: z.array(ImgSchema),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string().min(1, { message: "Please select a gender" }),
   password: z
     .string()
-    .min(8, { message: "NIK must be at least 16 characters" }),
+    .min(8, { message: "Password must be at least 8 characters" }),
+  date_of_birth: z.string(),
 });
 
 type DriverFormValues = z.infer<typeof formSchema>;
@@ -78,15 +79,20 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const description = initialData ? "Edit a Driver" : "Add a new driver";
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
+  const queryClient = useQueryClient();
+
+  const { mutate: createDriver } = usePostDriver();
 
   const defaultValues = initialData
     ? initialData
     : {
         name: "",
-        description: "",
-        price: 0,
+        nik: "",
+        email: "",
         imgUrl: [],
-        category: "",
+        password: "",
+        date_of_birth: "",
+        gender: "",
       };
 
   const form = useForm<DriverFormValues>({
@@ -100,21 +106,35 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       if (initialData) {
         // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
       } else {
+        createDriver(data, {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            toast({
+              variant: "success",
+              title: "Driver berhasil dibuat!",
+            });
+            router.refresh();
+            router.push(`/dashboard/driver`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
+        });
         // const res = await axios.post(`/api/products/create-product`, data);
         // console.log("product", res);
       }
-      router.refresh();
-      router.push(`/dashboard/driver`);
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-      });
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
+        title: "Uh oh! ada sesuatu yang error",
+        description: error,
       });
     } finally {
       setLoading(false);
@@ -134,7 +154,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
     }
   };
 
-  const triggerImgUrlValidation = () => form.trigger("imgUrl");
+  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
 
   return (
     <>
@@ -216,7 +236,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
                       // type="password"
@@ -229,17 +249,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <Popover>
-                  <PopoverContent className="w-auto p-0" align="end">
-                    <Calendar initialFocus mode="range" numberOfMonths={2} />
-                  </PopoverContent>
-                </Popover>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="nik"
@@ -248,6 +258,23 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormLabel>NIK</FormLabel>
                   <FormControl>
                     <Input disabled={loading} placeholder="NIK" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="date_of_birth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of birth</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="1999-20-12"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -267,10 +294,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a gender"
-                        />
+                        <SelectValue placeholder="Select a gender" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

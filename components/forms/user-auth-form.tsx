@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
@@ -27,6 +28,7 @@ export default function UserAuthForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -37,6 +39,10 @@ export default function UserAuthForm() {
       email: data.email,
       password: data.password,
       callbackUrl: callbackUrl ?? "/dashboard",
+    });
+    toast({
+      variant: "success",
+      title: "Login Berhasil",
     });
   };
 
