@@ -8,11 +8,12 @@ export const getDriverDetail = (id: number) => {
   return client.get(`/drivers/${id}`);
 };
 
-export const postDriver = (body) => {
+export const postDriver = (body: any) => {
+  console.log("bod", body);
   return client.post("/drivers", body);
 };
 
-export const editDriver = (id: number, body) => {
+export const editDriver = (id: number, body: any) => {
   return client.put(`/drivers/${id}`, body, {
     headers: {
       "Content-Type": "multipart/form-data",
