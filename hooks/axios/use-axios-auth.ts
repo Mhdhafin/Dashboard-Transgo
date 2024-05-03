@@ -13,7 +13,7 @@ const useAxiosAuth = () => {
     const requestIntercept = axios.interceptors.request.use(
       (config) => {
         // @ts-ignore
-        const token = session?.user?.token;
+        const token = session?.user?.accessToken;
 
         if (!config.headers["Authorization"]) {
           config.headers["Authorization"] = `Bearer ${token}`;
