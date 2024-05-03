@@ -133,7 +133,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
 
-  const triggerImgUrlValidation = () => form.trigger("imgUrl");
+  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
 
   return (
     <>
