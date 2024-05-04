@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
       return { ...token, ...user };
     },
   },
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/", //sigin page
