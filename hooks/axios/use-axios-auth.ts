@@ -8,7 +8,7 @@ const useAxiosAuth = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (!session?.user) return;
+    // if (!session?.user) return;
 
     const requestIntercept = axios.interceptors.request.use(
       (config) => {
@@ -25,34 +25,34 @@ const useAxiosAuth = () => {
       },
     );
 
-    const responseIntercept = axios.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const prevRequest = error?.config;
-        // if (
-        //   error?.response?.status === 401 &&
-        //   !prevRequest?.sent &&
-        //   error.config.request.url !== "v1/auth/logout"
-        // ) {
-        //   prevRequest.sent = true;
-        //   const res = await refreshToken();
-        //   prevRequest.headers[
-        //     "Authorization"
-        //   ] = `Bearer ${session?.user.accessToken}`;
+    // const responseIntercept = axios.interceptors.response.use(
+    //   (response) => response,
+    //   async (error) => {
+    //     const prevRequest = error?.config;
+    // if (
+    //   error?.response?.status === 401 &&
+    //   !prevRequest?.sent &&
+    //   error.config.request.url !== "v1/auth/logout"
+    // ) {
+    //   prevRequest.sent = true;
+    //   const res = await refreshToken();
+    //   prevRequest.headers[
+    //     "Authorization"
+    //   ] = `Bearer ${session?.user.accessToken}`;
 
-        //   if (res.status === 200) {
-        //     return axios(prevRequest);
-        //   } else {
-        //     return Promise.reject(error);
-        //   }
-        // }
-        return Promise.reject(error);
-      },
-    );
+    //   if (res.status === 200) {
+    //     return axios(prevRequest);
+    //   } else {
+    //     return Promise.reject(error);
+    //   }
+    // }
+    //     return Promise.reject(error);
+    //   },
+    // );
 
     return () => {
       axios.interceptors.request.eject(requestIntercept);
-      axios.interceptors.response.eject(responseIntercept);
+      // axios.interceptors.response.eject(responseIntercept);
     };
   }, [session]);
 
