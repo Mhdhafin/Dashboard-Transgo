@@ -101,56 +101,33 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   });
 
   const onSubmit = async (data: DriverFormValues) => {
-    try {
-      setLoading(true);
-      if (initialData) {
-        // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
-      } else {
-        createDriver(data, {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["drivers"] });
-            toast({
-              variant: "success",
-              title: "Driver berhasil dibuat!",
-            });
-            router.refresh();
-            router.push(`/dashboard/driver`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
-        });
-        // const res = await axios.post(`/api/products/create-product`, data);
-        // console.log("product", res);
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh! ada sesuatu yang error",
-        description: error,
+    setLoading(true);
+    if (initialData) {
+      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+    } else {
+      createDriver(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["drivers"] });
+          toast({
+            variant: "success",
+            title: "Driver berhasil dibuat!",
+          });
+          // router.refresh();
+          router.push(`/dashboard/driver`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
       });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      //   await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
-      router.refresh();
-      router.push(`/${params.storeId}/products`);
-    } catch (error: any) {
-    } finally {
-      setLoading(false);
-      setOpen(false);
+      // const res = await axios.post(`/api/products/create-product`, data);
+      // console.log("product", res);
     }
   };
 
