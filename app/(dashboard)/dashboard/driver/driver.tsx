@@ -13,7 +13,6 @@ type paramsProps = {
 };
 
 const Driver = ({ searchParams }: paramsProps) => {
-  const { data: session } = useSession();
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
 
@@ -21,7 +20,6 @@ const Driver = ({ searchParams }: paramsProps) => {
     limit: 10,
     page: 1,
   });
-  console.log(data);
 
   return (
     <div>
