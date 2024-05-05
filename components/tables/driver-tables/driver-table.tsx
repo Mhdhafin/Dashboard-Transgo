@@ -226,10 +226,6 @@ export function DriverTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    console.log(
-                      "cell",
-                      flexRender(cell.column.columnDef.cell, cell.getContext()),
-                    );
                     return (
                       <TableCell key={cell.id}>
                         {flexRender(
