@@ -1,12 +1,12 @@
-// import client from "./apiClient";
+import client from "./apiClient";
 
-// export const getCustomers = () => {
-//   return client.get("/customers");
-// };
+export const getCustomers = () => {
+  return client.get("/customers");
+};
 
-// export const getCustomersDetail = (id: number) => {
-//   return client.get(`/customers/${id}`);
-// };
+export const getCustomersDetail = (id: number) => {
+  return client.get(`/customers/${id}`);
+};
 
 // export const postCustomer = (body) => {
 //   return client.post("/customers", body, {

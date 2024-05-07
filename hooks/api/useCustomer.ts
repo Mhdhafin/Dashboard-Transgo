@@ -1,0 +1,46 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import useAxiosAuth from "../axios/use-axios-auth";
+
+const baseEndpoint = "/customers";
+export const useGetCustomers = (params: any) => {
+  const axiosAuth = useAxiosAuth();
+
+  const getCustomers = () => {
+    return axiosAuth.get(baseEndpoint, { params });
+  };
+  return useQuery({
+    queryKey: ["customers"],
+    queryFn: getCustomers,
+  });
+};
+
+export const usePostCustomer = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const postCustomer = (body: any) => {
+    return axiosAuth.post(baseEndpoint, body);
+  };
+
+  return useMutation({
+    mutationFn: postCustomer,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["customers"] });
+    },
+  });
+};
+
+export const useDeleteCustomer = (id: number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const deleteCustomer = (id: number) => {
+    return axiosAuth.delete(`${baseEndpoint}/${id}`);
+  };
+
+  return useMutation({
+    mutationFn: deleteCustomer,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["customers"] });
+    },
+  });
+};

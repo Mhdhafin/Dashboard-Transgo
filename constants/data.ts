@@ -136,10 +136,10 @@ export const navItems: NavItem[] = [
     label: "task",
   },
   {
-    title: "Mobil",
-    href: "/dashboard/mobil",
+    title: "Fleet",
+    href: "/dashboard/fleet",
     icon: "car",
-    label: "mobil",
+    label: "Fleet",
   },
   {
     title: "Driver",
@@ -148,8 +148,8 @@ export const navItems: NavItem[] = [
     label: "profile",
   },
   {
-    title: "User (Customer)",
-    href: "/",
+    title: "Customer",
+    href: "/dashboard/customers",
     icon: "users",
     label: "customer",
   },
