@@ -58,7 +58,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   // });
 
   const onConfirm = async () => {
-    deleteDriver(data?.id, {
+    deleteDriver(id, {
       onSuccess: () => {
         toast({
           variant: "success",
