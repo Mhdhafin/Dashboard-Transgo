@@ -16,7 +16,7 @@ const Driver = ({ searchParams }: paramsProps) => {
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
 
-  const { data, isFetching } = useGetDriver({
+  const { data, isFetching, status } = useGetDriver({
     limit: 10,
     page: 1,
   });
@@ -46,7 +46,7 @@ const Driver = ({ searchParams }: paramsProps) => {
           </div>
         </div>
       )}
-      {!isFetching && (
+      {!isFetching && data?.data && (
         <DriverTable
           columns={columns}
           data={data?.data?.items}
