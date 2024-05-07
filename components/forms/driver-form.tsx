@@ -47,13 +47,21 @@ const ImgSchema = z.object({
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-  imgUrl: z.array(ImgSchema),
+  // imgUrl: z.array(ImgSchema),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string().min(1, { message: "Please select a gender" }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
+  date_of_birth: z.string(),
+});
+
+const formEditSchema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  // imgUrl: z.array(ImgSchema),
+  nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
+  email: z.string().email({ message: "email must be valid" }),
   date_of_birth: z.string(),
 });
 
@@ -94,41 +102,44 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         date_of_birth: "",
         gender: "",
       };
+  console.log(initialData);
+  console.log("defautl", defaultValues);
 
   const form = useForm<DriverFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(!initialData ? formSchema : formEditSchema),
     defaultValues,
   });
 
   const onSubmit = async (data: DriverFormValues) => {
-    setLoading(true);
-    if (initialData) {
-      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
-    } else {
-      createDriver(data, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["drivers"] });
-          toast({
-            variant: "success",
-            title: "Driver berhasil dibuat!",
-          });
-          // router.refresh();
-          router.push(`/dashboard/driver`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
-      // const res = await axios.post(`/api/products/create-product`, data);
-      // console.log("product", res);
-    }
+    // setLoading(true);
+    console.log("init", data);
+    // if (initialData) {
+    //   // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+    // } else {
+    //   createDriver(data, {
+    //     onSuccess: () => {
+    //       queryClient.invalidateQueries({ queryKey: ["drivers"] });
+    //       toast({
+    //         variant: "success",
+    //         title: "Driver berhasil dibuat!",
+    //       });
+    //       // router.refresh();
+    //       router.push(`/dashboard/driver`);
+    //     },
+    //     onSettled: () => {
+    //       setLoading(false);
+    //     },
+    //     onError: (error) => {
+    //       toast({
+    //         variant: "destructive",
+    //         title: "Uh oh! ada sesuatu yang error",
+    //         description: `error: ${error.message}`,
+    //       });
+    //     },
+    //   });
+    //   // const res = await axios.post(`/api/products/create-product`, data);
+    //   // console.log("product", res);
+    // }
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
@@ -143,7 +154,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {initialData && (
+        {/* {initialData && (
           <Button
             disabled={loading}
             variant="destructive"
@@ -152,7 +163,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           >
             <Trash className="h-4 w-4" />
           </Button>
-        )}
+        )} */}
       </div>
       <Separator />
       <Form {...form}>
@@ -160,7 +171,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
+          {/* <FormField
             control={form.control}
             name="imgUrl"
             render={({ field }) => (
@@ -176,7 +187,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -208,24 +219,26 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      // type="password"
-                      disabled={loading}
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!initialData && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        // type="password"
+                        disabled={loading}
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
