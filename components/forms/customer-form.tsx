@@ -170,7 +170,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
+          {/* <FormField
             control={form.control}
             name="imgUrl"
             render={({ field }) => (
@@ -186,7 +186,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -197,7 +197,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Nama Driver"
+                      placeholder="Nama Customer"
                       {...field}
                     />
                   </FormControl>
