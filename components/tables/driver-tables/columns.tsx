@@ -29,8 +29,12 @@ export const columns: ColumnDef<Drivers>[] = [
     header: "Nama",
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "role",
+    header: "Role",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
   },
   {
     id: "actions",
