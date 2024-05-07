@@ -14,6 +14,18 @@ export const useGetCustomers = (params: any) => {
   });
 };
 
+export const useGetDetailCustomer = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+
+  const getDetaliCustomer = () => {
+    return axiosAuth.get(`${baseEndpoint}/${id}`);
+  };
+
+  return useQuery({
+    queryKey: ["customers", id],
+    queryFn: getDetaliCustomer,
+  });
+};
 export const usePostCustomer = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
