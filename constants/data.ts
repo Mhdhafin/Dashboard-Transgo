@@ -136,8 +136,8 @@ export const navItems: NavItem[] = [
     label: "task",
   },
   {
-    title: "Fleet",
-    href: "/dashboard/fleet",
+    title: "Fleets",
+    href: "/dashboard/fleets",
     icon: "car",
     label: "Fleet",
   },
