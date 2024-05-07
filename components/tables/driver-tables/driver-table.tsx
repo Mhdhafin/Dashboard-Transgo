@@ -126,7 +126,7 @@ export function DriverTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  console.log("table", table.getRowModel().rows);
+  // console.log("table", table.getRowModel().rows);
 
   const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
 
@@ -196,7 +196,7 @@ export function DriverTable<TData, TValue>({
         onChange={(event) =>
           table.getColumn(searchKey)?.setFilterValue(event.target.value)
         }
-        className="w-full md:max-w-sm"
+        className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
         <Table className="relative">
