@@ -46,8 +46,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         });
         queryClient.invalidateQueries({ queryKey: ["customers"] });
       },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["drivers"] });
+        setOpen(false);
+      },
     });
-    setOpen(false);
   };
 
   return (
