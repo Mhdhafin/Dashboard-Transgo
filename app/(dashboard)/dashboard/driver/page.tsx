@@ -1,6 +1,4 @@
 import BreadCrumb from "@/components/breadcrumb";
-import { columns } from "@/components/tables/driver-tables/columns";
-import { DriverTable } from "@/components/tables/driver-tables/driver-table";
 import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
@@ -16,8 +14,6 @@ import {
 } from "@tanstack/react-query";
 import { getDrivers } from "@/client/driverClient";
 import Driver from "./driver";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
 
 const breadcrumbItems = [{ title: "Driver", link: "/dashboard/driver" }];
 type paramsProps = {
