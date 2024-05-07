@@ -112,34 +112,33 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const onSubmit = async (data: DriverFormValues) => {
     // setLoading(true);
-    console.log("init", data);
-    // if (initialData) {
-    //   // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
-    // } else {
-    //   createDriver(data, {
-    //     onSuccess: () => {
-    //       queryClient.invalidateQueries({ queryKey: ["drivers"] });
-    //       toast({
-    //         variant: "success",
-    //         title: "Driver berhasil dibuat!",
-    //       });
-    //       // router.refresh();
-    //       router.push(`/dashboard/driver`);
-    //     },
-    //     onSettled: () => {
-    //       setLoading(false);
-    //     },
-    //     onError: (error) => {
-    //       toast({
-    //         variant: "destructive",
-    //         title: "Uh oh! ada sesuatu yang error",
-    //         description: `error: ${error.message}`,
-    //       });
-    //     },
-    //   });
-    //   // const res = await axios.post(`/api/products/create-product`, data);
-    //   // console.log("product", res);
-    // }
+    if (initialData) {
+      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+    } else {
+      createDriver(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["drivers"] });
+          toast({
+            variant: "success",
+            title: "Driver berhasil dibuat!",
+          });
+          // router.refresh();
+          router.push(`/dashboard/driver`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
+      // const res = await axios.post(`/api/products/create-product`, data);
+      // console.log("product", res);
+    }
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
