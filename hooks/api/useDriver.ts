@@ -17,6 +17,19 @@ export const useGetDriver = (params: any) => {
   });
 };
 
+export const useGetDetailDriver = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+
+  const getDetailDriver = () => {
+    return axiosAuth.get(`${baseEndpoint}/${id}`);
+  };
+
+  return useQuery({
+    queryKey: ["drivers", id],
+    queryFn: getDetailDriver,
+  });
+};
+
 export const usePostDriver = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
@@ -33,12 +46,14 @@ export const usePostDriver = () => {
   });
 };
 
+// export const useEditDriver = id;
+
 export const useDeleteDriver = (id: number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const deleteUserFn = async (id: number) => {
-    return axiosAuth.delete(`${"driver"}/${id}`);
+  const deleteUserFn = (id: number) => {
+    return axiosAuth.delete(`${baseEndpoint}/${id}`);
   };
 
   return useMutation({
