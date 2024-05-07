@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/customers";
+
 export const useGetCustomers = (params: any) => {
   const axiosAuth = useAxiosAuth();
 
@@ -17,15 +18,16 @@ export const useGetCustomers = (params: any) => {
 export const useGetDetailCustomer = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
 
-  const getDetaliCustomer = () => {
+  const getDetailCustomer = () => {
     return axiosAuth.get(`${baseEndpoint}/${id}`);
   };
 
   return useQuery({
     queryKey: ["customers", id],
-    queryFn: getDetaliCustomer,
+    queryFn: getDetailCustomer,
   });
 };
+
 export const usePostCustomer = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
@@ -35,6 +37,21 @@ export const usePostCustomer = () => {
 
   return useMutation({
     mutationFn: postCustomer,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["customers"] });
+    },
+  });
+};
+
+export const usePatchCustomer = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const patchCustomer = (body: any) => {
+    return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
+  };
+
+  return useMutation({
+    mutationFn: patchCustomer,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["customers"] });
     },

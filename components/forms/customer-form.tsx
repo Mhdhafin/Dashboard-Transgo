@@ -32,7 +32,7 @@ import FileUpload from "../file-upload";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { usePostCustomer } from "@/hooks/api/useCustomer";
+import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -77,7 +77,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   categories,
 }) => {
   console.log("categories", categories);
-  const params = useParams();
+  const { customerId } = useParams();
+
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -90,18 +91,19 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const queryClient = useQueryClient();
 
   const { mutate: createCustomer } = usePostCustomer();
+  const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
 
   const defaultValues = initialData
     ? initialData
     : {
-        name: "",
-        nik: "",
-        email: "",
-        imgUrl: [],
-        password: "",
-        date_of_birth: "",
-        gender: "",
-      };
+      name: "",
+      nik: "",
+      email: "",
+      imgUrl: [],
+      password: "",
+      date_of_birth: "",
+      gender: "",
+    };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -113,7 +115,26 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
     if (initialData) {
-      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+      updateCustomer(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: "Customer berhasil diedit!",
+          });
+          router.push(`/dashboard/customers`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
     } else {
       createCustomer(data, {
         onSuccess: () => {
@@ -283,7 +304,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a gender" />
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a gender" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
