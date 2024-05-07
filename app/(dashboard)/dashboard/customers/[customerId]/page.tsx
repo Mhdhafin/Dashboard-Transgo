@@ -1,17 +1,34 @@
+"use client";
 import BreadCrumb from "@/components/breadcrumb";
-import { ProductForm } from "@/components/forms/product-form";
+import { CustomerForm } from "@/components/forms/customer-form";
+import Spinner from "@/components/spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useGetDetailCustomer } from "@/hooks/api/useCustomer";
 import React from "react";
 
-export default function Page() {
+export default function Page({ params }: { params: { customerId: string } }) {
   const breadcrumbItems = [
-    { title: "Customers", link: "/dashboard/" },
-    { title: "Create", link: "/dashboard/customers/create" },
+    { title: "Customer", link: "/dashboard/customers" },
+    { title: "Edit", link: "/dashboard/customers/edit" },
   ];
+
+  const { data, isFetching } = useGetDetailCustomer(params.customerId);
+
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-5">
         <BreadCrumb items={breadcrumbItems} />
+        {isFetching && <Spinner />}
+        {!isFetching && data?.data && (
+          <CustomerForm
+            categories={[
+              { _id: "male", name: "Male" },
+              { _id: "female", name: "Female" },
+            ]}
+            initialData={data?.data}
+            key={null}
+          />
+        )}
       </div>
     </ScrollArea>
   );
