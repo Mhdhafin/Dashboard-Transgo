@@ -20,7 +20,7 @@ const Driver = ({ searchParams }: paramsProps) => {
   });
 
   return (
-    <div>
+    <>
       {isFetching && <Spinner />}
       {!isFetching && data?.data && (
         <DriverTable
@@ -32,7 +32,7 @@ const Driver = ({ searchParams }: paramsProps) => {
           pageNo={page}
         />
       )}
-    </div>
+    </>
   );
 };
 
