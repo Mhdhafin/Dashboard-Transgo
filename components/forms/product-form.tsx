@@ -248,12 +248,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* @ts-ignore  */}
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
+                      {categories.map(
+                        (category: { _id: string; name: string }) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.name}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
