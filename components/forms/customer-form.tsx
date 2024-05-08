@@ -50,7 +50,7 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
-  gender: z.string().min(1, { message: "Please select a gender" }),
+  gender: z.string({ required_error: "Please select a gender" }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
@@ -62,6 +62,7 @@ const formEditSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
+  gender: z.string({ required_error: "Please select a gender" }),
   date_of_birth: z.string(),
 });
 
@@ -96,14 +97,14 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const defaultValues = initialData
     ? initialData
     : {
-      name: "",
-      nik: "",
-      email: "",
-      imgUrl: [],
-      password: "",
-      date_of_birth: "",
-      gender: "",
-    };
+        name: "",
+        nik: "",
+        email: "",
+        imgUrl: [],
+        password: "",
+        date_of_birth: "",
+        gender: "",
+      };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -115,26 +116,27 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
     if (initialData) {
-      updateCustomer(data, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: "Customer berhasil diedit!",
-          });
-          router.push(`/dashboard/customers`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
+      console.log("data", data);
+      // updateCustomer(data, {
+      //   onSuccess: () => {
+      //     queryClient.invalidateQueries({ queryKey: ["customers"] });
+      //     toast({
+      //       variant: "success",
+      //       title: "Customer berhasil diedit!",
+      //     });
+      //     router.push(`/dashboard/customers`);
+      //   },
+      //   onSettled: () => {
+      //     setLoading(false);
+      //   },
+      //   onError: (error) => {
+      //     toast({
+      //       variant: "destructive",
+      //       title: "Uh oh! ada sesuatu yang error",
+      //       description: `error: ${error.message}`,
+      //     });
+      //   },
+      // });
     } else {
       createCustomer(data, {
         onSuccess: () => {
@@ -306,7 +308,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
-                          placeholder="Select a gender" />
+                          placeholder="Select a gender"
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
