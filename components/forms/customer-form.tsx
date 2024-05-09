@@ -1,9 +1,9 @@
 "use client";
 import * as z from "zod";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Trash } from "lucide-react";
+import { HeartPulse, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
+import { FilePicker } from "../upload/file-picker";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { usePresignedUrl } from "@/client/uploadClient";
+import useAxiosAuth from "@/hooks/axios/use-axios-auth";
+import axios from "axios";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -48,6 +54,7 @@ export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
   // imgUrl: z.array(ImgSchema),
+  file: z.instanceof(FileList).optional(),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string({ required_error: "Please select a gender" }),
@@ -93,7 +100,22 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
   const { mutate: createCustomer } = usePostCustomer();
   const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
+  const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
+  const axiosAuth = useAxiosAuth();
+  const onDrop = useCallback((acceptedFiles: Array<File>) => {
+    const file = new FileReader();
 
+    file.onload = function () {
+      setPreview(file.result);
+    };
+
+    file.readAsDataURL(acceptedFiles[0]);
+  }, []);
+
+  const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
+    useDropzone({
+      onDrop,
+    });
   const defaultValues = initialData
     ? initialData
     : {
@@ -112,9 +134,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
     defaultValues,
   });
+  const inputRef = form.register("file");
 
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
+    console.log("data", data, acceptedFiles);
     if (initialData) {
       console.log("data", data);
       // updateCustomer(data, {
@@ -138,27 +162,46 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       //   },
       // });
     } else {
-      createCustomer(data, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: "Customer berhasil dibuat!",
-          });
-          // router.refresh();
-          router.push(`/dashboard/customers`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
+      const file = data?.file?.[0];
+
+      // const filename = filepath.split("\\").pop();
+      const presignQuery = {
+        file_name: file?.name,
+        folder: "user",
+      };
+      const response = await axiosAuth.get("/storages/presign", {
+        params: presignQuery,
+      });
+      console.log("resp", response);
+
+      const testing = await axios.put(response.data.upload_url, file, {
+        headers: {
+          "Content-Type": file?.type,
         },
       });
+      console.log("testing", testing);
+
+      // createCustomer(data, {
+      //   onSuccess: () => {
+      //     queryClient.invalidateQueries({ queryKey: ["customers"] });
+      //     toast({
+      //       variant: "success",
+      //       title: "Customer berhasil dibuat!",
+      //     });
+      //     // router.refresh();
+      //     router.push(`/dashboard/customers`);
+      //   },
+      //   onSettled: () => {
+      //     setLoading(false);
+      //   },
+      //   onError: (error) => {
+      //     toast({
+      //       variant: "destructive",
+      //       title: "Uh oh! ada sesuatu yang error",
+      //       description: `error: ${error.message}`,
+      //     });
+      //   },
+      // });
       // const res = await axios.post(`/api/products/create-product`, data);
       // console.log("product", res);
     }
@@ -193,23 +236,39 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="imgUrl"
+            name="file"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  <FileUpload
-                    onChange={field.onChange}
-                    value={field.value}
-                    onRemove={field.onChange}
+                  <Input
+                    type="file"
+                    id="file"
+                    {...inputRef}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   />
+
+                  {/* <FilePicker uploadURL={""} /> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
+          {form.formState.errors.file && (
+            <span className="text-red-500">
+              {form.formState.errors.file.message}
+            </span>
+          )}
+          {/* {preview && (
+            <Image
+              src={preview as string}
+              width={200}
+              height={200}
+              alt="Upload preview"
+            />
+          )} */}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
