@@ -10,14 +10,11 @@ import Spinner from "@/components/spinner";
 
 export default function Page({ params }: { params: { driverId: string } }) {
   const breadcrumbItems = [
-    { title: "Driver", link: "/dashboard/driver" },
-    { title: "Edit", link: "/dashboard/driver/edit" },
+    { title: "Driver", link: "/dashboard/drivers" },
+    { title: "Edit", link: "/dashboard/drivers/edit" },
   ];
 
-  // const { driverId } = useParams();
-
   const { data, isFetching } = useGetDetailDriver(params.driverId);
-  console.log("data", data);
 
   return (
     <ScrollArea className="h-full">
@@ -30,7 +27,12 @@ export default function Page({ params }: { params: { driverId: string } }) {
               { _id: "male", name: "Male" },
               { _id: "female", name: "Female" },
             ]}
-            initialData={data?.data}
+            initialData={{
+              ...data?.data,
+              file: data?.data?.id_photo
+                ? { url: data?.data?.id_photo }
+                : undefined,
+            }}
             key={null}
           />
         )}

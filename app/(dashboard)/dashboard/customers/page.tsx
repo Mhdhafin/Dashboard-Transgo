@@ -13,7 +13,7 @@ import {
 import { Plus } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import Driver from "../driver/driver";
+import Driver from "../drivers/driver";
 import Customer from "./customer";
 export const metadata: Metadata = {
   title: "User | Transgo",

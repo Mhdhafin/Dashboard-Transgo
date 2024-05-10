@@ -3,7 +3,7 @@ import * as z from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Trash } from "lucide-react";
+import { Trash, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,11 @@ import FileUpload from "../file-upload";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { usePostDriver } from "@/hooks/api/useDriver";
+import { useEditDriver, usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
+import ImageUpload, { ImageUploadResponse } from "../image-upload";
+import axios from "axios";
+import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -54,7 +57,8 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
-  date_of_birth: z.string(),
+  date_of_birth: z.string({ required_error: "Date of Birth is required" }),
+  file: z.any(),
 });
 
 const formEditSchema = z.object({
@@ -63,9 +67,12 @@ const formEditSchema = z.object({
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   date_of_birth: z.string(),
+  file: z.any(),
 });
 
-type DriverFormValues = z.infer<typeof formSchema>;
+type DriverFormValues = z.infer<typeof formSchema> & {
+  file: ImageUploadResponse;
+};
 
 interface DriverFormProps {
   initialData: any | null;
@@ -77,7 +84,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   categories,
 }) => {
   console.log("categories", categories);
-  const params = useParams();
+  const { driverId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -89,7 +96,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
 
+  const axiosAuth = useAxiosAuth();
   const { mutate: createDriver } = usePostDriver();
+  const { mutate: updateDriver } = useEditDriver(driverId as string);
 
   const defaultValues = initialData
     ? initialData
@@ -110,20 +119,39 @@ export const DriverForm: React.FC<DriverFormProps> = ({
     defaultValues,
   });
 
+  const uploadImage = async (file: ImageUploadResponse | undefined) => {
+    if (!file?.data) {
+      return undefined;
+    }
+
+    const presignQuery = {
+      file_name: file?.data?.name,
+      folder: "user",
+    };
+
+    const response = await axiosAuth.get("/storages/presign", {
+      params: presignQuery,
+    });
+    await axios.put(response.data.upload_url, file?.data, {
+      headers: {
+        "Content-Type": file?.data?.type,
+      },
+    });
+
+    return response.data;
+  };
+
   const onSubmit = async (data: DriverFormValues) => {
-    // setLoading(true);
+    setLoading(true);
     if (initialData) {
-      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
-    } else {
-      createDriver(data, {
+      updateDriver(data, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
           toast({
             variant: "success",
-            title: "Driver berhasil dibuat!",
+            title: "Driver berhasil diedit!",
           });
-          // router.refresh();
-          router.push(`/dashboard/driver`);
+          router.push(`/dashboard/drivers`);
         },
         onSettled: () => {
           setLoading(false);
@@ -136,8 +164,33 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           });
         },
       });
-      // const res = await axios.post(`/api/products/create-product`, data);
-      // console.log("product", res);
+    } else {
+      const uploadImageResponse = await uploadImage(data?.file);
+
+      createDriver(
+        { ...data, id_photo: uploadImageResponse.download_url },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            toast({
+              variant: "success",
+              title: "Driver berhasil dibuat!",
+            });
+            // router.refresh();
+            router.push(`/dashboard/drivers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
+        },
+      );
     }
   };
 
@@ -170,14 +223,14 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="imgUrl"
+            name="file"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  <FileUpload
+                  <ImageUpload
                     onChange={field.onChange}
                     value={field.value}
                     onRemove={field.onChange}
@@ -186,7 +239,12 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
+          {form.formState.errors.file && (
+            <span className="text-red-500">
+              {form.formState.errors.file.message?.toString()}
+            </span>
+          )}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}

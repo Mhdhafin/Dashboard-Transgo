@@ -30,11 +30,21 @@ export const useGetDetailDriver = (id: string | number) => {
   });
 };
 
+type Body = {
+  name: string;
+  email: string;
+  gender: string;
+  date_of_birth: string;
+  nik: string;
+  password: string;
+  file: string;
+};
+
 export const usePostDriver = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postDriver = (body: any) => {
+  const postDriver = (body: Body) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
@@ -46,18 +56,32 @@ export const usePostDriver = () => {
   });
 };
 
-// export const useEditDriver = id;
+export const useEditDriver = (id: number | string) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const editDriverFn = (body: Omit<Body, "password">) => {
+    return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
+  };
+
+  return useMutation({
+    mutationFn: editDriverFn,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["drivers"] });
+    },
+  });
+};
 
 export const useDeleteDriver = (id: number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const deleteUserFn = (id: number) => {
+  const deleteDriverFn = (id: number) => {
     return axiosAuth.delete(`${baseEndpoint}/${id}`);
   };
 
   return useMutation({
-    mutationFn: deleteUserFn,
+    mutationFn: deleteDriverFn,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["drivers"] });
     },
