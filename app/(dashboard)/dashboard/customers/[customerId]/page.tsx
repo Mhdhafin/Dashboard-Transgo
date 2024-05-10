@@ -25,7 +25,12 @@ export default function Page({ params }: { params: { customerId: string } }) {
               { _id: "male", name: "Male" },
               { _id: "female", name: "Female" },
             ]}
-            initialData={data?.data}
+            initialData={{
+              ...data?.data,
+              file: data?.data?.id_photo ? {
+                url: data?.data?.id_photo,
+              } : undefined,
+            }}
             key={null}
           />
         )}

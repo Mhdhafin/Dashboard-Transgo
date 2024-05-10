@@ -1,16 +1,15 @@
 "use client";
+
 import * as z from "zod";
 import { useCallback, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { HeartPulse, Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,21 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
-import FileUpload from "../file-upload";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
 import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { FilePicker } from "../upload/file-picker";
 import { useDropzone } from "react-dropzone";
-import Image from "next/image";
-import { usePresignedUrl } from "@/client/uploadClient";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
+import ImageUpload, { ImageUploadResponse } from "../image-upload";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -53,8 +44,6 @@ const ImgSchema = z.object({
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-  // imgUrl: z.array(ImgSchema),
-  file: z.instanceof(FileList).optional(),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string({ required_error: "Please select a gender" }),
@@ -62,6 +51,7 @@ const formSchema = z.object({
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
   date_of_birth: z.string(),
+  file: z.any(),
 });
 
 const formEditSchema = z.object({
@@ -71,9 +61,10 @@ const formEditSchema = z.object({
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string({ required_error: "Please select a gender" }),
   date_of_birth: z.string(),
+  file: z.any(),
 });
 
-type CustomerFormValues = z.infer<typeof formSchema>;
+type CustomerFormValues = z.infer<typeof formSchema> & { file: ImageUploadResponse };
 
 interface CustomerFormProps {
   initialData: any | null;
@@ -84,7 +75,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   initialData,
   categories,
 }) => {
-  console.log("categories", categories);
   const { customerId } = useParams();
 
   const router = useRouter();
@@ -119,16 +109,15 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const defaultValues = initialData
     ? initialData
     : {
-        name: "",
-        nik: "",
-        email: "",
-        imgUrl: [],
-        password: "",
-        date_of_birth: "",
-        gender: "",
-      };
-  console.log(initialData);
-  console.log("defautl", defaultValues);
+      name: "",
+      nik: "",
+      email: "",
+      imgUrl: [],
+      password: "",
+      date_of_birth: "",
+      gender: "",
+      file: undefined,
+    };
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
@@ -136,74 +125,88 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   });
   const inputRef = form.register("file");
 
+  const uploadImage = async (file: ImageUploadResponse | undefined) => {
+    if (!file?.data) {
+      return undefined;
+    }
+
+    const presignQuery = {
+      file_name: file?.data?.name,
+      folder: "user",
+    };
+
+    const response = await axiosAuth.get("/storages/presign", {
+      params: presignQuery,
+    });
+    await axios.put(response.data.upload_url, file?.data, {
+      headers: {
+        "Content-Type": file?.data?.type,
+      },
+    });
+
+    return response.data;
+  }
+
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
-    console.log("data", data, acceptedFiles);
+
     if (initialData) {
-      console.log("data", data);
-      // updateCustomer(data, {
-      //   onSuccess: () => {
-      //     queryClient.invalidateQueries({ queryKey: ["customers"] });
-      //     toast({
-      //       variant: "success",
-      //       title: "Customer berhasil diedit!",
-      //     });
-      //     router.push(`/dashboard/customers`);
-      //   },
-      //   onSettled: () => {
-      //     setLoading(false);
-      //   },
-      //   onError: (error) => {
-      //     toast({
-      //       variant: "destructive",
-      //       title: "Uh oh! ada sesuatu yang error",
-      //       description: `error: ${error.message}`,
-      //     });
-      //   },
-      // });
-    } else {
-      const file = data?.file?.[0];
+      const uploadImageResponse = await uploadImage(data?.file);
 
-      // const filename = filepath.split("\\").pop();
-      const presignQuery = {
-        file_name: file?.name,
-        folder: "user",
-      };
-      const response = await axiosAuth.get("/storages/presign", {
-        params: presignQuery,
-      });
-      console.log("resp", response);
+      const newData: any = { ...data };
+      newData.file = undefined;
 
-      const testing = await axios.put(response.data.upload_url, file, {
-        headers: {
-          "Content-Type": file?.type,
+      if (uploadImageResponse) {
+        newData.id_photo = uploadImageResponse.download_url;
+      }
+
+      updateCustomer(newData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: "Customer berhasil diedit!",
+          });
+          router.push(`/dashboard/customers`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
         },
       });
-      console.log("testing", testing);
+    } else {
+      const uploadImageResponse = await uploadImage(data?.file);
 
-      // createCustomer(data, {
-      //   onSuccess: () => {
-      //     queryClient.invalidateQueries({ queryKey: ["customers"] });
-      //     toast({
-      //       variant: "success",
-      //       title: "Customer berhasil dibuat!",
-      //     });
-      //     // router.refresh();
-      //     router.push(`/dashboard/customers`);
-      //   },
-      //   onSettled: () => {
-      //     setLoading(false);
-      //   },
-      //   onError: (error) => {
-      //     toast({
-      //       variant: "destructive",
-      //       title: "Uh oh! ada sesuatu yang error",
-      //       description: `error: ${error.message}`,
-      //     });
-      //   },
-      // });
-      // const res = await axios.post(`/api/products/create-product`, data);
-      // console.log("product", res);
+      createCustomer({
+        ...data,
+        id_photo: uploadImageResponse.download_url,
+      }, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: "Customer berhasil dibuat!",
+          });
+          // router.refresh();
+          router.push(`/dashboard/customers`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
     }
   };
 
@@ -243,14 +246,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  <Input
-                    type="file"
-                    id="file"
-                    {...inputRef}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-
-                  {/* <FilePicker uploadURL={""} /> */}
+                  <ImageUpload
+                    onChange={field.onChange}
+                    value={field.value}
+                    onRemove={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -258,17 +257,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           />
           {form.formState.errors.file && (
             <span className="text-red-500">
-              {form.formState.errors.file.message}
+              {form.formState.errors.file.message?.toString()}
             </span>
           )}
-          {/* {preview && (
-            <Image
-              src={preview as string}
-              width={200}
-              height={200}
-              alt="Upload preview"
-            />
-          )} */}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
