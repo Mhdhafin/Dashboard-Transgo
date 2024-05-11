@@ -2,7 +2,7 @@
 import Spinner from "@/components/spinner";
 import { columns } from "@/components/tables/driver-tables/columns";
 import { DriverTable } from "@/components/tables/driver-tables/driver-table";
-import { useGetDriver } from "@/hooks/api/useDriver";
+import { useGetDrivers } from "@/hooks/api/useDriver";
 import React from "react";
 type paramsProps = {
   searchParams?: {
@@ -14,7 +14,7 @@ const Driver = ({ searchParams }: paramsProps) => {
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
 
-  const { data, isFetching } = useGetDriver({
+  const { data, isFetching } = useGetDrivers({
     limit: 10,
     page: 1,
   });

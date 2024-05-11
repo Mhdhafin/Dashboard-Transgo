@@ -131,7 +131,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: "Request Task",
-    href: "/dashboard/request-task",
+    href: "/dashboard/requests",
     icon: "clipboardList",
     label: "task",
   },

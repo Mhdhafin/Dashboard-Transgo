@@ -12,7 +12,14 @@ export default function Page() {
   return (
     <div className="flex-1 space-y-4 p-8">
       <BreadCrumb items={breadcrumbItems} />
-      <FleetForm initialData={null} key={null} />
+      <FleetForm
+        initialData={null}
+        key={null}
+        type={[
+          { id: "motorcycle", name: "Motor Cycle" },
+          { id: "car", name: "Car" },
+        ]}
+      />
     </div>
   );
 }

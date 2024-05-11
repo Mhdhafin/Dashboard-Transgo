@@ -2,7 +2,6 @@
 import Spinner from "@/components/spinner";
 import { columns } from "@/components/tables/fleet-tables/columns";
 import { FleetTable } from "@/components/tables/fleet-tables/fleet-table";
-import { useGetDriver } from "@/hooks/api/useDriver";
 import { useGetFleets } from "@/hooks/api/useFleet";
 import React from "react";
 type paramsProps = {

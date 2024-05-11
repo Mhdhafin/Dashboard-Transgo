@@ -19,7 +19,14 @@ export default function Page({ params }: { params: { fleetId: number } }) {
       <BreadCrumb items={breadcrumbItems} />
       {isFetching && <Spinner />}
       {!isFetching && data?.data && (
-        <FleetForm initialData={data.data} key={null} />
+        <FleetForm
+          initialData={data.data}
+          key={null}
+          type={[
+            { id: "motorcycle", name: "Motor Cycle" },
+            { id: "car", name: "Car" },
+          ]}
+        />
       )}
     </div>
   );

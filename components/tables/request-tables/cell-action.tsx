@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
-import { useDeleteCustomer } from "@/hooks/api/useCustomer";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useDeleteRequest } from "@/hooks/api/useRequest";
+import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -27,11 +27,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteCustomer } = useDeleteCustomer(id);
+  const { mutateAsync: deleteRequest } = useDeleteRequest(id);
 
   const onConfirm = async () => {
-    console.log("hello");
-    deleteCustomer(id, {
+    deleteRequest(id, {
       onSuccess: () => {
         toast({
           variant: "success",
@@ -44,10 +43,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           title: "ada error cuyy",
           description: `Something went wrong: ${error.message}`,
         });
-        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["requests"] });
       },
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["drivers"] });
+        queryClient.invalidateQueries({ queryKey: ["requests"] });
         setOpen(false);
       },
     });
@@ -72,7 +71,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/customers/${data.id}`)}
+            onClick={() => router.push(`/dashboard/requests/${data.id}`)}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>

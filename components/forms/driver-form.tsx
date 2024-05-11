@@ -144,26 +144,31 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
     if (initialData) {
-      updateDriver(data, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["drivers"] });
-          toast({
-            variant: "success",
-            title: "Driver berhasil diedit!",
-          });
-          router.push(`/dashboard/drivers`);
+      const uploadImageResponse = await uploadImage(data?.file);
+
+      updateDriver(
+        { ...data, id_photo: uploadImageResponse.download_url },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            toast({
+              variant: "success",
+              title: "Driver berhasil diedit!",
+            });
+            router.push(`/dashboard/drivers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
         },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
+      );
     } else {
       const uploadImageResponse = await uploadImage(data?.file);
 

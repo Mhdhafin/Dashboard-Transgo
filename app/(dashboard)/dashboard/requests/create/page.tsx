@@ -12,7 +12,13 @@ export default function Page() {
   return (
     <div className="flex-1 space-y-4 p-8">
       <BreadCrumb items={breadcrumbItems} />
-      <RequestForm initialData={null} />
+      <RequestForm
+        initialData={null}
+        type={[
+          { id: "delivery", name: "Delivery" },
+          { id: "pick_up", name: "Pick Up" },
+        ]}
+      />
     </div>
   );
 }

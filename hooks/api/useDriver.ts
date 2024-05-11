@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/drivers";
-export const useGetDriver = (params: any) => {
+export const useGetDrivers = (params: any) => {
   const axiosAuth = useAxiosAuth();
 
   const getDrivers = () => {
@@ -38,6 +38,7 @@ type Body = {
   nik: string;
   password: string;
   file: string;
+  id_photo: string;
 };
 
 export const usePostDriver = () => {

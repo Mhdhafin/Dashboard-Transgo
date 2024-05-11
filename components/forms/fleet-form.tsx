@@ -33,7 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostFleet } from "@/hooks/api/useFleet";
+import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -61,6 +61,7 @@ const formSchema = z.object({
     required_error: "Color is required",
     invalid_type_error: "Color must be a string",
   }),
+  type: z.string({ required_error: "type is required" }),
 });
 
 const formEditSchema = z.object({
@@ -79,16 +80,21 @@ const formEditSchema = z.object({
     required_error: "Color is required",
     invalid_type_error: "Color must be a string",
   }),
+  type: z.string({ required_error: "type is required" }),
 });
 
 type FleetFormValues = z.infer<typeof formSchema>;
-
+type FleetType = {
+  id: string;
+  name: string;
+};
 interface FleetFormProps {
   initialData: any | null;
+  type: FleetType[];
 }
 
-export const FleetForm: React.FC<FleetFormProps> = ({ initialData }) => {
-  const params = useParams();
+export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
+  const { fleetId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -101,6 +107,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData }) => {
   const queryClient = useQueryClient();
 
   const { mutate: createFleet } = usePostFleet();
+  const { mutate: editFleet } = useEditFleet(fleetId as string);
 
   const defaultValues = initialData
     ? initialData
@@ -123,10 +130,33 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData }) => {
     console.log(data);
     // setLoading(true);
     if (initialData) {
-      // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+      editFleet(
+        { ...data, photos: [] },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["fleets"] });
+            toast({
+              variant: "success",
+              title: "Fleet berhasil diubah!",
+            });
+            // router.refresh();
+            router.push(`/dashboard/fleets`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
+        },
+      );
     } else {
       createFleet(
-        { ...data, type: "car", photos: [] },
+        { ...data, photos: [] },
         {
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["fleets"] });
@@ -149,8 +179,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData }) => {
           },
         },
       );
-      // const res = await axios.post(`/api/products/create-product`, data);
-      // console.log("product", res);
     }
   };
 
@@ -245,6 +273,39 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a type"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {/* @ts-ignore  */}
+                      {type.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

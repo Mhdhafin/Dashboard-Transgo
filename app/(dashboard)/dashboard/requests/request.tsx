@@ -4,7 +4,7 @@ import { columns } from "@/components/tables/request-tables/columns";
 import { RequestTable } from "@/components/tables/request-tables/request-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetRequests } from "@/hooks/api/useRequest";
-import React from "react";
+import React, { useState } from "react";
 type paramsProps = {
   searchParams?: {
     [key: string]: string | string[] | undefined;
@@ -14,43 +14,81 @@ type paramsProps = {
 const Request = ({ searchParams }: paramsProps) => {
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
+  const [tab, setTab] = useState("active");
 
-  const { data, isFetching } = useGetRequests({
-    limit: 10,
-    page: 1,
-    status: "pending",
-  });
+  const { data, isFetching } = useGetRequests(
+    {
+      limit: 10,
+      page: 1,
+      status: "pending",
+    },
+    {
+      enabled: tab === "active",
+    },
+    "pending",
+  );
 
-  console.log("data", data);
+  const { data: onProgressData, isFetching: isFetchingOnProgressData } =
+    useGetRequests(
+      {
+        limit: 10,
+        page: 1,
+        status: "on_progress",
+      },
+      { enabled: tab === "active" },
+      "on_progress",
+    );
+
+  const { data: completedData, isFetching: isFetchingCompletedData } =
+    useGetRequests(
+      {
+        limit: 10,
+        page: 1,
+        status: "done",
+      },
+      { enabled: tab === "completed" },
+      "done",
+    );
+
+  const concatData = [].concat(data?.data?.items, onProgressData?.data?.items);
 
   return (
     <div>
-      <Tabs defaultValue="active" className="space-y-4">
+      <Tabs defaultValue={tab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="active" onClick={() => setTab("active")}>
+            Active
+          </TabsTrigger>
+          <TabsTrigger value="completed" onClick={() => setTab("completed")}>
+            Completed
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="space-y-4">
-          {isFetching && <Spinner />}
-          {!isFetching && data?.data && (
-            <RequestTable
-              columns={columns}
-              data={data?.data.items}
-              searchKey="name"
-              totalUsers={data?.data?.meta?.total_items}
-              pageCount={Math.ceil(data?.data?.meta?.total_items / pageLimit)}
-              pageNo={page}
-            />
-          )}
+          {isFetching && isFetchingOnProgressData && <Spinner />}
+          {!isFetching &&
+            !isFetchingOnProgressData &&
+            onProgressData?.data &&
+            data?.data && (
+              <RequestTable
+                columns={columns}
+                data={concatData}
+                searchKey="name"
+                totalUsers={data?.data?.meta?.total_items}
+                pageCount={Math.ceil(data?.data?.meta?.total_items / pageLimit)}
+                pageNo={page}
+              />
+            )}
         </TabsContent>
         <TabsContent value="completed" className="space-y-4">
-          {!isFetching && data?.data && (
+          {!isFetchingCompletedData && completedData?.data && (
             <RequestTable
               columns={columns}
-              data={data?.data.items}
+              data={completedData?.data.items}
               searchKey="name"
-              totalUsers={data?.data?.meta?.total_items}
-              pageCount={Math.ceil(data?.data?.meta?.total_items / pageLimit)}
+              totalUsers={completedData?.data?.meta?.total_items}
+              pageCount={Math.ceil(
+                completedData?.data?.meta?.total_items / pageLimit,
+              )}
               pageNo={page}
             />
           )}

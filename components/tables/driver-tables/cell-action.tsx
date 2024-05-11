@@ -27,35 +27,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const id = data?.id;
-  console.log("data?.id", data?.id);
   const { mutateAsync: deleteDriver } = useDeleteDriver(id);
-  const axiosAuth = useAxiosAuth();
-  // const {mutate: deleteDriver} = useDeleteDriver(id)
-  // console.log("cek", data);
-  // const deleteDriver = () => {
-  //   return axiosAuth.delete(`drivers/${id}`);
-  // };
-  // const onConfirm = async () => {
-  //   try {
-  //     await deleteDriverMutation.mutateAsync(id);
-  //   } catch (error) {
-  //     toast({
-  //       variant: "destructive",
-  //       title: "gagal menghapus driver",
-  //     });
-  //   }
-  // };
-
-  // const deleteDriverMutation = useMutation({
-  //   mutationFn: deleteDriver,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["drivers"] });
-  //     toast({
-  //       variant: "success",
-  //       title: "Driver berhasil dihapus",
-  //     });
-  //   },
-  // });
 
   const onConfirm = async () => {
     deleteDriver(id, {

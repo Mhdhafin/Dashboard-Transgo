@@ -33,16 +33,40 @@ export const useGetDetailFleet = (id: number) => {
   });
 };
 
+type PayloadBody = {
+  name: string;
+  type: string;
+  color: string;
+  plate_number: string;
+  photos: string[];
+};
+
 export const usePostFleet = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postFleet = (body: any) => {
+  const postFleet = (body: PayloadBody) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
   return useMutation({
     mutationFn: postFleet,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["fleets"] });
+    },
+  });
+};
+
+export const useEditFleet = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const editFleet = (body: PayloadBody) => {
+    return axiosAuth.patch(`${baseEndpoint}/${id}`);
+  };
+
+  return useMutation({
+    mutationFn: editFleet,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["fleets"] });
     },
