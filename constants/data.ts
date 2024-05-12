@@ -142,13 +142,13 @@ export const navItems: NavItem[] = [
     label: "Fleet",
   },
   {
-    title: "Driver",
-    href: "/dashboard/driver",
+    title: "Drivers",
+    href: "/dashboard/drivers",
     icon: "profile",
     label: "profile",
   },
   {
-    title: "Customer",
+    title: "Customers",
     href: "/dashboard/customers",
     icon: "users",
     label: "customer",
