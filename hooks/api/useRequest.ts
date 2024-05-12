@@ -61,7 +61,7 @@ export const useEditRequest = (id: string | number) => {
   const queryClient = useQueryClient();
 
   const editRequest = (body: PayloadBody) => {
-    return axiosAuth.patch(`${baseEndpoint}/${id}`);
+    return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
   return useMutation({

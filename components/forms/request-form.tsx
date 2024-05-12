@@ -78,7 +78,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   initialData,
   type,
 }) => {
-  const { customerId } = useParams();
+  const { requestId } = useParams();
   const { data: customers } = useGetCustomers({ limit: 10, page: 1 });
   const { data: fleets } = useGetFleets({ limit: 10, page: 1 });
   const { data: drivers } = useGetDrivers({ limit: 10, page: 1 });
@@ -94,10 +94,19 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const queryClient = useQueryClient();
 
   const { mutate: createRequest } = usePostRequest();
-  const { mutate: updateRequest } = useEditRequest(customerId as string);
+  const { mutate: updateRequest } = useEditRequest(requestId as string);
 
   const defaultValues = initialData
-    ? initialData
+    ? {
+        customer: initialData?.customer?.id?.toString(),
+        pic: initialData?.driver?.id?.toString(),
+        fleet: initialData?.fleet?.id?.toString(),
+        time: initialData?.start_date,
+        type: initialData?.type,
+        address: initialData?.address,
+        description: initialData?.description,
+        is_self_pickup: initialData?.is_self_pickup,
+      }
     : {
         customer: "",
         pic: "",
@@ -235,13 +244,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <Select
                       disabled={loading}
                       onValueChange={field.onChange}
-                      value={defaultValues?.customer?.id?.toString()}
-                      defaultValue={defaultValues?.customer?.id?.toString()}
+                      value={field.value}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue
-                            defaultValue={defaultValues?.customer?.id?.toString()}
+                            defaultValue={field.value}
                             placeholder="Select a customer"
                           />
                         </SelectTrigger>
@@ -269,7 +278,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}
-                    value={defaultValues?.driver?.id?.toString() ?? field.value}
+                    value={field.value}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -302,7 +311,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}
-                    value={defaultValues?.fleet?.id?.toString() ?? field.value}
+                    value={field.value}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -335,7 +344,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   <FormControl>
                     <Textarea
                       id="address"
-                      defaultValue={defaultValues?.address ?? field.value}
+                      defaultValue={field.value}
                       placeholder="Address..."
                       className="col-span-4"
                       {...field}
@@ -354,7 +363,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}
-                    value={defaultValues?.type ?? field.value}
+                    value={field.value}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -402,7 +411,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       id="description"
                       placeholder="Description..."
                       className="col-span-4"
-                      value={defaultValues?.description ?? field.value}
+                      defaultValue={field.value}
                       {...field}
                     />
                   </FormControl>
