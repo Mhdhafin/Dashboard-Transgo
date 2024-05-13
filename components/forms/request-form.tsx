@@ -1,8 +1,10 @@
 "use client";
 import * as z from "zod";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { DatePicker, Space } from 'antd';
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -98,25 +100,25 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const defaultValues = initialData
     ? {
-        customer: initialData?.customer?.id?.toString(),
-        pic: initialData?.driver?.id?.toString(),
-        fleet: initialData?.fleet?.id?.toString(),
-        time: initialData?.start_date,
-        type: initialData?.type,
-        address: initialData?.address,
-        description: initialData?.description,
-        is_self_pickup: initialData?.is_self_pickup,
-      }
+      customer: initialData?.customer?.id?.toString(),
+      pic: initialData?.driver?.id?.toString(),
+      fleet: initialData?.fleet?.id?.toString(),
+      time: initialData?.start_date,
+      type: initialData?.type,
+      address: initialData?.address,
+      description: initialData?.description,
+      is_self_pickup: initialData?.is_self_pickup,
+    }
     : {
-        customer: "",
-        pic: "",
-        fleet: "",
-        time: "",
-        type: "",
-        address: "",
-        description: "",
-        is_self_pickup: false,
-      };
+      customer: "",
+      pic: "",
+      fleet: "",
+      time: "",
+      type: "",
+      address: "",
+      description: "",
+      is_self_pickup: false,
+    };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -387,18 +389,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            <Controller
               control={form.control}
               name="time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Time</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder="Waktu" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log('dateval', value);
+                return (
+                  <Space
+                    size={12}
+                    direction="vertical"
+                  >
+                    <FormLabel>Type</FormLabel>
+                    <DatePicker
+                      height={40}
+                      onChange={onChange} // send value to hook form
+                      onBlur={onBlur} // notify when input is touched/blur
+                      value={value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : undefined}
+                      format={'YYYY-MM-DD HH:mm:ss'}
+                      showTime
+                    />
+                  </Space>
+                )
+              }}
             />
             <FormField
               control={form.control}
