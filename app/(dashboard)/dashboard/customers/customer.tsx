@@ -14,12 +14,10 @@ const Customer = ({ searchParams }: paramsProps) => {
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
 
-  const { data, isFetching, status } = useGetCustomers({
+  const { data, isFetching } = useGetCustomers({
     limit: 10,
     page: 1,
   });
-
-  console.log("v", data?.data, isFetching, status);
 
   return (
     <div>

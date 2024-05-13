@@ -13,7 +13,6 @@ export default function Page({ params }: { params: { customerId: string } }) {
   ];
 
   const { data, isFetching } = useGetDetailCustomer(params.customerId);
-
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-5">
@@ -27,9 +26,11 @@ export default function Page({ params }: { params: { customerId: string } }) {
             ]}
             initialData={{
               ...data?.data,
-              file: data?.data?.id_photo ? {
-                url: data?.data?.id_photo,
-              } : undefined,
+              file: data?.data?.id_photo
+                ? {
+                    url: data?.data?.id_photo,
+                  }
+                : undefined,
             }}
             key={null}
           />
