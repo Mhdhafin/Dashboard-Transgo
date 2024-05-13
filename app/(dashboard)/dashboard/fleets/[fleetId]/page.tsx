@@ -12,8 +12,6 @@ export default function Page({ params }: { params: { fleetId: number } }) {
   ];
 
   const { data, isFetching } = useGetDetailFleet(params.fleetId);
-  console.log("flee", data);
-
   return (
     <div className="flex-1 space-y-4 p-8">
       <BreadCrumb items={breadcrumbItems} />
