@@ -37,6 +37,7 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
+    setLoading(true);
     signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -57,10 +58,7 @@ export default function UserAuthForm() {
   return (
     <>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-2 w-full"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
             name="email"
@@ -98,7 +96,11 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-          <Button disabled={loading} className="ml-auto w-full" type="submit">
+          <Button
+            disabled={loading}
+            className="mt-6 ml-auto w-full"
+            type="submit"
+          >
             Login
           </Button>
         </form>
