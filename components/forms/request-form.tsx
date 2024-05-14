@@ -126,7 +126,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
-  console.log("form", form);
 
   const onSubmit = async (data: RequestFormValues) => {
     setLoading(true);

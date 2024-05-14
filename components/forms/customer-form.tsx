@@ -64,7 +64,9 @@ const formEditSchema = z.object({
   file: z.any(),
 });
 
-type CustomerFormValues = z.infer<typeof formSchema> & { file: ImageUploadResponse };
+type CustomerFormValues = z.infer<typeof formSchema> & {
+  file: ImageUploadResponse;
+};
 
 interface CustomerFormProps {
   initialData: any | null;
@@ -109,15 +111,15 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const defaultValues = initialData
     ? initialData
     : {
-      name: "",
-      nik: "",
-      email: "",
-      imgUrl: [],
-      password: "",
-      date_of_birth: "",
-      gender: "",
-      file: undefined,
-    };
+        name: "",
+        nik: "",
+        email: "",
+        imgUrl: [],
+        password: "",
+        date_of_birth: "",
+        gender: "",
+        file: undefined,
+      };
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
@@ -145,7 +147,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     });
 
     return response.data;
-  }
+  };
 
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
@@ -159,7 +161,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       if (uploadImageResponse) {
         newData.id_photo = uploadImageResponse.download_url;
       }
-
       updateCustomer(newData, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -181,32 +182,36 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         },
       });
     } else {
+      return;
       const uploadImageResponse = await uploadImage(data?.file);
 
-      createCustomer({
-        ...data,
-        id_photo: uploadImageResponse.download_url,
-      }, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: "Customer berhasil dibuat!",
-          });
-          // router.refresh();
-          router.push(`/dashboard/customers`);
+      createCustomer(
+        {
+          ...data,
+          id_photo: uploadImageResponse.download_url,
         },
-        onSettled: () => {
-          setLoading(false);
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["customers"] });
+            toast({
+              variant: "success",
+              title: "Customer berhasil dibuat!",
+            });
+            // router.refresh();
+            router.push(`/dashboard/customers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
         },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
+      );
     }
   };
 
@@ -249,7 +254,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <ImageUpload
                     onChange={field.onChange}
                     value={field.value}
-                    onRemove={field.onChange} />
+                    onRemove={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
