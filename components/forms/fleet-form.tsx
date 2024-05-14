@@ -34,6 +34,11 @@ import { cn } from "@/lib/utils";
 import { usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
+import MulitpleImageUpload, {
+  MulitpleImageUploadResponse,
+} from "../multiple-image-upload";
+import useAxiosAuth from "@/hooks/axios/use-axios-auth";
+import axios from "axios";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -52,26 +57,7 @@ const formSchema = z.object({
       invalid_type_error: "Name must be a string",
     })
     .min(3, { message: "Name must be at least 3 characters" }),
-  // imgUrl: z.array(ImgSchema),
-  color: z.string({
-    required_error: "Color is required",
-    invalid_type_error: "Color must be a string",
-  }),
-  plate_number: z.string({
-    required_error: "Color is required",
-    invalid_type_error: "Color must be a string",
-  }),
-  type: z.string({ required_error: "type is required" }),
-});
-
-const formEditSchema = z.object({
-  name: z
-    .string({
-      required_error: "Name is required",
-      invalid_type_error: "Name must be a string",
-    })
-    .min(3, { message: "Name must be at least 3 characters" }),
-  // imgUrl: z.array(ImgSchema),
+  photos: z.any(),
   color: z.string({
     required_error: "Color is required",
     invalid_type_error: "Color must be a string",
@@ -84,6 +70,10 @@ const formEditSchema = z.object({
 });
 
 type FleetFormValues = z.infer<typeof formSchema>;
+
+type CustomerFormValues = z.infer<typeof formSchema> & {
+  photos: MulitpleImageUploadResponse;
+};
 type FleetType = {
   id: string;
   name: string;
@@ -108,6 +98,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
 
   const { mutate: createFleet } = usePostFleet();
   const { mutate: editFleet } = useEditFleet(fleetId as string);
+  const axiosAuth = useAxiosAuth();
 
   const defaultValues = initialData
     ? initialData
@@ -118,20 +109,44 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
         plate_number: "",
         photos: [],
       };
-  console.log(initialData);
-  console.log("defautl", defaultValues);
 
-  const form = useForm<FleetFormValues>({
-    resolver: zodResolver(!initialData ? formSchema : formEditSchema),
+  const form = useForm<CustomerFormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues,
   });
 
-  const onSubmit = async (data: FleetFormValues) => {
-    console.log(data);
-    // setLoading(true);
+  const uploadImage = async (file: any) => {
+    const file_names = [];
+    for (let i = 0; i < file?.length; i++) {
+      file_names.push(file?.[i].name);
+    }
+
+    const response = await axiosAuth.post("/storages/presign/list", {
+      file_names: file_names,
+      folder: "fleet",
+    });
+    for (let i = 0; i < file_names.length; i++) {
+      const file_data = file;
+      await axios.put(response.data[i].upload_url, file_data[i], {
+        headers: {
+          "Content-Type": file_data[i].type,
+        },
+      });
+    }
+
+    return response.data;
+  };
+
+  const onSubmit = async (data: CustomerFormValues) => {
+    setLoading(true);
     if (initialData) {
+      const uploadImageRes = await uploadImage(data?.photos);
+      const filteredURL = uploadImageRes?.map(
+        (item: { download_url: string; upload_url: string }) =>
+          item.download_url,
+      );
       editFleet(
-        { ...data, photos: [] },
+        { ...data, photos: filteredURL },
         {
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["fleets"] });
@@ -155,8 +170,20 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
         },
       );
     } else {
+      const uploadImageRes = await uploadImage(data?.photos);
+      const filteredURL = uploadImageRes.map(
+        (item: { download_url: string; upload_url: string }) =>
+          item.download_url,
+      );
+      console.log("filter", data?.photos?.data, filteredURL, data?.photos);
+      const payload = {
+        ...data,
+        photos: data?.photos?.data ? filteredURL : data?.photos,
+      };
+      console.log("data", data, initialData, payload);
+      console.log({ ...data, photos: filteredURL });
       createFleet(
-        { ...data, photos: [] },
+        { ...data, photos: filteredURL },
         {
           onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["fleets"] });
@@ -211,14 +238,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="imgUrl"
+            name="photos"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Images</FormLabel>
                 <FormControl>
-                  <FileUpload
+                  <MulitpleImageUpload
                     onChange={field.onChange}
                     value={field.value}
                     onRemove={field.onChange}
@@ -227,7 +254,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
