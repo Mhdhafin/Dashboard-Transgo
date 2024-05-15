@@ -5,7 +5,7 @@ import { User } from "@/constants/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<any>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (

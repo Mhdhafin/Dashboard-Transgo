@@ -121,6 +121,16 @@ export type Drivers = {
   role: string;
   id_photo: string;
 };
+export type Requests = {
+  id: number;
+  name: string;
+  status: string;
+  email: string;
+  date_of_birth: string;
+  nik: string;
+  role: string;
+  id_photo: string;
+};
 
 export const navItems: NavItem[] = [
   {
