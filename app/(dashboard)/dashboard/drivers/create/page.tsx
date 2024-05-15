@@ -18,7 +18,7 @@ export default function Page() {
           { _id: "female", name: "Female" },
         ]}
         initialData={null}
-        key={null}
+        isEdit
       />
     </div>
   );

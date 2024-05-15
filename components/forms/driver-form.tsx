@@ -77,22 +77,33 @@ type DriverFormValues = z.infer<typeof formSchema> & {
 interface DriverFormProps {
   initialData: any | null;
   categories: any;
+  isEdit?: boolean;
 }
 
 export const DriverForm: React.FC<DriverFormProps> = ({
   initialData,
   categories,
+  isEdit,
 }) => {
-  console.log("categories", categories);
   const { driverId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? "Edit Driver" : "Create Driver";
-  const description = initialData ? "Edit a Driver" : "Add a new driver";
-  const toastMessage = initialData ? "Product updated." : "Product created.";
+  const title = !isEdit
+    ? "Detail Driver"
+    : initialData
+    ? "Edit Driver"
+    : "Create Driver";
+  const description = !isEdit
+    ? ""
+    : initialData
+    ? "Edit a Driver"
+    : "Add a new driver";
+  const toastMessage = initialData
+    ? "Driver changed successfully!"
+    : "Driver created successfully!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
 
@@ -153,7 +164,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
             toast({
               variant: "success",
-              title: "Driver berhasil diedit!",
+              title: toastMessage,
             });
             router.push(`/dashboard/drivers`);
           },
@@ -179,7 +190,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
             toast({
               variant: "success",
-              title: "Driver berhasil dibuat!",
+              title: toastMessage,
             });
             // router.refresh();
             router.push(`/dashboard/drivers`);
@@ -228,28 +239,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
-            control={form.control}
-            name="file"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    onChange={field.onChange}
-                    value={field.value}
-                    onRemove={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {form.formState.errors.file && (
-            <span className="text-red-500">
-              {form.formState.errors.file.message?.toString()}
-            </span>
-          )}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -259,7 +248,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormLabel>Nama</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="Nama Driver"
                       {...field}
                     />
@@ -275,32 +264,35 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Email" {...field} />
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {!initialData && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        // type="password"
-                        disabled={loading}
-                        placeholder="Password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      // type="password"
+                      disabled={initialData || !isEdit || loading}
+                      placeholder="Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -309,7 +301,11 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormItem>
                   <FormLabel>NIK</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="NIK" {...field} />
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="NIK"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -323,7 +319,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormLabel>Date of birth</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="1999-20-12"
                       {...field}
                     />
@@ -339,7 +335,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -363,9 +359,34 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    disabled={!isEdit || loading}
+                    onChange={field.onChange}
+                    value={field.value}
+                    onRemove={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {form.formState.errors.file && (
+            <span className="text-red-500">
+              {form.formState.errors.file.message?.toString()}
+            </span>
+          )}
+          {isEdit && (
+            <Button disabled={loading} className="ml-auto" type="submit">
+              {action}
+            </Button>
+          )}
         </form>
       </Form>
     </>

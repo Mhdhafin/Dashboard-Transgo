@@ -58,8 +58,8 @@ export default function MulitpleImageUpload({
             key={item?.name ?? value.url}
             className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
           >
-            <div className="z-10 absolute top-2 right-2">
-              {!disabled && (
+            {!disabled && (
+              <div className="z-10 absolute top-2 right-2">
                 <Button
                   type="button"
                   onClick={() => onDeleteFile(item)}
@@ -68,8 +68,8 @@ export default function MulitpleImageUpload({
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
             <div>
               <Image
                 fill

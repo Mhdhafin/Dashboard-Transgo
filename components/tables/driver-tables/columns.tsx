@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Drivers } from "@/constants/data";
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
+import Link from "next/link";
 
 export const columns: ColumnDef<Drivers>[] = [
   // {
@@ -27,6 +28,11 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "name",
     header: "Nama",
+    cell: ({ row }) => (
+      <Link href={`/dashboard/drivers/${row.original.id}/detail`}>
+        {row.original.name}
+      </Link>
+    ),
   },
   {
     accessorKey: "role",

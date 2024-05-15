@@ -15,12 +15,14 @@ interface ImageUploadProps {
   onChange?: any;
   onRemove: (value?: ImageUploadResponse) => void;
   value?: ImageUploadResponse;
+  disabled?: boolean;
 }
 
 export default function ImageUpload({
   onChange,
   onRemove,
   value,
+  disabled,
 }: ImageUploadProps) {
   const { toast } = useToast();
 
@@ -34,22 +36,36 @@ export default function ImageUpload({
 
   return (
     <div>
+      <div className="mb-6">
+        <Input
+          type="file"
+          id="file"
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          accept="image/*"
+          disabled={disabled}
+          onChange={(e) => {
+            onUpdateFile({ data: e.target.files![0] });
+          }}
+        />
+      </div>
       <div className="mb-4 flex items-center gap-4">
         {!!value && (
           <div
             key={value.data?.name ?? value.url}
             className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
           >
-            <div className="z-10 absolute top-2 right-2">
-              <Button
-                type="button"
-                onClick={() => onDeleteFile()}
-                variant="destructive"
-                size="sm"
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
-            </div>
+            {!disabled && (
+              <div className="z-10 absolute top-2 right-2">
+                <Button
+                  type="button"
+                  onClick={() => onDeleteFile()}
+                  variant="destructive"
+                  size="sm"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
             <div>
               <Image
                 fill
@@ -60,18 +76,6 @@ export default function ImageUpload({
             </div>
           </div>
         )}
-      </div>
-      <div>
-        {
-          <Input
-            type="file"
-            id="file"
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            accept="image/*"
-            onChange={(e) => {
-              onUpdateFile({ data: e.target.files![0] });
-            }}
-          />}
       </div>
     </div>
   );
