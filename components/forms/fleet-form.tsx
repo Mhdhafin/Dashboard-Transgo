@@ -81,9 +81,14 @@ type FleetType = {
 interface FleetFormProps {
   initialData: any | null;
   type: FleetType[];
+  isEdit?: boolean | null;
 }
 
-export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
+export const FleetForm: React.FC<FleetFormProps> = ({
+  initialData,
+  type,
+  isEdit,
+}) => {
   const { fleetId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -92,7 +97,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
   const [imgLoading, setImgLoading] = useState(false);
   const title = initialData ? "Edit Fleet" : "Create Fleet";
   const description = initialData ? "Edit a fleet" : "Add a new fleet";
-  const toastMessage = initialData ? "Product updated." : "Product created.";
+  const toastMessage = initialData
+    ? "fleet changed successfully!"
+    : "fleet successfully created!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
 
@@ -125,6 +132,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
       file_names: file_names,
       folder: "fleet",
     });
+
     for (let i = 0; i < file_names.length; i++) {
       const file_data = file;
       await axios.put(response.data[i].upload_url, file_data[i], {
@@ -152,7 +160,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
             queryClient.invalidateQueries({ queryKey: ["fleets"] });
             toast({
               variant: "success",
-              title: "Fleet berhasil diubah!",
+              title: toastMessage,
             });
             // router.refresh();
             router.push(`/dashboard/fleets`);
@@ -175,13 +183,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
         (item: { download_url: string; upload_url: string }) =>
           item.download_url,
       );
-      console.log("filter", data?.photos?.data, filteredURL, data?.photos);
-      const payload = {
-        ...data,
-        photos: data?.photos?.data ? filteredURL : data?.photos,
-      };
-      console.log("data", data, initialData, payload);
-      console.log({ ...data, photos: filteredURL });
       createFleet(
         { ...data, photos: filteredURL },
         {
@@ -189,7 +190,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
             queryClient.invalidateQueries({ queryKey: ["fleets"] });
             toast({
               variant: "success",
-              title: "Fleet berhasil dibuat!",
+              title: toastMessage,
             });
             // router.refresh();
             router.push(`/dashboard/fleets`);
@@ -238,23 +239,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
-            control={form.control}
-            name="photos"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <MulitpleImageUpload
-                    onChange={field.onChange}
-                    value={field.value}
-                    onRemove={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -264,7 +248,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
                   <FormLabel>Nama</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="Nama Fleet"
                       {...field}
                     />
@@ -280,7 +264,11 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
                 <FormItem>
                   <FormLabel>Color</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Color" {...field} />
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Color"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -295,7 +283,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
                   <FormLabel>Plate Number</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="Plate Number"
                       {...field}
                     />
@@ -311,7 +299,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
                 <FormItem>
                   <FormLabel>Type</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -338,9 +326,29 @@ export const FleetForm: React.FC<FleetFormProps> = ({ initialData, type }) => {
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <FormField
+            control={form.control}
+            name="photos"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <MulitpleImageUpload
+                    onChange={field.onChange}
+                    value={field.value}
+                    onRemove={field.onChange}
+                    disabled={!isEdit || loading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {isEdit && (
+            <Button disabled={loading} className="ml-auto" type="submit">
+              {action}
+            </Button>
+          )}
         </form>
       </Form>
     </>

@@ -15,12 +15,14 @@ interface MulitpleImageUploadProps {
   onChange?: any;
   onRemove: (value?: MulitpleImageUploadResponse) => void;
   value?: any;
+  disabled?: boolean;
 }
 
 export default function MulitpleImageUpload({
   onChange,
   onRemove,
   value,
+  disabled,
 }: MulitpleImageUploadProps) {
   const { toast } = useToast();
 
@@ -39,6 +41,17 @@ export default function MulitpleImageUpload({
 
   return (
     <div>
+      <div className="mb-6">
+        <Input
+          type="file"
+          id="file"
+          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          accept="image/*"
+          multiple
+          disabled={disabled}
+          onChange={(e) => onUpdateFile({ data: e.target.files })}
+        />
+      </div>
       <div className="mb-4 flex items-center gap-4">
         {value.map((item: any) => (
           <div
@@ -46,14 +59,16 @@ export default function MulitpleImageUpload({
             className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
           >
             <div className="z-10 absolute top-2 right-2">
-              <Button
-                type="button"
-                onClick={() => onDeleteFile(item)}
-                variant="destructive"
-                size="sm"
-              >
-                <Trash className="h-4 w-4" />
-              </Button>
+              {!disabled && (
+                <Button
+                  type="button"
+                  onClick={() => onDeleteFile(item)}
+                  variant="destructive"
+                  size="sm"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <div>
               <Image
@@ -65,18 +80,6 @@ export default function MulitpleImageUpload({
             </div>
           </div>
         ))}
-      </div>
-      <div>
-        {
-          <Input
-            type="file"
-            id="file"
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            accept="image/*"
-            multiple
-            onChange={(e) => onUpdateFile({ data: e.target.files })}
-          />
-        }
       </div>
     </div>
   );

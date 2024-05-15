@@ -19,6 +19,7 @@ export default function Page() {
           { id: "motorcycle", name: "Motor Cycle" },
           { id: "car", name: "Car" },
         ]}
+        isEdit
       />
     </div>
   );

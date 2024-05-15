@@ -8,7 +8,7 @@ import React from "react";
 export default function Page({ params }: { params: { fleetId: number } }) {
   const breadcrumbItems = [
     { title: "Fleets", link: "/dashboard/fleets" },
-    { title: "Edit", link: "/dashboard/fleets/edit" },
+    { title: "Detail", link: "/dashboard/fleets/detail" },
   ];
 
   const { data, isFetching } = useGetDetailFleet(params.fleetId);
