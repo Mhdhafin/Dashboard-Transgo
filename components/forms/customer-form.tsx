@@ -71,11 +71,13 @@ type CustomerFormValues = z.infer<typeof formSchema> & {
 interface CustomerFormProps {
   initialData: any | null;
   categories: any;
+  isEdit?: boolean;
 }
 
 export const CustomerForm: React.FC<CustomerFormProps> = ({
   initialData,
   categories,
+  isEdit,
 }) => {
   const { customerId } = useParams();
 
@@ -84,9 +86,19 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? "Edit Customer" : "Create Customer";
-  const description = initialData ? "Edit a customer" : "Add a new customer";
-  const toastMessage = initialData ? "Product updated." : "Product created.";
+  const title = !isEdit
+    ? "Detail Customer"
+    : initialData
+    ? "Edit Customer"
+    : "Create Customer";
+  const description = !isEdit
+    ? ""
+    : initialData
+    ? "Edit a customer"
+    : "Add a new customer";
+  const toastMessage = initialData
+    ? "Customer changed successfully!"
+    : "Customer created successfully!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
 
@@ -166,7 +178,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           queryClient.invalidateQueries({ queryKey: ["customers"] });
           toast({
             variant: "success",
-            title: "Customer berhasil diedit!",
+            title: toastMessage,
           });
           router.push(`/dashboard/customers`);
         },
@@ -182,7 +194,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         },
       });
     } else {
-      return;
       const uploadImageResponse = await uploadImage(data?.file);
 
       createCustomer(
@@ -195,7 +206,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             queryClient.invalidateQueries({ queryKey: ["customers"] });
             toast({
               variant: "success",
-              title: "Customer berhasil dibuat!",
+              title: toastMessage,
             });
             // router.refresh();
             router.push(`/dashboard/customers`);
@@ -244,28 +255,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <FormField
-            control={form.control}
-            name="file"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    onChange={field.onChange}
-                    value={field.value}
-                    onRemove={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {form.formState.errors.file && (
-            <span className="text-red-500">
-              {form.formState.errors.file.message?.toString()}
-            </span>
-          )}
           <div className="md:grid md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -275,7 +264,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <FormLabel>Nama</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="Nama Customer"
                       {...field}
                     />
@@ -291,7 +280,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Email" {...field} />
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -307,7 +300,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <FormControl>
                       <Input
                         // type="password"
-                        disabled={loading}
+                        disabled={!isEdit || loading}
                         placeholder="Password"
                         {...field}
                       />
@@ -325,7 +318,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <FormItem>
                   <FormLabel>NIK</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="NIK" {...field} />
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="NIK"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -339,7 +336,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <FormLabel>Date of birth</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       placeholder="1999-20-12"
                       {...field}
                     />
@@ -355,7 +352,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -382,9 +379,34 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    disabled={!isEdit || loading}
+                    onChange={field.onChange}
+                    value={field.value}
+                    onRemove={field.onChange}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {form.formState.errors.file && (
+            <span className="text-red-500">
+              {form.formState.errors.file.message?.toString()}
+            </span>
+          )}
+          {isEdit && (
+            <Button disabled={loading} className="ml-auto" type="submit">
+              {action}
+            </Button>
+          )}
         </form>
       </Form>
     </>

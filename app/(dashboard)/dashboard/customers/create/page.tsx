@@ -19,6 +19,7 @@ export default function Page() {
         ]}
         initialData={null}
         key={null}
+        isEdit
       />
     </div>
   );

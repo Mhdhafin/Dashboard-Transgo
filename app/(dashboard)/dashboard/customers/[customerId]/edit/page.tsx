@@ -32,7 +32,7 @@ export default function Page({ params }: { params: { customerId: string } }) {
                   }
                 : undefined,
             }}
-            key={null}
+            isEdit
           />
         )}
       </div>
