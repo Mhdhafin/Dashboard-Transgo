@@ -2,7 +2,7 @@
 import * as z from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Trash, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
 import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
+import { ConfigProvider, DatePicker, Space, theme } from "antd";
+import { useTheme } from "next-themes";
+import dayjs from "dayjs";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -57,7 +60,7 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
-  date_of_birth: z.string({ required_error: "Date of Birth is required" }),
+  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
   file: z.any(),
 });
 
@@ -66,7 +69,7 @@ const formEditSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
-  date_of_birth: z.string(),
+  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
   file: z.any(),
 });
 
@@ -110,6 +113,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const axiosAuth = useAxiosAuth();
   const { mutate: createDriver } = usePostDriver();
   const { mutate: updateDriver } = useEditDriver(driverId as string);
+  const { theme: themeMode } = useTheme();
 
   const defaultValues = initialData
     ? initialData
@@ -154,59 +158,65 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
-    if (initialData) {
-      const uploadImageResponse = await uploadImage(data?.file);
+    const uploadImageResponse = await uploadImage(data?.file);
+    const newData: any = { ...data };
+    newData.file = undefined;
+    newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
 
-      updateDriver(
-        { ...data, id_photo: uploadImageResponse.download_url },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["drivers"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            router.push(`/dashboard/drivers`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
+    if (uploadImageResponse) {
+      newData.id_photo = uploadImageResponse.download_url;
+    }
+
+    if (initialData) {
+      updateDriver(newData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["drivers"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          router.push(`/dashboard/drivers`);
         },
-      );
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
     } else {
       const uploadImageResponse = await uploadImage(data?.file);
-
-      createDriver(
-        { ...data, id_photo: uploadImageResponse.download_url },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["drivers"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            // router.refresh();
-            router.push(`/dashboard/drivers`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
+      delete data?.file;
+      const payload = {
+        ...data,
+        id_photo: uploadImageResponse.download_url,
+        date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
+      };
+      createDriver(payload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["drivers"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          // router.refresh();
+          router.push(`/dashboard/drivers`);
         },
-      );
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
     }
   };
 
@@ -311,22 +321,35 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            <Controller
               control={form.control}
               name="date_of_birth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date of birth</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="1999-20-12"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("dateval", value);
+                return (
+                  <ConfigProvider
+                    theme={{
+                      algorithm:
+                        themeMode === "light"
+                          ? theme.defaultAlgorithm
+                          : theme.darkAlgorithm,
+                    }}
+                  >
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Date of Birth</FormLabel>
+                      <DatePicker
+                        disabled={!isEdit || loading}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur}
+                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                        format={"YYYY-MM-DD"}
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
             />
             <FormField
               control={form.control}

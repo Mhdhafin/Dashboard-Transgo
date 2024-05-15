@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Space } from "antd";
+import { ConfigProvider, DatePicker, Space, theme } from "antd";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,7 @@ import { useGetFleets } from "@/hooks/api/useFleet";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
+import { useTheme } from "next-themes";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -58,7 +59,7 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   customer: z.string().min(1, { message: "Please select a customer" }),
   pic: z.string().min(1, { message: "Please select a pic" }),
-  time: z.string({ required_error: "time is required" }),
+  time: z.any({ required_error: "time is required" }),
   type: z.string().min(1, { message: "Please select a type" }),
   address: z.string({ required_error: "address is required" }),
   description: z.string({ required_error: "description is required" }),
@@ -96,6 +97,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
+  const { theme: themeMode } = useTheme();
 
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
@@ -135,13 +137,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       customer_id: Number(data?.customer),
       fleet_id: Number(data?.fleet),
       driver_id: Number(data?.pic),
-      start_date: data?.time,
+      start_date: dayjs(data?.time).toISOString(),
       type: data?.type,
       address: data?.address,
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
     };
-    console.log("data", data, payload);
     if (initialData) {
       updateRequest(payload, {
         onSuccess: () => {
@@ -391,17 +392,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            <Controller
               control={form.control}
               name="time"
               render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("dateval", value);
                 return (
                   <Space size={12} direction="vertical">
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>Time</FormLabel>
                     <DatePicker
                       disabled={!isEdit || loading}
                       height={40}
+                      className="p"
                       onChange={onChange} // send value to hook form
                       onBlur={onBlur} // notify when input is touched/blur
                       value={

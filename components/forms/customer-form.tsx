@@ -3,10 +3,11 @@
 import * as z from "zod";
 import { useCallback, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ConfigProvider, DatePicker, Space, theme } from "antd";
 import {
   Form,
   FormControl,
@@ -31,6 +32,8 @@ import { useDropzone } from "react-dropzone";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
+import { useTheme } from "next-themes";
+import dayjs from "dayjs";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -50,7 +53,7 @@ const formSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
-  date_of_birth: z.string(),
+  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
   file: z.any(),
 });
 
@@ -60,7 +63,7 @@ const formEditSchema = z.object({
   nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
   email: z.string().email({ message: "email must be valid" }),
   gender: z.string({ required_error: "Please select a gender" }),
-  date_of_birth: z.string(),
+  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
   file: z.any(),
 });
 
@@ -106,6 +109,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const axiosAuth = useAxiosAuth();
+  const { theme: themeMode } = useTheme();
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
     const file = new FileReader();
 
@@ -120,13 +124,21 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     useDropzone({
       onDrop,
     });
+  console.log("initialData", initialData);
   const defaultValues = initialData
-    ? initialData
+    ? {
+        name: initialData?.name,
+        nik: initialData?.nik,
+        email: initialData?.email,
+        date_of_birth: initialData?.date_of_birth,
+        gender: initialData?.gender,
+        file: initialData?.file,
+        password: initialData?.password,
+      }
     : {
         name: "",
         nik: "",
         email: "",
-        imgUrl: [],
         password: "",
         date_of_birth: "",
         gender: "",
@@ -137,8 +149,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
     defaultValues,
   });
+  console.log("defaul", defaultValues);
   const inputRef = form.register("file");
-
+  console.log("form", form.watch("date_of_birth"));
   const uploadImage = async (file: ImageUploadResponse | undefined) => {
     if (!file?.data) {
       return undefined;
@@ -163,12 +176,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
   const onSubmit = async (data: CustomerFormValues) => {
     setLoading(true);
-
     if (initialData) {
       const uploadImageResponse = await uploadImage(data?.file);
 
       const newData: any = { ...data };
       newData.file = undefined;
+      newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
 
       if (uploadImageResponse) {
         newData.id_photo = uploadImageResponse.download_url;
@@ -199,6 +212,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       createCustomer(
         {
           ...data,
+          date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
           id_photo: uploadImageResponse.download_url,
         },
         {
@@ -290,26 +304,24 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-            {!initialData && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        // type="password"
-                        disabled={!isEdit || loading}
-                        placeholder="Password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      // type="password"
+                      disabled={initialData || !isEdit || loading}
+                      placeholder="Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -328,23 +340,87 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="date_of_birth"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date of birth</FormLabel>
+                  <FormLabel>asdf</FormLabel>
                   <FormControl>
                     <Input
+                      // type="password"
                       disabled={!isEdit || loading}
-                      placeholder="1999-20-12"
+                      placeholder="Password"
                       {...field}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
+            /> */}
+            <Controller
+              control={form.control}
+              name="date_of_birth"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("dateval", value);
+                return (
+                  <ConfigProvider
+                    theme={{
+                      algorithm:
+                        themeMode === "light"
+                          ? theme.defaultAlgorithm
+                          : theme.darkAlgorithm,
+                    }}
+                  >
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Date of Birth</FormLabel>
+                      <DatePicker
+                        disabled={!isEdit || loading}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur}
+                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                        format={"YYYY-MM-DD"}
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
             />
+            {/* <Controller
+              control={form.control}
+              name="date_of_birth"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("value", value);
+                return (
+                  <ConfigProvider
+                    theme={{
+                      algorithm:
+                        themeMode === "light"
+                          ? theme.defaultAlgorithm
+                          : theme.darkAlgorithm,
+                    }}
+                  >
+                    <FormItem>
+                      <Space size={12} direction="vertical">
+                        <FormLabel>Date of birth</FormLabel>
+                        <DatePicker
+                          disabled={!isEdit || loading}
+                          height={50}
+                          className="p"
+                          onChange={onChange} // send value to hook form
+                          onBlur={onBlur} // notify when input is touched/blur
+                          value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                          format={"YYYY-MM-DD"}
+                        />
+                      </Space>
+                      <FormMessage />
+                    </FormItem>
+                  </ConfigProvider>
+                );
+              }}
+            /> */}
             <FormField
               control={form.control}
               name="gender"
