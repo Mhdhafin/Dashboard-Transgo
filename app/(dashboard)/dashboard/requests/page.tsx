@@ -53,7 +53,7 @@ const page = async ({ searchParams }: paramsProps) => {
         </div>
         <Separator />
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <Request />
+          <Request searchParams={searchParams} />
         </HydrationBoundary>
       </div>
     </>

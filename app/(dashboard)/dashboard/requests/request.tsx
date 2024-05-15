@@ -12,79 +12,101 @@ type paramsProps = {
 };
 
 const Request = ({ searchParams }: paramsProps) => {
+  console.log("search", searchParams);
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
-  const [tab, setTab] = useState("active");
+  const [tab, setTab] = useState("pending");
 
-  const { data, isFetching } = useGetRequests(
-    {
-      limit: 10,
-      page: 1,
-      status: "pending",
-    },
-    {
-      enabled: tab === "active",
-    },
-    "pending",
-  );
+  const { data: pendingData, isFetching: isFetchingPendingData } =
+    useGetRequests(
+      {
+        limit: 30,
+        page: page,
+        status: "pending",
+      },
+      {
+        enabled: tab === "pending",
+      },
+      "pending",
+    );
 
   const { data: onProgressData, isFetching: isFetchingOnProgressData } =
     useGetRequests(
       {
-        limit: 10,
-        page: 1,
+        limit: pageLimit,
+        page: page,
         status: "on_progress",
       },
-      { enabled: tab === "active" },
+      { enabled: tab === "on_progress" },
       "on_progress",
     );
 
   const { data: completedData, isFetching: isFetchingCompletedData } =
     useGetRequests(
       {
-        limit: 10,
-        page: 1,
+        limit: pageLimit,
+        page: page,
         status: "done",
       },
-      { enabled: tab === "completed" },
+      { enabled: tab === "done" },
       "done",
     );
-
-  const concatData = [].concat(data?.data?.items, onProgressData?.data?.items);
 
   return (
     <div>
       <Tabs defaultValue={tab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="active" onClick={() => setTab("active")}>
-            Active
+          <TabsTrigger value="pending" onClick={() => setTab("pending")}>
+            Pending
           </TabsTrigger>
-          <TabsTrigger value="completed" onClick={() => setTab("completed")}>
-            Completed
+          <TabsTrigger
+            value="on_progress"
+            onClick={() => setTab("on_progress")}
+          >
+            On Progress
+          </TabsTrigger>
+          <TabsTrigger value="done" onClick={() => setTab("done")}>
+            Done
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="active" className="space-y-4">
-          {isFetching && isFetchingOnProgressData && <Spinner />}
-          {!isFetching &&
+        <TabsContent value="pending" className="space-y-4">
+          {isFetchingPendingData && <Spinner />}
+          {!isFetchingPendingData &&
             !isFetchingOnProgressData &&
-            onProgressData?.data &&
-            data?.data && (
+            pendingData?.data && (
               <RequestTable
                 columns={columns}
-                data={concatData}
-                searchKey="name"
-                totalUsers={data?.data?.meta?.total_items}
-                pageCount={Math.ceil(data?.data?.meta?.total_items / pageLimit)}
+                data={pendingData?.data?.items}
+                searchKey="customer.name"
+                totalUsers={pendingData?.data?.meta?.total_items}
+                pageCount={Math.ceil(
+                  pendingData?.data?.meta?.total_items / pageLimit,
+                )}
                 pageNo={page}
               />
             )}
         </TabsContent>
-        <TabsContent value="completed" className="space-y-4">
+        <TabsContent value="on_progress" className="space-y-4">
+          {isFetchingOnProgressData && <Spinner />}
+          {!isFetchingOnProgressData && onProgressData?.data && (
+            <RequestTable
+              columns={columns}
+              data={onProgressData?.data?.items}
+              searchKey="customer.name"
+              totalUsers={onProgressData?.data?.meta?.total_items}
+              pageCount={Math.ceil(
+                onProgressData?.data?.meta?.total_items / pageLimit,
+              )}
+              pageNo={page}
+            />
+          )}
+        </TabsContent>
+        <TabsContent value="done" className="space-y-4">
           {!isFetchingCompletedData && completedData?.data && (
             <RequestTable
               columns={columns}
               data={completedData?.data.items}
-              searchKey="name"
+              searchKey="customer.name"
               totalUsers={completedData?.data?.meta?.total_items}
               pageCount={Math.ceil(
                 completedData?.data?.meta?.total_items / pageLimit,

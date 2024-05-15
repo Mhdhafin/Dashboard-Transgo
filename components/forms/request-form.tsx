@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Space } from 'antd';
+import { DatePicker, Space } from "antd";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -74,11 +74,13 @@ type Type = {
 interface RequestFormProps {
   initialData: any | null;
   type: Type[];
+  isEdit?: boolean;
 }
 
 export const RequestForm: React.FC<RequestFormProps> = ({
   initialData,
   type,
+  isEdit,
 }) => {
   const { requestId } = useParams();
   const { data: customers } = useGetCustomers({ limit: 10, page: 1 });
@@ -100,25 +102,25 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const defaultValues = initialData
     ? {
-      customer: initialData?.customer?.id?.toString(),
-      pic: initialData?.driver?.id?.toString(),
-      fleet: initialData?.fleet?.id?.toString(),
-      time: initialData?.start_date,
-      type: initialData?.type,
-      address: initialData?.address,
-      description: initialData?.description,
-      is_self_pickup: initialData?.is_self_pickup,
-    }
+        customer: initialData?.customer?.id?.toString(),
+        pic: initialData?.driver?.id?.toString(),
+        fleet: initialData?.fleet?.id?.toString(),
+        time: initialData?.start_date,
+        type: initialData?.type,
+        address: initialData?.address,
+        description: initialData?.description,
+        is_self_pickup: initialData?.is_self_pickup,
+      }
     : {
-      customer: "",
-      pic: "",
-      fleet: "",
-      time: "",
-      type: "",
-      address: "",
-      description: "",
-      is_self_pickup: false,
-    };
+        customer: "",
+        pic: "",
+        fleet: "",
+        time: "",
+        type: "",
+        address: "",
+        description: "",
+        is_self_pickup: false,
+      };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -243,7 +245,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
                     <Select
-                      disabled={loading}
+                      disabled={!isEdit || loading}
                       onValueChange={field.onChange}
                       value={field.value}
                       defaultValue={field.value}
@@ -277,7 +279,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormItem>
                   <FormLabel>PIC</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -310,7 +312,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormItem>
                   <FormLabel>Fleet</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -348,6 +350,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       defaultValue={field.value}
                       placeholder="Address..."
                       className="col-span-4"
+                      disabled={!isEdit || loading}
                       {...field}
                     />
                   </FormControl>
@@ -362,7 +365,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormItem>
                   <FormLabel>Type</FormLabel>
                   <Select
-                    disabled={loading}
+                    disabled={!isEdit || loading}
                     onValueChange={field.onChange}
                     value={field.value}
                     defaultValue={field.value}
@@ -388,27 +391,27 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
-            <Controller
+            <FormField
               control={form.control}
               name="time"
               render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log('dateval', value);
+                console.log("dateval", value);
                 return (
-                  <Space
-                    size={12}
-                    direction="vertical"
-                  >
+                  <Space size={12} direction="vertical">
                     <FormLabel>Type</FormLabel>
                     <DatePicker
+                      disabled={!isEdit || loading}
                       height={40}
                       onChange={onChange} // send value to hook form
                       onBlur={onBlur} // notify when input is touched/blur
-                      value={value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : undefined}
-                      format={'YYYY-MM-DD HH:mm:ss'}
+                      value={
+                        value ? dayjs(value, "YYYY-MM-DD HH:mm:ss") : undefined
+                      }
+                      format={"YYYY-MM-DD HH:mm:ss"}
                       showTime
                     />
                   </Space>
-                )
+                );
               }}
             />
             <FormField
@@ -423,7 +426,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       placeholder="Description..."
                       className="col-span-4"
                       defaultValue={field.value}
-                      {...field}
+                      disabled={!isEdit || loading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -437,6 +440,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormItem className="space-x-2 items-center">
                   <FormControl>
                     <Checkbox
+                      disabled={!isEdit || loading}
                       checked={field.value}
                       defaultChecked={
                         defaultValues?.is_self_pickup ?? field.value
@@ -450,9 +454,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               )}
             />
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
+          {isEdit && (
+            <Button disabled={loading} className="ml-auto" type="submit">
+              {action}
+            </Button>
+          )}
         </form>
       </Form>
     </>

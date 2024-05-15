@@ -18,6 +18,7 @@ export default function Page() {
           { id: "delivery", name: "Delivery" },
           { id: "pick_up", name: "Pick Up" },
         ]}
+        isEdit
       />
     </div>
   );
