@@ -5,7 +5,7 @@ import { User } from "@/constants/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<any>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -41,6 +41,11 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "plate_number",
     header: "Plate Number",
+    cell: ({ row }) => (
+      <span className="bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+        {row.original.plate_number}
+      </span>
+    ),
   },
   {
     accessorKey: "color",
