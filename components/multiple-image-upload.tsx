@@ -56,7 +56,7 @@ export default function MulitpleImageUpload({
         {value.map((item: any) => (
           <div
             key={item?.name ?? value.url}
-            className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
+            className="relative rounded-md overflow-hidden"
           >
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
@@ -70,7 +70,7 @@ export default function MulitpleImageUpload({
                 </Button>
               </div>
             )}
-            <div>
+            <div className="relative w-[300px] h-[200px]">
               <Image
                 fill
                 className="object-cover"
