@@ -5,6 +5,7 @@ import { IMG_MAX_LIMIT } from "./forms/product-form";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
+import { useRef } from "react";
 
 export interface ImageUploadResponse {
   data?: File;
@@ -25,6 +26,7 @@ export default function ImageUpload({
   disabled,
 }: ImageUploadProps) {
   const { toast } = useToast();
+  const inputFile = useRef(null);
 
   const onDeleteFile = () => {
     onChange(null);
@@ -34,10 +36,19 @@ export default function ImageUpload({
     onChange(file);
   };
 
+  const onResetFile = () => {
+    if (inputFile.current) {
+      inputFile.current.value = "";
+      inputFile.current.type = "text";
+      inputFile.current.type = "file";
+    }
+  };
+
   return (
     <div>
       <div className="mb-6">
         <Input
+          ref={inputFile}
           type="file"
           id="file"
           className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -52,13 +63,16 @@ export default function ImageUpload({
         {!!value && (
           <div
             key={value.data?.name ?? value.url}
-            className="relative w-[200px] h-[200px] rounded-md overflow-hidden"
+            className="relative rounded-md overflow-hidden"
           >
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
                 <Button
                   type="button"
-                  onClick={() => onDeleteFile()}
+                  onClick={() => {
+                    onDeleteFile();
+                    onResetFile();
+                  }}
                   variant="destructive"
                   size="sm"
                 >
@@ -66,10 +80,10 @@ export default function ImageUpload({
                 </Button>
               </div>
             )}
-            <div>
+            <div className="relative w-[500px] h-[300px]">
               <Image
                 fill
-                className="object-cover"
+                className="object-fit"
                 alt="Image"
                 src={value.url || URL.createObjectURL(value.data!)}
               />
