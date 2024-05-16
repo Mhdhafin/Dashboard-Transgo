@@ -17,7 +17,10 @@ export function UserNav() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Button
+            variant="ghost"
+            className="relative py-5 w-full flex justify-between rounded-full bg-accent"
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage
                 src={session.user?.image ?? ""}
@@ -25,6 +28,14 @@ export function UserNav() {
               />
               <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
             </Avatar>
+            <div className="flex flex-col text-left">
+              <p className="text-sm font-medium leading-none">
+                {session.user?.name}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {session.user?.email}
+              </p>
+            </div>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
