@@ -26,7 +26,7 @@ export default function ImageUpload({
   disabled,
 }: ImageUploadProps) {
   const { toast } = useToast();
-  const inputFile = useRef(null);
+  const inputFile = useRef<HTMLInputElement>(null);
 
   const onDeleteFile = () => {
     onChange(null);
