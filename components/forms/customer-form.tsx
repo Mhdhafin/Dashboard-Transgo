@@ -1,7 +1,7 @@
 "use client";
 
 import * as z from "zod";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
@@ -28,7 +28,6 @@ import {
 import { useToast } from "../ui/use-toast";
 import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDropzone } from "react-dropzone";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
@@ -107,24 +106,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
   const { mutate: createCustomer } = usePostCustomer();
   const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
-  const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const axiosAuth = useAxiosAuth();
   const { theme: themeMode } = useTheme();
-  const onDrop = useCallback((acceptedFiles: Array<File>) => {
-    const file = new FileReader();
 
-    file.onload = function () {
-      setPreview(file.result);
-    };
-
-    file.readAsDataURL(acceptedFiles[0]);
-  }, []);
-
-  const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
-    useDropzone({
-      onDrop,
-    });
-  console.log("initialData", initialData);
   const defaultValues = initialData
     ? {
         name: initialData?.name,
@@ -133,7 +117,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
         file: initialData?.file,
-        password: initialData?.password,
       }
     : {
         name: "",
@@ -149,9 +132,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
     defaultValues,
   });
-  console.log("defaul", defaultValues);
-  const inputRef = form.register("file");
-  console.log("form", form.watch("date_of_birth"));
+
   const uploadImage = async (file: ImageUploadResponse | undefined) => {
     if (!file?.data) {
       return undefined;
@@ -240,28 +221,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     }
   };
 
-  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
-
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )} */}
       </div>
       <Separator />
       <Form {...form}>
@@ -304,24 +267,26 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      // type="password"
-                      disabled={initialData || !isEdit || loading}
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!initialData && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        // type="password"
+                        disabled={loading}
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
@@ -340,24 +305,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="date_of_birth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>asdf</FormLabel>
-                  <FormControl>
-                    <Input
-                      // type="password"
-                      disabled={!isEdit || loading}
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <Controller
               control={form.control}
               name="date_of_birth"
@@ -388,39 +335,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 );
               }}
             />
-            {/* <Controller
-              control={form.control}
-              name="date_of_birth"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("value", value);
-                return (
-                  <ConfigProvider
-                    theme={{
-                      algorithm:
-                        themeMode === "light"
-                          ? theme.defaultAlgorithm
-                          : theme.darkAlgorithm,
-                    }}
-                  >
-                    <FormItem>
-                      <Space size={12} direction="vertical">
-                        <FormLabel>Date of birth</FormLabel>
-                        <DatePicker
-                          disabled={!isEdit || loading}
-                          height={50}
-                          className="p"
-                          onChange={onChange} // send value to hook form
-                          onBlur={onBlur} // notify when input is touched/blur
-                          value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                          format={"YYYY-MM-DD"}
-                        />
-                      </Space>
-                      <FormMessage />
-                    </FormItem>
-                  </ConfigProvider>
-                );
-              }}
-            /> */}
             <FormField
               control={form.control}
               name="gender"

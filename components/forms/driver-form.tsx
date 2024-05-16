@@ -3,14 +3,12 @@ import * as z from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { Trash, Upload } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,10 +26,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 // import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
-import FileUpload from "../file-upload";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
 import { useEditDriver, usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
@@ -116,12 +110,18 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const { theme: themeMode } = useTheme();
 
   const defaultValues = initialData
-    ? initialData
+    ? {
+        name: initialData?.name,
+        nik: initialData?.nik,
+        email: initialData?.email,
+        date_of_birth: initialData?.date_of_birth,
+        gender: initialData?.gender,
+        file: initialData?.file,
+      }
     : {
         name: "",
         nik: "",
         email: "",
-        imgUrl: [],
         password: "",
         date_of_birth: "",
         gender: "",
@@ -220,28 +220,10 @@ export const DriverForm: React.FC<DriverFormProps> = ({
     }
   };
 
-  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
-
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )} */}
       </div>
       <Separator />
       <Form {...form}>
@@ -285,24 +267,26 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      // type="password"
-                      disabled={initialData || !isEdit || loading}
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!initialData && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        // type="password"
+                        disabled={loading}
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
