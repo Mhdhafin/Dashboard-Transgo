@@ -322,6 +322,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Space size={12} direction="vertical">
                       <FormLabel>Date of Birth</FormLabel>
                       <DatePicker
+                        style={{ width: "100%" }}
                         disabled={!isEdit || loading}
                         height={40}
                         className="p"

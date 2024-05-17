@@ -91,13 +91,13 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const title = !isEdit
     ? "Detail Driver"
     : initialData
-    ? "Edit Driver"
-    : "Create Driver";
+      ? "Edit Driver"
+      : "Create Driver";
   const description = !isEdit
     ? ""
     : initialData
-    ? "Edit a Driver"
-    : "Add a new driver";
+      ? "Edit a Driver"
+      : "Add a new driver";
   const toastMessage = initialData
     ? "Driver changed successfully!"
     : "Driver created successfully!";
@@ -111,21 +111,21 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const defaultValues = initialData
     ? {
-        name: initialData?.name,
-        nik: initialData?.nik,
-        email: initialData?.email,
-        date_of_birth: initialData?.date_of_birth,
-        gender: initialData?.gender,
-        file: initialData?.file,
-      }
+      name: initialData?.name,
+      nik: initialData?.nik,
+      email: initialData?.email,
+      date_of_birth: initialData?.date_of_birth,
+      gender: initialData?.gender,
+      file: initialData?.file,
+    }
     : {
-        name: "",
-        nik: "",
-        email: "",
-        password: "",
-        date_of_birth: "",
-        gender: "",
-      };
+      name: "",
+      nik: "",
+      email: "",
+      password: "",
+      date_of_birth: "",
+      gender: "",
+    };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -322,6 +322,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Space size={12} direction="vertical">
                       <FormLabel>Date of Birth</FormLabel>
                       <DatePicker
+                        style={{ width: "100%" }}
                         disabled={!isEdit || loading}
                         height={40}
                         className="p"

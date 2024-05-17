@@ -104,25 +104,25 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const defaultValues = initialData
     ? {
-        customer: initialData?.customer?.id?.toString(),
-        pic: initialData?.driver?.id?.toString(),
-        fleet: initialData?.fleet?.id?.toString(),
-        time: initialData?.start_date,
-        type: initialData?.type,
-        address: initialData?.address,
-        description: initialData?.description,
-        is_self_pickup: initialData?.is_self_pickup,
-      }
+      customer: initialData?.customer?.id?.toString(),
+      pic: initialData?.driver?.id?.toString(),
+      fleet: initialData?.fleet?.id?.toString(),
+      time: initialData?.start_date,
+      type: initialData?.type,
+      address: initialData?.address,
+      description: initialData?.description,
+      is_self_pickup: initialData?.is_self_pickup,
+    }
     : {
-        customer: "",
-        pic: "",
-        fleet: "",
-        time: "",
-        type: "",
-        address: "",
-        description: "",
-        is_self_pickup: false,
-      };
+      customer: "",
+      pic: "",
+      fleet: "",
+      time: "",
+      type: "",
+      address: "",
+      description: "",
+      is_self_pickup: false,
+    };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -397,21 +397,31 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="time"
               render={({ field: { onChange, onBlur, value, ref } }) => {
                 return (
-                  <Space size={12} direction="vertical">
-                    <FormLabel>Time</FormLabel>
-                    <DatePicker
-                      disabled={!isEdit || loading}
-                      height={40}
-                      className="p"
-                      onChange={onChange} // send value to hook form
-                      onBlur={onBlur} // notify when input is touched/blur
-                      value={
-                        value ? dayjs(value, "YYYY-MM-DD HH:mm:ss") : undefined
-                      }
-                      format={"YYYY-MM-DD HH:mm:ss"}
-                      showTime
-                    />
-                  </Space>
+                  <ConfigProvider
+                    theme={{
+                      algorithm:
+                        themeMode === "light"
+                          ? theme.defaultAlgorithm
+                          : theme.darkAlgorithm,
+                    }}
+                  >
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Time</FormLabel>
+                      <DatePicker
+                        disabled={!isEdit || loading}
+                        style={{ width: "100%" }}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur} // notify when input is touched/blur
+                        value={
+                          value ? dayjs(value, "YYYY-MM-DD HH:mm:ss") : undefined
+                        }
+                        format={"YYYY-MM-DD HH:mm:ss"}
+                        showTime
+                      />
+                    </Space>
+                  </ConfigProvider>
                 );
               }}
             />
@@ -461,7 +471,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             </Button>
           )}
         </form>
-      </Form>
+      </Form >
     </>
   );
 };
