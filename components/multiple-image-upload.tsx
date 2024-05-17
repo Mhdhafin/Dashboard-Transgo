@@ -5,6 +5,7 @@ import { IMG_MAX_LIMIT } from "./forms/product-form";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 
 export interface MulitpleImageUploadResponse {
   data?: FileList | null;
@@ -40,7 +41,7 @@ export default function MulitpleImageUpload({
   };
 
   return (
-    <div>
+    <>
       <div className="mb-6">
         <Input
           type="file"
@@ -52,12 +53,9 @@ export default function MulitpleImageUpload({
           onChange={(e) => onUpdateFile({ data: e.target.files })}
         />
       </div>
-      <div className="mb-4 flex items-center gap-4">
+      <div className="grid grid-cols-4 mb-4 items-center gap-4">
         {value.map((item: any) => (
-          <div
-            key={item?.name ?? value.url}
-            className="relative rounded-md overflow-hidden"
-          >
+          <div key={item?.name ?? value.url} className="relative rounded-md">
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
                 <Button
@@ -70,10 +68,10 @@ export default function MulitpleImageUpload({
                 </Button>
               </div>
             )}
-            <div className="relative w-[300px] h-[200px]">
+            <div className="relative w-auto h-[200px]">
               <Image
                 fill
-                className="object-cover"
+                className=""
                 alt="Image"
                 src={item?.photo || URL.createObjectURL(item)}
               />
@@ -81,6 +79,6 @@ export default function MulitpleImageUpload({
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
