@@ -1,6 +1,9 @@
 "use client";
 import Spinner from "@/components/spinner";
-import { columns } from "@/components/tables/request-tables/columns";
+import {
+  completedColumns,
+  pendingColumns,
+} from "@/components/tables/request-tables/columns";
 import { RequestTable } from "@/components/tables/request-tables/request-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetRequests } from "@/hooks/api/useRequest";
@@ -71,26 +74,24 @@ const Request = ({ searchParams }: paramsProps) => {
         </TabsList>
         <TabsContent value="pending" className="space-y-4">
           {isFetchingPendingData && <Spinner />}
-          {!isFetchingPendingData &&
-            !isFetchingOnProgressData &&
-            pendingData?.data && (
-              <RequestTable
-                columns={columns}
-                data={pendingData?.data?.items}
-                searchKey="customer.name"
-                totalUsers={pendingData?.data?.meta?.total_items}
-                pageCount={Math.ceil(
-                  pendingData?.data?.meta?.total_items / pageLimit,
-                )}
-                pageNo={page}
-              />
-            )}
+          {!isFetchingPendingData && pendingData?.data && (
+            <RequestTable
+              columns={pendingColumns}
+              data={pendingData?.data?.items}
+              searchKey="customer.name"
+              totalUsers={pendingData?.data?.meta?.total_items}
+              pageCount={Math.ceil(
+                pendingData?.data?.meta?.total_items / pageLimit,
+              )}
+              pageNo={page}
+            />
+          )}
         </TabsContent>
         <TabsContent value="on_progress" className="space-y-4">
           {isFetchingOnProgressData && <Spinner />}
           {!isFetchingOnProgressData && onProgressData?.data && (
             <RequestTable
-              columns={columns}
+              columns={completedColumns}
               data={onProgressData?.data?.items}
               searchKey="customer.name"
               totalUsers={onProgressData?.data?.meta?.total_items}
@@ -104,7 +105,7 @@ const Request = ({ searchParams }: paramsProps) => {
         <TabsContent value="done" className="space-y-4">
           {!isFetchingCompletedData && completedData?.data && (
             <RequestTable
-              columns={columns}
+              columns={completedColumns}
               data={completedData?.data.items}
               searchKey="customer.name"
               totalUsers={completedData?.data?.meta?.total_items}

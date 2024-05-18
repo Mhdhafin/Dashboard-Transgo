@@ -3,7 +3,6 @@ import BreadCrumb from "@/components/breadcrumb";
 import { buttonVariants } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { users } from "@/constants/data";
 import { cn } from "@/lib/utils";
 import {
   HydrationBoundary,
@@ -13,11 +12,10 @@ import {
 import { Plus } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import Driver from "../drivers/driver";
 import Customer from "./customer";
 export const metadata: Metadata = {
-  title: "User | Transgo",
-  description: "User page",
+  title: "Customers | Transgo",
+  description: "Customers page",
 };
 
 const breadcrumbItems = [{ title: "Customers", link: "/dashboard/customers" }];
@@ -34,7 +32,7 @@ export default async function page() {
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
         <BreadCrumb items={breadcrumbItems} />
         <div className="flex items-start justify-between">
-          <Heading title="Customer" />
+          <Heading title="Customers" />
           <Link
             href={"/dashboard/customers/create"}
             className={cn(buttonVariants({ variant: "default" }))}

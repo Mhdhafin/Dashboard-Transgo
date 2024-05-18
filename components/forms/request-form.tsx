@@ -93,7 +93,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
   const title = initialData ? "Edit Request" : "Create Request";
-  const description = initialData ? "Edit a request" : "Add a new request";
+  const description = initialData
+    ? "Edit a request for driver"
+    : "Add a new request for driver";
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
@@ -104,25 +106,25 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const defaultValues = initialData
     ? {
-      customer: initialData?.customer?.id?.toString(),
-      pic: initialData?.driver?.id?.toString(),
-      fleet: initialData?.fleet?.id?.toString(),
-      time: initialData?.start_date,
-      type: initialData?.type,
-      address: initialData?.address,
-      description: initialData?.description,
-      is_self_pickup: initialData?.is_self_pickup,
-    }
+        customer: initialData?.customer?.id?.toString(),
+        pic: initialData?.driver?.id?.toString(),
+        fleet: initialData?.fleet?.id?.toString(),
+        time: initialData?.start_date,
+        type: initialData?.type,
+        address: initialData?.address,
+        description: initialData?.description,
+        is_self_pickup: initialData?.is_self_pickup,
+      }
     : {
-      customer: "",
-      pic: "",
-      fleet: "",
-      time: "",
-      type: "",
-      address: "",
-      description: "",
-      is_self_pickup: false,
-    };
+        customer: "",
+        pic: "",
+        fleet: "",
+        time: "",
+        type: "",
+        address: "",
+        description: "",
+        is_self_pickup: false,
+      };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -273,39 +275,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 );
               }}
             />
-            <FormField
-              control={form.control}
-              name="pic"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>PIC</FormLabel>
-                  <Select
-                    disabled={!isEdit || loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a gender"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {drivers?.data?.items?.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                      {/* @ts-ignore  */}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="fleet"
@@ -341,20 +311,53 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="address"
+              name="pic"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>PIC</FormLabel>
+                  <Select
+                    disabled={!isEdit || loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a gender"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {drivers?.data?.items?.map((item: any) => (
+                        <SelectItem key={item.id} value={item.id.toString()}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                      {/* @ts-ignore  */}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="is_self_pickup"
+              render={({ field }) => (
+                <FormItem className="space-x-2 items-center">
                   <FormControl>
-                    <Textarea
-                      id="address"
-                      defaultValue={field.value}
-                      placeholder="Address..."
-                      className="col-span-4"
+                    <Checkbox
                       disabled={!isEdit || loading}
-                      {...field}
+                      checked={field.value}
+                      defaultChecked={
+                        defaultValues?.is_self_pickup ?? field.value
+                      }
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                  <FormLabel>Oleh Customer</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}
@@ -415,9 +418,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         onChange={onChange} // send value to hook form
                         onBlur={onBlur} // notify when input is touched/blur
                         value={
-                          value ? dayjs(value, "YYYY-MM-DD HH:mm:ss") : undefined
+                          value
+                            ? dayjs(value, "HH:mm:ss - dddd,DD,MMMM (YYYY)")
+                            : undefined
                         }
-                        format={"YYYY-MM-DD HH:mm:ss"}
+                        format={"HH:mm:ss - dddd,DD,MMMM (YYYY)"}
                         showTime
                       />
                     </Space>
@@ -425,6 +430,27 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 );
               }}
             />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="address"
+                      defaultValue={field.value}
+                      placeholder="Address..."
+                      className="col-span-4"
+                      disabled={!isEdit || loading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="description"
@@ -444,26 +470,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="is_self_pickup"
-              render={({ field }) => (
-                <FormItem className="space-x-2 items-center">
-                  <FormControl>
-                    <Checkbox
-                      disabled={!isEdit || loading}
-                      checked={field.value}
-                      defaultChecked={
-                        defaultValues?.is_self_pickup ?? field.value
-                      }
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel>self pick</FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
           {isEdit && (
             <Button disabled={loading} className="ml-auto" type="submit">
@@ -471,7 +477,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             </Button>
           )}
         </form>
-      </Form >
+      </Form>
     </>
   );
 };

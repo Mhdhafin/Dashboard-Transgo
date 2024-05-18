@@ -15,7 +15,7 @@ import {
 import { getDrivers } from "@/client/driverClient";
 import Driver from "./driver";
 
-const breadcrumbItems = [{ title: "Driver", link: "/dashboard/driver" }];
+const breadcrumbItems = [{ title: "Drivers", link: "/dashboard/drivers" }];
 type paramsProps = {
   searchParams: {
     [key: string]: string | string[] | undefined;
@@ -23,8 +23,8 @@ type paramsProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Driver | Transgo",
-  description: "Driver page",
+  title: "Drivers | Transgo",
+  description: "Drivers page",
 };
 
 const page = async ({ searchParams }: paramsProps) => {
@@ -43,7 +43,7 @@ const page = async ({ searchParams }: paramsProps) => {
         <BreadCrumb items={breadcrumbItems} />
 
         <div className="flex items-start justify-between">
-          <Heading title="Driver" />
+          <Heading title="Customers" />
 
           <Link
             href={"/dashboard/drivers/create"}

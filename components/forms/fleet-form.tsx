@@ -259,45 +259,10 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Color</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="Color"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="plate_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Plate Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="Plate Number"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Tipe</FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -308,7 +273,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
-                          placeholder="Select a type"
+                          placeholder="Pilih tipe"
                         />
                       </SelectTrigger>
                     </FormControl>
@@ -325,13 +290,47 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="plate_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plat Nomor</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Plat Nomor"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Warna</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Warna"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <FormField
             control={form.control}
             name="photos"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>Foto fleet</FormLabel>
                 <FormControl>
                   <MulitpleImageUpload
                     onChange={field.onChange}

@@ -35,12 +35,21 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: "phone_number",
+    header: "Nomor Telepon",
+    cell: ({ row }) => <span>{row.original.phone_number ?? "-"}</span>,
+  },
+  {
+    accessorKey: "emergency_phone_number",
+    header: "Nomor Emergency",
+    cell: ({ row }) => (
+      <span>{row.original.emergency_phone_number ?? "-"}</span>
+    ),
   },
   {
     accessorKey: "email",
     header: "Email",
+    cell: ({ row }) => <span>{row.original.email ?? "-"}</span>,
   },
   {
     id: "actions",

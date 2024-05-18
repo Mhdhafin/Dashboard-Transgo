@@ -191,7 +191,7 @@ export function CustomerTable<TData, TValue>({
   return (
     <>
       <Input
-        placeholder={`Search ${searchKey}...`}
+        placeholder={`Cari customers...`}
         value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
         onChange={(event) =>
           table.getColumn(searchKey)?.setFilterValue(event.target.value)
@@ -227,7 +227,10 @@ export function CustomerTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        className="last:flex last:justify-end"
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -243,7 +246,7 @@ export function CustomerTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Tidak ada data yang dapat ditampilkan.
                 </TableCell>
               </TableRow>
             )}
@@ -261,7 +264,7 @@ export function CustomerTable<TData, TValue>({
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
             <div className="flex items-center space-x-2">
               <p className="whitespace-nowrap text-sm font-medium">
-                Rows per page
+                Data per halaman
               </p>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -286,8 +289,8 @@ export function CustomerTable<TData, TValue>({
           </div>
         </div>
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+          <div className="flex w-[120px] items-center justify-center text-sm font-medium">
+            Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
             {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">

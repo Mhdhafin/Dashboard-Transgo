@@ -58,7 +58,7 @@ export default function UserAuthForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full mt-6">
           <FormField
             control={form.control}
             name="email"
@@ -98,10 +98,10 @@ export default function UserAuthForm() {
           />
           <Button
             disabled={loading}
-            className="mt-6 ml-auto w-full"
+            className="mt-6 ml-auto w-full bg-main text-white hover:text-black "
             type="submit"
           >
-            Login
+            Masuk
           </Button>
         </form>
       </Form>

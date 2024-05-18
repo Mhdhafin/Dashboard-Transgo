@@ -8,7 +8,7 @@ import React from "react";
 
 export default function Page({ params }: { params: { customerId: string } }) {
   const breadcrumbItems = [
-    { title: "Customer", link: "/dashboard/customers" },
+    { title: "Customers", link: "/dashboard/customers" },
     { title: "Edit", link: "/dashboard/customers/edit" },
   ];
 

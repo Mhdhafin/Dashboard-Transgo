@@ -14,7 +14,9 @@ import {
 } from "@tanstack/react-query";
 import { getRequests } from "@/client/requestClient";
 import Request from "./request";
-const breadcrumbItems = [{ title: "Requests", link: "/dashboard/requests" }];
+const breadcrumbItems = [
+  { title: "Requests Tasks", link: "/dashboard/requests" },
+];
 type paramsProps = {
   searchParams: {
     [key: string]: string | string[] | undefined;
@@ -42,7 +44,7 @@ const page = async ({ searchParams }: paramsProps) => {
         <BreadCrumb items={breadcrumbItems} />
 
         <div className="flex items-start justify-between">
-          <Heading title="Requests" />
+          <Heading title="Requests Tasks" />
 
           <Link
             href={"/dashboard/requests/create"}

@@ -21,8 +21,8 @@ export default function Page({ params }: { params: { fleetId: number } }) {
           initialData={data.data}
           key={null}
           type={[
-            { id: "motorcycle", name: "Motor Cycle" },
-            { id: "car", name: "Car" },
+            { id: "motorcycle", name: "Motor" },
+            { id: "car", name: "Mobil" },
           ]}
         />
       )}

@@ -36,11 +36,11 @@ export const columns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "type",
-    header: "Type",
+    header: "Tipe",
   },
   {
     accessorKey: "plate_number",
-    header: "Plate Number",
+    header: "Plat Nomor",
     cell: ({ row }) => (
       <span className="bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
         {row.original.plate_number}
@@ -49,7 +49,8 @@ export const columns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "color",
-    header: "Color",
+    header: "Warna",
+    cell: ({ row }) => <span>{row.original.color}</span>,
   },
   {
     id: "actions",

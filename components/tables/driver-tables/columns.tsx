@@ -35,12 +35,18 @@ export const columns: ColumnDef<Drivers>[] = [
     ),
   },
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: "phone_number",
+    header: "Nomor Telepon",
+    cell: ({ row }) => <span>{row.original.phone_number ?? "-"}</span>,
   },
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "gender",
+    header: "Jenis Kelamin",
+    cell: ({ row }) => <span>{row.original.gender}</span>,
   },
   {
     id: "actions",

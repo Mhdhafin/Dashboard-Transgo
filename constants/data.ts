@@ -120,6 +120,9 @@ export type Drivers = {
   nik: string;
   role: string;
   id_photo: string;
+  gender: string;
+  phone_number: string;
+  emergency_phone_number: string;
 };
 export type Requests = {
   id: number;

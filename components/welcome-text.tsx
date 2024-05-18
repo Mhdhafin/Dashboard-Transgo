@@ -6,7 +6,7 @@ const Welcome = () => {
   const { data: session } = useSession();
   return (
     <h2 className="text-3xl font-bold tracking-tight">
-      Hi, Welcome back {session?.user?.name} 👋
+      Halo {session?.user.name}, Selamat datang kembali 👋
     </h2>
   );
 };

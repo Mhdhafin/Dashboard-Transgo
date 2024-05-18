@@ -45,25 +45,27 @@ const ImgSchema = z.object({
 });
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
-  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
-  nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
-  email: z.string().email({ message: "email must be valid" }),
-  gender: z.string({ required_error: "Please select a gender" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
-  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
+  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
+  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  email: z.string().email({ message: "Email harus valid" }),
+  gender: z.string({ required_error: "Tolong pilih jenis kelamin" }),
+  password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
+  date_of_birth: z.any({ required_error: "Tanggal lahir dibutuhkan" }),
   file: z.any(),
+  phone: z.string({ required_error: "Nomor telepon diperlukan" }),
+  emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
 });
 
 const formEditSchema = z.object({
-  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
-  email: z.string().email({ message: "email must be valid" }),
-  gender: z.string({ required_error: "Please select a gender" }),
-  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
+  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  email: z.string().email({ message: "Email harus valid" }),
+  gender: z.string({ required_error: "Tolong pilih jenis kelamin" }),
+  date_of_birth: z.any({ required_error: "Tanggal lahir dibutuhkan" }),
   file: z.any(),
+  phone: z.string({ required_error: "Nomor telepon diperlukan" }),
+  emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -117,6 +119,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
         file: initialData?.file,
+        phone_number: initialData?.phone_number,
+        emergency_phone_number: initialData?.emergency_phone_number,
       }
     : {
         name: "",
@@ -126,6 +130,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         date_of_birth: "",
         gender: "",
         file: undefined,
+        phone_number: "",
+        emergency_phone_number: "",
       };
 
   const form = useForm<CustomerFormValues>({
@@ -305,43 +311,49 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-            <Controller
+
+            <FormField
               control={form.control}
-              name="date_of_birth"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("dateval", value);
-                return (
-                  <ConfigProvider
-                    theme={{
-                      algorithm:
-                        themeMode === "light"
-                          ? theme.defaultAlgorithm
-                          : theme.darkAlgorithm,
-                    }}
-                  >
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Date of Birth</FormLabel>
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        disabled={!isEdit || loading}
-                        height={40}
-                        className="p"
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur}
-                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                        format={"YYYY-MM-DD"}
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nomor Telepon</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Nomor Telepon"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            <FormField
+              control={form.control}
+              name="emergency_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nomor Emergency</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Nomor Emergency"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="gender"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gender</FormLabel>
+                  <FormLabel>Jenis Kelamin</FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -352,7 +364,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
-                          placeholder="Select a gender"
+                          placeholder="Pilih jenis kelamin"
                         />
                       </SelectTrigger>
                     </FormControl>
@@ -369,13 +381,45 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
+
+            <Controller
+              control={form.control}
+              name="date_of_birth"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("dateval", value);
+                return (
+                  <ConfigProvider
+                    theme={{
+                      algorithm:
+                        themeMode === "light"
+                          ? theme.defaultAlgorithm
+                          : theme.darkAlgorithm,
+                    }}
+                  >
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Tanggal Lahir</FormLabel>
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        disabled={!isEdit || loading}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur}
+                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                        format={"YYYY-MM-DD"}
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
+            />
           </div>
           <FormField
             control={form.control}
             name="file"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>Foto KTP</FormLabel>
                 <FormControl>
                   <ImageUpload
                     disabled={!isEdit || loading}

@@ -15,8 +15,8 @@ export default function Page() {
       <RequestForm
         initialData={null}
         type={[
-          { id: "delivery", name: "Delivery" },
-          { id: "pick_up", name: "Pick Up" },
+          { id: "delivery", name: "Pengantaran" },
+          { id: "pick_up", name: "Penjemputan" },
         ]}
         isEdit
       />

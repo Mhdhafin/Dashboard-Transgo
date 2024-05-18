@@ -46,25 +46,25 @@ const ImgSchema = z.object({
 });
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
-  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
-  email: z.string().email({ message: "email must be valid" }),
-  gender: z.string().min(1, { message: "Please select a gender" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
-  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
+  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  email: z.string().email({ message: "Email harus valid" }),
+  gender: z.string().min(1, { message: "Tolong pilih jenis kelamin" }),
+  password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
+  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
   file: z.any(),
+  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
 
 const formEditSchema = z.object({
-  name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK must be at least 16 characters" }),
-  email: z.string().email({ message: "email must be valid" }),
-  date_of_birth: z.any({ required_error: "Date of Birth is required" }),
+  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  email: z.string().email({ message: "Email harus valid" }),
+  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
   file: z.any(),
+  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
 
 type DriverFormValues = z.infer<typeof formSchema> & {
@@ -91,13 +91,13 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const title = !isEdit
     ? "Detail Driver"
     : initialData
-      ? "Edit Driver"
-      : "Create Driver";
+    ? "Edit Driver"
+    : "Create Driver";
   const description = !isEdit
     ? ""
     : initialData
-      ? "Edit a Driver"
-      : "Add a new driver";
+    ? "Edit a Driver"
+    : "Add a new driver";
   const toastMessage = initialData
     ? "Driver changed successfully!"
     : "Driver created successfully!";
@@ -111,21 +111,21 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const defaultValues = initialData
     ? {
-      name: initialData?.name,
-      nik: initialData?.nik,
-      email: initialData?.email,
-      date_of_birth: initialData?.date_of_birth,
-      gender: initialData?.gender,
-      file: initialData?.file,
-    }
+        name: initialData?.name,
+        nik: initialData?.nik,
+        email: initialData?.email,
+        date_of_birth: initialData?.date_of_birth,
+        gender: initialData?.gender,
+        file: initialData?.file,
+      }
     : {
-      name: "",
-      nik: "",
-      email: "",
-      password: "",
-      date_of_birth: "",
-      gender: "",
-    };
+        name: "",
+        nik: "",
+        email: "",
+        password: "",
+        date_of_birth: "",
+        gender: "",
+      };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -305,6 +305,23 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="phone_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nomor Telepon</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Nomor Telepon"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Controller
               control={form.control}
               name="date_of_birth"
@@ -320,7 +337,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     }}
                   >
                     <Space size={12} direction="vertical">
-                      <FormLabel>Date of Birth</FormLabel>
+                      <FormLabel>Tanggal Lahir</FormLabel>
                       <DatePicker
                         style={{ width: "100%" }}
                         disabled={!isEdit || loading}
@@ -341,7 +358,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               name="gender"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Gender</FormLabel>
+                  <FormLabel>Jenis Kelamin</FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -350,7 +367,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a gender" />
+                        <SelectValue placeholder="Pilih jenis kelamin" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -372,7 +389,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
             name="file"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Images</FormLabel>
+                <FormLabel>Foto Driver</FormLabel>
                 <FormControl>
                   <ImageUpload
                     disabled={!isEdit || loading}
