@@ -7,6 +7,7 @@ import {
 import { RequestTable } from "@/components/tables/request-tables/request-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetRequests } from "@/hooks/api/useRequest";
+import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 type paramsProps = {
   searchParams?: {
@@ -15,10 +16,11 @@ type paramsProps = {
 };
 
 const Request = ({ searchParams }: paramsProps) => {
-  console.log("search", searchParams);
+  const params = useSearchParams();
   const page = Number(searchParams) || 1;
   const pageLimit = Number(searchParams) || 10;
   const [tab, setTab] = useState("pending");
+  const defaultTab = params.get("status") ?? tab;
 
   const { data: pendingData, isFetching: isFetchingPendingData } =
     useGetRequests(
@@ -28,7 +30,7 @@ const Request = ({ searchParams }: paramsProps) => {
         status: "pending",
       },
       {
-        enabled: tab === "pending",
+        enabled: defaultTab === "pending",
       },
       "pending",
     );
@@ -40,7 +42,7 @@ const Request = ({ searchParams }: paramsProps) => {
         page: page,
         status: "on_progress",
       },
-      { enabled: tab === "on_progress" },
+      { enabled: defaultTab === "on_progress" },
       "on_progress",
     );
 
@@ -51,13 +53,13 @@ const Request = ({ searchParams }: paramsProps) => {
         page: page,
         status: "done",
       },
-      { enabled: tab === "done" },
+      { enabled: defaultTab === "done" },
       "done",
     );
 
   return (
     <div>
-      <Tabs defaultValue={tab} className="space-y-4">
+      <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="pending" onClick={() => setTab("pending")}>
             Pending
@@ -103,6 +105,7 @@ const Request = ({ searchParams }: paramsProps) => {
           )}
         </TabsContent>
         <TabsContent value="done" className="space-y-4">
+          {isFetchingCompletedData && <Spinner />}
           {!isFetchingCompletedData && completedData?.data && (
             <RequestTable
               columns={completedColumns}

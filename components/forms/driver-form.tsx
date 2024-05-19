@@ -238,7 +238,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Driver"
@@ -255,7 +255,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Email"
@@ -274,7 +274,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <Input
                         // type="password"
                         disabled={loading}
@@ -294,7 +294,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>NIK</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="NIK"
@@ -311,7 +311,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nomor Telepon</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Telepon"
@@ -365,7 +365,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih jenis kelamin" />
                       </SelectTrigger>
@@ -390,7 +390,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto Driver</FormLabel>
-                <FormControl>
+                <FormControl className="disabled:opacity-100">
                   <ImageUpload
                     disabled={!isEdit || loading}
                     onChange={field.onChange}

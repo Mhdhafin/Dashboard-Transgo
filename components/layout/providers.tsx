@@ -23,12 +23,8 @@ export default function Providers({
   );
 
   return (
-    <>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <SessionProvider session={session}>{children}</SessionProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider session={session}>{children}</SessionProvider>
+    </QueryClientProvider>
   );
 }

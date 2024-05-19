@@ -245,7 +245,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Customer"
@@ -262,7 +262,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Email"
@@ -280,7 +280,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <Input
                         // type="password"
                         disabled={loading}
@@ -300,7 +300,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>NIK</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="NIK"
@@ -318,7 +318,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nomor Telepon</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Telepon"
@@ -336,7 +336,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nomor Emergency</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Emergency"
@@ -360,7 +360,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
@@ -420,7 +420,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto KTP</FormLabel>
-                <FormControl>
+                <FormControl className="disabled:opacity-100">
                   <ImageUpload
                     disabled={!isEdit || loading}
                     onChange={field.onChange}

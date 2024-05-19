@@ -41,6 +41,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGetDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
 import { useTheme } from "next-themes";
+import "dayjs/locale/id";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -92,8 +93,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? "Edit Request" : "Create Request";
-  const description = initialData
+  const title = !isEdit
+    ? "Detail Request"
+    : initialData
+    ? "Edit Request"
+    : "Create Request";
+  const description = !isEdit
+    ? ""
+    : initialData
     ? "Edit a request for driver"
     : "Add a new request for driver";
   const toastMessage = initialData ? "Product updated." : "Product created.";
@@ -253,7 +260,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       value={field.value}
                       defaultValue={field.value}
                     >
-                      <FormControl>
+                      <FormControl className="disabled:opacity-100">
                         <SelectTrigger>
                           <SelectValue
                             defaultValue={field.value}
@@ -288,7 +295,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
@@ -321,7 +328,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
@@ -347,7 +354,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="is_self_pickup"
               render={({ field }) => (
                 <FormItem className="space-x-2 items-center">
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Checkbox
                       disabled={!isEdit || loading}
                       checked={field.value}
@@ -374,7 +381,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
@@ -399,30 +406,45 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               control={form.control}
               name="time"
               render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log(dayjs(value).locale("id"));
                 return (
-                  <ConfigProvider
-                    theme={{
-                      algorithm:
-                        themeMode === "light"
-                          ? theme.defaultAlgorithm
-                          : theme.darkAlgorithm,
-                    }}
-                  >
+                  <ConfigProvider>
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Time</FormLabel>
+                      <DatePicker
+                        // disabled={!isEdit || loading}
+                        style={{ width: "100%" }}
+                        height={40}
+                        className="p disabled:opacity-100 disabled:bg-[#ffffff]"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur} // notify when input is touched/blur
+                        value={value ? dayjs(value).locale("id") : undefined}
+                        format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
+                        showTime
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
+            />
+            <Controller
+              control={form.control}
+              name="time"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log(dayjs(value).locale("id"));
+                return (
+                  <ConfigProvider>
                     <Space size={12} direction="vertical">
                       <FormLabel>Time</FormLabel>
                       <DatePicker
                         disabled={!isEdit || loading}
                         style={{ width: "100%" }}
                         height={40}
-                        className="p"
+                        className="p disabled:opacity-100 disabled:bg-[#ffffff] "
                         onChange={onChange} // send value to hook form
                         onBlur={onBlur} // notify when input is touched/blur
-                        value={
-                          value
-                            ? dayjs(value, "HH:mm:ss - dddd,DD,MMMM (YYYY)")
-                            : undefined
-                        }
-                        format={"HH:mm:ss - dddd,DD,MMMM (YYYY)"}
+                        value={value ? dayjs(value).locale("id") : undefined}
+                        format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
                         showTime
                       />
                     </Space>
@@ -436,7 +458,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Address</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Textarea
                       id="address"
                       defaultValue={field.value}
@@ -457,7 +479,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Textarea
                       id="description"
                       placeholder="Description..."

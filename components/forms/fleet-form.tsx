@@ -246,7 +246,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Fleet"
@@ -269,7 +269,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     value={field.value}
                     defaultValue={field.value}
                   >
-                    <FormControl>
+                    <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
@@ -296,7 +296,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Plat Nomor</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Plat Nomor"
@@ -313,7 +313,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Warna</FormLabel>
-                  <FormControl>
+                  <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Warna"
@@ -331,7 +331,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Foto fleet</FormLabel>
-                <FormControl>
+                <FormControl className="disabled:opacity-100">
                   <MulitpleImageUpload
                     onChange={field.onChange}
                     value={field.value}
