@@ -31,8 +31,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
 import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
-import { ConfigProvider, DatePicker, Space, theme } from "antd";
-import { useTheme } from "next-themes";
+import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -107,7 +106,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const axiosAuth = useAxiosAuth();
   const { mutate: createDriver } = usePostDriver();
   const { mutate: updateDriver } = useEditDriver(driverId as string);
-  const { theme: themeMode } = useTheme();
 
   const defaultValues = initialData
     ? {
@@ -328,14 +326,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               render={({ field: { onChange, onBlur, value, ref } }) => {
                 console.log("dateval", value);
                 return (
-                  <ConfigProvider
-                    theme={{
-                      algorithm:
-                        themeMode === "light"
-                          ? theme.defaultAlgorithm
-                          : theme.darkAlgorithm,
-                    }}
-                  >
+                  <ConfigProvider>
                     <Space size={12} direction="vertical">
                       <FormLabel>Tanggal Lahir</FormLabel>
                       <DatePicker

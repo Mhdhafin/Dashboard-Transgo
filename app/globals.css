@@ -85,3 +85,18 @@
     height: 100dvh;
   }
 }
+
+/* .ant-picker-footer {
+  display: none;
+} */
+.ant-picker-now-btn {
+  display: none;
+}
+
+/* .ant-picker-ok {
+  display: none;
+} */
+
+li.ant-picker-ok > button {
+  background-color: #1677ff;
+}

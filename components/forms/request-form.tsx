@@ -4,11 +4,13 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { ConfigProvider, DatePicker, Space, theme } from "antd";
-import { Trash } from "lucide-react";
+import { ConfigProvider, DatePicker, Space } from "antd";
+import { PencilLine } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import isEmpty from "lodash/isEmpty";
+
 import {
   Form,
   FormControl,
@@ -40,8 +42,10 @@ import { useGetFleets } from "@/hooks/api/useFleet";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
-import { useTheme } from "next-themes";
+import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
+import ImageUpload from "../image-upload";
+import Image from "next/image";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -52,6 +56,7 @@ const ImgSchema = z.object({
   fileUrl: z.string(),
   url: z.string(),
 });
+dayjs.locale("id");
 export const IMG_MAX_LIMIT = 3;
 
 // perlu dipisah
@@ -106,7 +111,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
-  const { theme: themeMode } = useTheme();
 
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
@@ -139,6 +143,18 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  const endlogs = initialData?.logs?.filter((log) => log.type === "end");
+  console.log("evidences", endlogs);
+  const evidenceDecs = endlogs?.map((log) => {
+    return log?.description;
+  });
+
+  const evidencePhotos = endlogs?.map((log) => {
+    return log?.photos;
+  });
+
+  console.log("evidenceDecs", evidenceDecs, evidencePhotos);
 
   const onSubmit = async (data: RequestFormValues) => {
     setLoading(true);
@@ -211,16 +227,16 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* {initialData && (
+        {!isEdit && (
           <Button
             disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
+            size="default"
+            onClick={() => router.push(`/dashboard/requests/${requestId}/edit`)}
           >
-            <Trash className="h-4 w-4" />
+            <PencilLine />
+            Edit
           </Button>
-        )} */}
+        )}
       </div>
       <Separator />
       <Form {...form}>
@@ -402,97 +418,189 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
-            <Controller
-              control={form.control}
-              name="time"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log(dayjs(value).locale("id"));
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Time</FormLabel>
-                      <DatePicker
-                        // disabled={!isEdit || loading}
-                        style={{ width: "100%" }}
-                        height={40}
-                        className="p disabled:opacity-100 disabled:bg-[#ffffff]"
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur} // notify when input is touched/blur
-                        value={value ? dayjs(value).locale("id") : undefined}
-                        format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
-                        showTime
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
-            />
-            <Controller
-              control={form.control}
-              name="time"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log(dayjs(value).locale("id"));
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Time</FormLabel>
-                      <DatePicker
-                        disabled={!isEdit || loading}
-                        style={{ width: "100%" }}
-                        height={40}
-                        className="p disabled:opacity-100 disabled:bg-[#ffffff] "
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur} // notify when input is touched/blur
-                        value={value ? dayjs(value).locale("id") : undefined}
-                        format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
-                        showTime
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Textarea
-                      id="address"
-                      defaultValue={field.value}
-                      placeholder="Address..."
-                      className="col-span-4"
-                      disabled={!isEdit || loading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Textarea
-                      id="description"
-                      placeholder="Description..."
-                      className="col-span-4"
-                      defaultValue={field.value}
-                      disabled={!isEdit || loading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Waktu</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={dayjs(defaultValues?.time)
+                      .locale("id")
+                      .format("HH:mm:ss - dddd,DD MMMM (YYYY)")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <Controller
+                control={form.control}
+                name="time"
+                render={({ field: { onChange, onBlur, value, ref } }) => {
+                  console.log(dayjs(value).locale("id"));
+                  return (
+                    <ConfigProvider locale={locale}>
+                      <Space size={12} direction="vertical">
+                        <FormLabel>Waktu</FormLabel>
+                        <DatePicker
+                          disabled={loading}
+                          style={{ width: "100%" }}
+                          height={40}
+                          className="p"
+                          onChange={onChange} // send value to hook form
+                          onBlur={onBlur} // notify when input is touched/blur
+                          value={value ? dayjs(value).locale("id") : undefined}
+                          format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
+                          showTime
+                        />
+                      </Space>
+                    </ConfigProvider>
+                  );
+                }}
+              />
+            )}
           </div>
+          {!isEdit && initialData?.customer.id_photo && (
+            <div className="md:grid md:grid-cols-3 gap-8">
+              <FormItem>
+                <FormLabel>KTP Customer</FormLabel>
+                <div></div>
+                <Image
+                  src={initialData?.customer.id_photo}
+                  width={300}
+                  height={300}
+                  alt="photo"
+                />
+              </FormItem>
+            </div>
+          )}
+          <div className="md:grid md:grid-cols-3 gap-8">
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Alamat</FormLabel>
+                <div
+                  className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: !isEmpty(defaultValues?.address)
+                      ? defaultValues?.address
+                      : "-",
+                  }}
+                />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alamat</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Textarea
+                        id="address"
+                        defaultValue={field.value}
+                        placeholder="Alamat..."
+                        className="col-span-4"
+                        disabled={!isEdit || loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Deskripsi</FormLabel>
+                <div
+                  className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: !isEmpty(defaultValues?.description)
+                      ? defaultValues?.description
+                      : "-",
+                  }}
+                />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deskripsi</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Textarea
+                        id="description"
+                        placeholder="Deskripsi..."
+                        className="col-span-4"
+                        defaultValue={field.value}
+                        disabled={!isEdit || loading}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+          {!isEdit && (
+            <div className="md:grid md:grid-cols-3 gap-8">
+              <FormItem>
+                <FormLabel>Durasi</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={dayjs(
+                      initialData?.progress_duration_second ?? 0,
+                    ).format("HH:MM")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </div>
+          )}
+
+          {!isEdit && (
+            <div className="">
+              <FormLabel>Foto Bukti Serah terima</FormLabel>
+              {endlogs?.map((log: any) => (
+                <>
+                  <div className="md:grid md:grid-cols-3 gap-8">
+                    {log?.photos?.map((photo: any) => (
+                      <Image
+                        key={photo.id}
+                        src={
+                          "https://s3.app.transgo.id/main/user/1715524161515-103276969.jpeg"
+                        }
+                        width={300}
+                        height={300}
+                        alt="photo"
+                      />
+                    ))}
+                  </div>
+
+                  <div
+                    className="md:grid md:grid-cols-3 gap-8  mt-6"
+                    key={log.id}
+                  >
+                    <FormItem>
+                      <FormLabel>Deskripsi Driver</FormLabel>
+                      <div
+                        className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                        dangerouslySetInnerHTML={{
+                          __html: !isEmpty(log?.description)
+                            ? log?.description
+                            : "-",
+                        }}
+                      />
+                    </FormItem>
+                  </div>
+                </>
+              ))}
+            </div>
+          )}
+
+          {/* {!isEdit && <p>{evidences?.description}</p>} */}
+
           {isEdit && (
             <Button disabled={loading} className="ml-auto" type="submit">
               {action}

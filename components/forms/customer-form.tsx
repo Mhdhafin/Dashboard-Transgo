@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ConfigProvider, DatePicker, Space, theme } from "antd";
+import { ConfigProvider, DatePicker, Space } from "antd";
 import {
   Form,
   FormControl,
@@ -31,7 +31,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
-import { useTheme } from "next-themes";
 import dayjs from "dayjs";
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -109,7 +108,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const { mutate: createCustomer } = usePostCustomer();
   const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
   const axiosAuth = useAxiosAuth();
-  const { theme: themeMode } = useTheme();
 
   const defaultValues = initialData
     ? {
@@ -388,14 +386,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               render={({ field: { onChange, onBlur, value, ref } }) => {
                 console.log("dateval", value);
                 return (
-                  <ConfigProvider
-                    theme={{
-                      algorithm:
-                        themeMode === "light"
-                          ? theme.defaultAlgorithm
-                          : theme.darkAlgorithm,
-                    }}
-                  >
+                  <ConfigProvider>
                     <Space size={12} direction="vertical">
                       <FormLabel>Tanggal Lahir</FormLabel>
                       <DatePicker
