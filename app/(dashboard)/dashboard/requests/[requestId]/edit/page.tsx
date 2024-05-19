@@ -18,14 +18,7 @@ export default function Page({ params }: { params: { requestId: string } }) {
       <BreadCrumb items={breadcrumbItems} />
       {isFetching && <Spinner />}
       {!isFetching && data?.data && (
-        <RequestForm
-          initialData={data?.data}
-          type={[
-            { id: "delivery", name: "Pengantaran" },
-            { id: "pick_up", name: "Penjemputan" },
-          ]}
-          isEdit
-        />
+        <RequestForm initialData={data?.data} isEdit />
       )}
     </div>
   );

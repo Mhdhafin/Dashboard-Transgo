@@ -69,24 +69,18 @@ const formSchema = z.object({
   type: z.string().min(1, { message: "Please select a type" }),
   address: z.string({ required_error: "address is required" }),
   description: z.string({ required_error: "description is required" }),
-  is_self_pickup: z.boolean({ required_error: "self pickup is required" }),
+  is_self_pickup: z.boolean(),
 });
 
 type RequestFormValues = z.infer<typeof formSchema>;
 
-type Type = {
-  id: string;
-  name: string;
-};
 interface RequestFormProps {
   initialData: any | null;
-  type: Type[];
   isEdit?: boolean;
 }
 
 export const RequestForm: React.FC<RequestFormProps> = ({
   initialData,
-  type,
   isEdit,
 }) => {
   const { requestId } = useParams();
@@ -111,7 +105,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const toastMessage = initialData ? "Product updated." : "Product created.";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
-
+  const [checked, setChecked] = useState(false);
+  const type = [
+    { id: "delivery", name: checked ? "Pengambilan" : "Pengantaran" },
+    { id: "pick_up", name: checked ? "Pengembalian" : "Penjemputan" },
+  ];
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
@@ -358,22 +356,26 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             <FormField
               control={form.control}
               name="is_self_pickup"
-              render={({ field }) => (
-                <FormItem className="space-x-2 items-center">
-                  <FormControl className="disabled:opacity-100">
-                    <Checkbox
-                      disabled={!isEdit || loading}
-                      checked={field.value}
-                      defaultChecked={
-                        defaultValues?.is_self_pickup ?? field.value
-                      }
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel>Oleh Customer</FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                if (field.value === true) {
+                  setChecked(true);
+                } else {
+                  setChecked(false);
+                }
+                return (
+                  <FormItem className="space-x-2 items-center">
+                    <FormControl className="disabled:opacity-100">
+                      <Checkbox
+                        disabled={!isEdit || loading}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Oleh Customer</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <FormField
               control={form.control}

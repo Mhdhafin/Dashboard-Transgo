@@ -17,15 +17,7 @@ export default function Page({ params }: { params: { requestId: string } }) {
     <div className="flex-1 space-y-4 p-8">
       <BreadCrumb items={breadcrumbItems} />
       {isFetching && <Spinner />}
-      {!isFetching && data?.data && (
-        <RequestForm
-          initialData={data?.data}
-          type={[
-            { id: "delivery", name: "Pengantaran" },
-            { id: "pick_up", name: "Penjemputan" },
-          ]}
-        />
-      )}
+      {!isFetching && data?.data && <RequestForm initialData={data?.data} />}
     </div>
   );
 }
