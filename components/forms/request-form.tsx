@@ -144,17 +144,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     defaultValues,
   });
 
-  const endlogs = initialData?.logs?.filter((log) => log.type === "end");
-  console.log("evidences", endlogs);
-  const evidenceDecs = endlogs?.map((log) => {
-    return log?.description;
-  });
-
-  const evidencePhotos = endlogs?.map((log) => {
-    return log?.photos;
-  });
-
-  console.log("evidenceDecs", evidenceDecs, evidencePhotos);
+  const endlogs = initialData?.logs?.filter((log: any) => log.type === "end");
 
   const onSubmit = async (data: RequestFormValues) => {
     setLoading(true);
