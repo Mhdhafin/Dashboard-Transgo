@@ -363,7 +363,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   setChecked(false);
                 }
                 return (
-                  <FormItem className="space-x-2 items-center">
+                  <FormItem className="flex space-x-2 items-center space-y-0">
                     <FormControl className="disabled:opacity-100">
                       <Checkbox
                         disabled={!isEdit || loading}
@@ -371,7 +371,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel>Oleh Customer</FormLabel>
+                    <FormLabel className="cursor-pointer">
+                      Oleh Customer
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 );
