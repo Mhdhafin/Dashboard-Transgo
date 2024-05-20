@@ -22,10 +22,10 @@ const breadcrumbItems = [{ title: "Customers", link: "/dashboard/customers" }];
 export default async function page() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["customers"],
-    queryFn: getCustomers,
-  });
+  // await queryClient.prefetchQuery({
+  //   queryKey: ["customers"],
+  //   queryFn: getCustomers,
+  // });
 
   return (
     <>

@@ -158,32 +158,32 @@ export function CustomerTable<TData, TValue>({
   // }, [debounceValue, filterVariety, selectedOption.value])
 
   React.useEffect(() => {
-    if (searchValue?.length > 0) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          search: searchValue,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-    }
-    if (searchValue?.length === 0 || searchValue === undefined) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          search: null,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-    }
+    // if (searchValue?.length > 0) {
+    //   router.push(
+    //     `${pathname}?${createQueryString({
+    //       page: null,
+    //       limit: null,
+    //       search: searchValue,
+    //     })}`,
+    //     {
+    //       scroll: false,
+    //     },
+    //   );
+    // }
+    // if (searchValue?.length === 0 || searchValue === undefined) {
+    //   router.push(
+    //     `${pathname}?${createQueryString({
+    //       page: null,
+    //       limit: null,
+    //       search: null,
+    //     })}`,
+    //     {
+    //       scroll: false,
+    //     },
+    //   );
+    // }
 
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    // setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);

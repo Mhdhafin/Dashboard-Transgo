@@ -10,7 +10,7 @@ export const useGetCustomers = (params: any) => {
     return axiosAuth.get(baseEndpoint, { params });
   };
   return useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers", params],
     queryFn: getCustomers,
   });
 };
