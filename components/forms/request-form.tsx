@@ -137,6 +137,15 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   console.log(initialData);
   console.log("defautl", defaultValues);
 
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: 
+
+*Tolong tambahkan detail lainnya jika ada...
+`;
+  const predefinedAddress = `Tuliskan alamat disini:
+  
+
+
+  Link Google Maps:`;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -490,11 +499,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="address"
-                        defaultValue={field.value}
+                        defaultValue={predefinedAddress}
                         placeholder="Alamat..."
                         className="col-span-4"
+                        rows={8}
                         disabled={!isEdit || loading}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -526,7 +535,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         id="description"
                         placeholder="Deskripsi..."
                         className="col-span-4"
-                        defaultValue={field.value}
+                        rows={8}
+                        defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
                       />
                     </FormControl>
