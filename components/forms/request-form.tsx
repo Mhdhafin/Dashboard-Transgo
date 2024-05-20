@@ -541,9 +541,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={dayjs(
-                      initialData?.progress_duration_second ?? 0,
-                    ).format("HH:MM")}
+                    value={(dayjs as any).duration(
+                      initialData?.progress_duration_second * 1000,
+                    ).format("HH:mm")}
                   />
                 </FormControl>
                 <FormMessage />

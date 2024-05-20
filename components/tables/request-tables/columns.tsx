@@ -7,6 +7,9 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 
+var duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
+
 export const pendingColumns: ColumnDef<any>[] = [
   // {
   //   id: "select",
@@ -148,13 +151,14 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "driver.name",
     header: "Durasi",
-    cell: ({ row }) => (
+    cell: ({ row }) => {
+      return (
       <span>
-        {dayjs(row.original.start_date)
-          .locale("id")
-          .format("dddd, D MMMM YYYY HH:mm:ss")}
+        {(dayjs as any).duration(
+          row.original.progress_duration_second * 1000,
+        ).format("HH:mm")}
       </span>
-    ),
+    )},
   },
   {
     id: "actions",
