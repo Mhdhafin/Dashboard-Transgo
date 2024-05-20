@@ -16,10 +16,12 @@ const Customer = () => {
 
   const page = Number(searchParams.get('page')) || 1;
   const pageLimit = Number(searchParams.get('limit')) || 10;
+  const q = searchParams.get('q') || '';
 
   const { data, isFetching } = useGetCustomers({
     limit: pageLimit,
     page: page,
+    q,
   });
 
   return (
