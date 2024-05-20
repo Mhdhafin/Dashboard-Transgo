@@ -2,13 +2,22 @@ import { Metadata } from "next";
 import UserAuthForm from "@/components/forms/user-auth-form";
 import Logo from "@/components/Logo";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Login | Transgo",
   description: "Please Login before access the dashboard",
 };
 
-export default function AuthenticationPage() {
+export default async function AuthenticationPage() {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user.accessToken) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="relative h-screen flex-col items-center justify-center">
       <div className="p-4 h-full flex items-center">

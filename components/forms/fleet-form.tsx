@@ -102,7 +102,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     : "fleet successfully created!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
-
+  const [canPresign, setCanPresign] = useState(false);
   const { mutate: createFleet } = usePostFleet();
   const { mutate: editFleet } = useEditFleet(fleetId as string);
   const axiosAuth = useAxiosAuth();
@@ -146,13 +146,28 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   };
 
   const onSubmit = async (data: CustomerFormValues) => {
+    for (let i = 0; i < data?.photos?.length; i++) {
+      if (data?.photos[i]?.photo) {
+        setCanPresign(false);
+      } else {
+        setCanPresign(true);
+      }
+    }
     setLoading(true);
+
     if (initialData) {
-      const uploadImageRes = await uploadImage(data?.photos);
-      const filteredURL = uploadImageRes?.map(
-        (item: { download_url: string; upload_url: string }) =>
-          item.download_url,
-      );
+      let filteredURL: string[] = [];
+      if (canPresign) {
+        const uploadImageRes = await uploadImage(data?.photos);
+
+        filteredURL = uploadImageRes?.map(
+          (item: { download_url: string; upload_url: string }) =>
+            item.download_url,
+        );
+      } else {
+        filteredURL = data?.photos?.map((item: any) => item.photo);
+      }
+
       editFleet(
         { ...data, photos: filteredURL },
         {
