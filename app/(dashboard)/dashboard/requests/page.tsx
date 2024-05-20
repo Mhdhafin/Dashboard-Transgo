@@ -28,15 +28,9 @@ export const metadata: Metadata = {
   description: "Requests page",
 };
 
-const page = async ({ searchParams }: paramsProps) => {
+const page = async () => {
   // const session = await getServerSession(authOptions);
   const queryClient = new QueryClient();
-  const page = Number(searchParams.page) || 1;
-
-  await queryClient.prefetchQuery({
-    queryKey: ["requests"],
-    queryFn: getRequests,
-  });
 
   return (
     <>
@@ -55,7 +49,7 @@ const page = async ({ searchParams }: paramsProps) => {
         </div>
         <Separator />
         <HydrationBoundary state={dehydrate(queryClient)}>
-          <Request searchParams={searchParams} />
+          <Request />
         </HydrationBoundary>
       </div>
     </>

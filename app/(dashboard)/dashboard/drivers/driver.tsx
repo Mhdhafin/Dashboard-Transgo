@@ -3,6 +3,7 @@ import Spinner from "@/components/spinner";
 import { columns } from "@/components/tables/driver-tables/columns";
 import { DriverTable } from "@/components/tables/driver-tables/driver-table";
 import { useGetDrivers } from "@/hooks/api/useDriver";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 type paramsProps = {
   searchParams?: {
@@ -10,13 +11,17 @@ type paramsProps = {
   };
 };
 
-const Driver = ({ searchParams }: paramsProps) => {
-  const page = Number(searchParams) || 1;
-  const pageLimit = Number(searchParams) || 10;
+const Driver = () => {
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const pageLimit = Number(searchParams.get('limit')) || 10;
+  const q = searchParams.get('q') || '';
 
   const { data, isFetching } = useGetDrivers({
-    limit: 10,
-    page: 1,
+    limit: pageLimit,
+    page: page,
+    q,
   });
 
   return (

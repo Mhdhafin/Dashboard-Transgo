@@ -3,20 +3,20 @@ import Spinner from "@/components/spinner";
 import { columns } from "@/components/tables/fleet-tables/columns";
 import { FleetTable } from "@/components/tables/fleet-tables/fleet-table";
 import { useGetFleets } from "@/hooks/api/useFleet";
+import { useSearchParams } from "next/navigation";
 import React from "react";
-type paramsProps = {
-  searchParams?: {
-    [key: string]: string | string[] | undefined;
-  };
-};
 
-const Fleet = ({ searchParams }: paramsProps) => {
-  const page = Number(searchParams) || 1;
-  const pageLimit = Number(searchParams) || 10;
+const Fleet = () => {
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const pageLimit = Number(searchParams.get('limit')) || 10;
+  const q = searchParams.get('q') || '';
 
   const { data, isFetching } = useGetFleets({
-    limit: 10,
-    page: 1,
+    limit: pageLimit,
+    page: page,
+    q,
   });
 
   return (

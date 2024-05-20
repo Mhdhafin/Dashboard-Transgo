@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { useDebounce } from 'use-debounce';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,20 +98,6 @@ export function FleetTable<TData, TValue>({
       pageSize: fallbackPerPage,
     });
 
-  React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        limit: pageSize,
-      })}`,
-      {
-        scroll: false,
-      },
-    );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize]);
-
   const table = useReactTable({
     data,
     columns,
@@ -128,73 +115,31 @@ export function FleetTable<TData, TValue>({
 
   // console.log("table", table.getRowModel().rows);
 
-  const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
-
-  // React.useEffect(() => {
-  //   if (debounceValue.length > 0) {
-  //     router.push(
-  //       `${pathname}?${createQueryString({
-  //         [selectedOption.value]: `${debounceValue}${
-  //           debounceValue.length > 0 ? `.${filterVariety}` : ""
-  //         }`,
-  //       })}`,
-  //       {
-  //         scroll: false,
-  //       }
-  //     )
-  //   }
-
-  //   if (debounceValue.length === 0) {
-  //     router.push(
-  //       `${pathname}?${createQueryString({
-  //         [selectedOption.value]: null,
-  //       })}`,
-  //       {
-  //         scroll: false,
-  //       }
-  //     )
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [debounceValue, filterVariety, selectedOption.value])
+  const [searchValue, setSearchValue] = React.useState<string | null>(
+    searchParams?.get("q") ?? null,
+  );
+  const [searchDebounce] = useDebounce(searchValue, 500);
 
   React.useEffect(() => {
-    if (searchValue?.length > 0) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          search: searchValue,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-    }
-    if (searchValue?.length === 0 || searchValue === undefined) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          search: null,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-    }
-
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+    router.push(
+      `${pathname}?${createQueryString({
+        page: pageIndex + 1,
+        limit: pageSize,
+        q: searchValue,
+      })}`,
+      {
+        scroll: false,
+      },
+    );
+  }, [pageIndex, pageSize, searchDebounce]);
 
   return (
     <>
       <Input
         placeholder={`Cari fleets...`}
-        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+        value={searchValue as any}
         onChange={(event) =>
-          table.getColumn(searchKey)?.setFilterValue(event.target.value)
+          setSearchValue(event.target.value)
         }
         className="w-full md:max-w-sm mb-5"
       />
@@ -209,9 +154,9 @@ export function FleetTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}

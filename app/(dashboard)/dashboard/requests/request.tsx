@@ -9,24 +9,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetRequests } from "@/hooks/api/useRequest";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
-type paramsProps = {
-  searchParams?: {
-    [key: string]: string | string[] | undefined;
-  };
-};
 
-const Request = ({ searchParams }: paramsProps) => {
-  const params = useSearchParams();
-  const page = Number(searchParams) || 1;
-  const pageLimit = Number(searchParams) || 10;
+const Request = () => {
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const pageLimit = Number(searchParams.get('limit')) || 10;
+  const q = searchParams.get('q') || '';
+
   const [tab, setTab] = useState("pending");
-  const defaultTab = params.get("status") ?? tab;
+  const defaultTab = searchParams.get("status") ?? tab;
 
   const { data: pendingData, isFetching: isFetchingPendingData } =
     useGetRequests(
       {
         limit: 30,
         page: page,
+        q: q,
         status: "pending",
       },
       {
@@ -40,6 +39,7 @@ const Request = ({ searchParams }: paramsProps) => {
       {
         limit: pageLimit,
         page: page,
+        q: q,
         status: "on_progress",
       },
       { enabled: defaultTab === "on_progress" },
@@ -51,6 +51,7 @@ const Request = ({ searchParams }: paramsProps) => {
       {
         limit: pageLimit,
         page: page,
+        q: q,
         status: "done",
       },
       { enabled: defaultTab === "done" },

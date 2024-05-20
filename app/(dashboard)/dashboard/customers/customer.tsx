@@ -3,6 +3,7 @@ import Spinner from "@/components/spinner";
 import { columns } from "@/components/tables/customer-tables/columns";
 import { CustomerTable } from "@/components/tables/customer-tables/customer-table";
 import { useGetCustomers } from "@/hooks/api/useCustomer";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 type paramsProps = {
   searchParams?: {
@@ -10,13 +11,17 @@ type paramsProps = {
   };
 };
 
-const Customer = ({ searchParams }: paramsProps) => {
-  const page = Number(searchParams) || 1;
-  const pageLimit = Number(searchParams) || 10;
+const Customer = () => {
+  const searchParams = useSearchParams();
+
+  const page = Number(searchParams.get('page')) || 1;
+  const pageLimit = Number(searchParams.get('limit')) || 10;
+  const q = searchParams.get('q') || '';
 
   const { data, isFetching } = useGetCustomers({
-    limit: 10,
-    page: 1,
+    limit: pageLimit,
+    page: page,
+    q,
   });
 
   return (

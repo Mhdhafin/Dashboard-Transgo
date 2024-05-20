@@ -10,7 +10,7 @@ export const useGetRequests = (params: any, options = {}, type: string) => {
   };
 
   return useQuery({
-    queryKey: ["requests", type],
+    queryKey: ["requests", params, type],
     queryFn: getRequests,
     ...options,
   });
