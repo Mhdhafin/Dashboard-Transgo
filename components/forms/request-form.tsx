@@ -382,7 +382,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Tipe Task</FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}

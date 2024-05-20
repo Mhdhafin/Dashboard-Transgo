@@ -39,14 +39,23 @@ export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "type",
     header: "Tipe Tasks",
-    cell: ({ row }) => <span>{row.original.type}</span>,
+    cell: ({ row }) => {
+      const getType = () => {
+        if (row.original.type == "delivery" && row.original.is_self_pickup == false) return "Pengantaran";
+        if (row.original.type == "delivery" && row.original.is_self_pickup == true) return "Pengambilan";
+        if (row.original.type == "pick_up" && row.original.is_self_pickup == false) return "Penjemputan";
+        if (row.original.type == "pick_up" && row.original.is_self_pickup == true) return "Pengembalian";
+      };
+
+      return <span>{getType()}</span>;
+    }
   },
   {
     accessorKey: "fleet.name",
-    header: "Nama Kendaraan - Tipe",
+    header: "Nama Kendaraan",
     cell: ({ row }) => (
       <span>
-        {row.original.fleet.name} - {row.original.fleet.type}
+        {row.original.fleet.name} ({row.original.fleet.type=="car"?"Mobil":"Motor"})
       </span>
     ),
   },
@@ -104,14 +113,23 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "type",
     header: "Tipe Tasks",
-    cell: ({ row }) => <span>{row.original.type}</span>,
+    cell: ({ row }) => {
+      const getType = () => {
+        if (row.original.type == "delivery" && row.original.is_self_pickup == false) return "Pengantaran";
+        if (row.original.type == "delivery" && row.original.is_self_pickup == true) return "Pengambilan";
+        if (row.original.type == "pick_up" && row.original.is_self_pickup == false) return "Penjemputan";
+        if (row.original.type == "pick_up" && row.original.is_self_pickup == true) return "Pengembalian";
+      };
+
+      return <span>{getType()}</span>;
+    }
   },
   {
     accessorKey: "fleet.name",
-    header: "Nama Kendaraan - Tipe",
+    header: "Nama Kendaraan",
     cell: ({ row }) => (
       <span>
-        {row.original.fleet.name} - {row.original.fleet.type}
+        {row.original.fleet.name} ({row.original.fleet.type=="car"?"Mobil":"Motor"})
       </span>
     ),
   },
@@ -125,11 +143,6 @@ export const completedColumns: ColumnDef<any>[] = [
           .format("dddd, D MMMM YYYY HH:mm:ss")}
       </span>
     ),
-  },
-  {
-    accessorKey: "driver.name",
-    header: "PIC",
-    cell: ({ row }) => <span>{row.original.driver.name}</span>,
   },
   {
     accessorKey: "driver.name",

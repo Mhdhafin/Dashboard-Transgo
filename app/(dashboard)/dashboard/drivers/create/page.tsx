@@ -14,8 +14,8 @@ export default function Page() {
       <BreadCrumb items={breadcrumbItems} />
       <DriverForm
         categories={[
-          { _id: "male", name: "Male" },
-          { _id: "female", name: "Female" },
+          { _id: "male", name: "Laki-laki" },
+          { _id: "female", name: "Perempuan" },
         ]}
         initialData={null}
         isEdit

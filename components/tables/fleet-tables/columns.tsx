@@ -37,6 +37,11 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "type",
     header: "Tipe",
+    cell: ({ row }) => (
+      <span>
+        {row.original.type=="car"?"Mobil":"Motor"}
+      </span>
+    ),
   },
   {
     accessorKey: "plate_number",

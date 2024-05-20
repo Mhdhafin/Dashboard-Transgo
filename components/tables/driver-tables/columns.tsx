@@ -46,7 +46,7 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "gender",
     header: "Jenis Kelamin",
-    cell: ({ row }) => <span>{row.original.gender}</span>,
+    cell: ({ row }) => <span>{row.original.gender=="male"?"Laki-laki":"Perempuan"}</span>,
   },
   {
     id: "actions",

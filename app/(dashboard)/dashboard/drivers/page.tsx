@@ -43,7 +43,7 @@ const page = async ({ searchParams }: paramsProps) => {
         <BreadCrumb items={breadcrumbItems} />
 
         <div className="flex items-start justify-between">
-          <Heading title="Customers" />
+          <Heading title="Drivers" />
 
           <Link
             href={"/dashboard/drivers/create"}
