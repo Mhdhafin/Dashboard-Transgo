@@ -97,7 +97,7 @@ export default function UserAuthForm() {
           />
           <Button
             disabled={loading}
-            className="mt-6 ml-auto w-full bg-main text-white"
+            className="mt-6 ml-auto w-full bg-main text-white hover:bg-main/90"
             type="submit"
           >
             Masuk

@@ -429,7 +429,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             </span>
           )}
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}

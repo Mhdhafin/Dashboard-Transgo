@@ -541,9 +541,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={(dayjs as any).duration(
-                      initialData?.progress_duration_second * 1000,
-                    ).format("HH:mm")}
+                    value={(dayjs as any)
+                      .duration(initialData?.progress_duration_second * 1000)
+                      .format("HH:mm")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -594,7 +594,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           {/* {!isEdit && <p>{evidences?.description}</p>} */}
 
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}
