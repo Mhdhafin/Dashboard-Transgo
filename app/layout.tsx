@@ -26,8 +26,14 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" sizes="180x180" href="logo.png" />
-        <link rel="shortcut icon" href="logo.png" />
+        <link
+          rel="icon"
+          href="/favicon.ico"
+          type="image/x-icon"
+          sizes="16x16"
+        />
+        <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+        <link rel="shortcut icon" href="/logo.png" />
         <meta property="og:title" content="Dashboard Transgo" />
         <meta property="og:description" content="Dashboard Transgo" />
         <meta property="og:url" content="https://dev.dashboard.transgo.id/" />
