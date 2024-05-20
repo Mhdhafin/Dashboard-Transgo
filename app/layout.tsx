@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Transgo",
   description: "Manage rent car",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default async function RootLayout({
@@ -23,11 +26,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/images/apple-touch-icon.png"
-        />
+        <link rel="apple-touch-icon" sizes="180x180" href="logo.png" />
         <link rel="shortcut icon" href="logo.png" />
         <meta property="og:title" content="Dashboard Transgo" />
         <meta property="og:description" content="Dashboard Transgo" />
