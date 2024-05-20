@@ -30,11 +30,7 @@ export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
-    cell: ({ row }) => (
-      <Link href={`/dashboard/requests/${row.original.id}/detail`}>
-        {row.original.customer.name}
-      </Link>
-    ),
+    cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
   {
     accessorKey: "type",
