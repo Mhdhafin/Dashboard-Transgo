@@ -12,7 +12,7 @@ export const useGetDrivers = (params: any) => {
   };
 
   return useQuery({
-    queryKey: ["drivers"],
+    queryKey: ["drivers", params],
     queryFn: getDrivers,
   });
 };
