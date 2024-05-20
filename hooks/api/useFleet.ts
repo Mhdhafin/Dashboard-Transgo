@@ -15,7 +15,7 @@ export const useGetFleets = (params: any) => {
   };
 
   return useQuery({
-    queryKey: ["fleets"],
+    queryKey: ["fleets", params],
     queryFn: getFleets,
   });
 };
