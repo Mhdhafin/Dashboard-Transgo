@@ -140,15 +140,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   console.log(initialData);
   console.log("defautl", defaultValues);
 
-  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: 
-
-*Tolong tambahkan detail lainnya jika ada...
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
 `;
-  const predefinedAddress = `Tuliskan alamat disini:
-  
-
-
-  Link Google Maps:`;
+  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps:`;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
