@@ -35,8 +35,8 @@ type PayloadBody = {
   driver_id: number;
   start_date: string;
   type: string;
-  address: string;
-  description: string;
+  address?: string;
+  description?: string;
   is_self_pickup: boolean;
 };
 
@@ -44,7 +44,7 @@ export const usePostRequest = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postRequest = (body: PayloadBody) => {
+  const postRequest = (body: any) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
@@ -60,7 +60,7 @@ export const useEditRequest = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const editRequest = (body: PayloadBody) => {
+  const editRequest = (body: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
