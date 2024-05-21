@@ -320,30 +320,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <Controller
-              control={form.control}
-              name="date_of_birth"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("dateval", value);
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Tanggal Lahir</FormLabel>
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        disabled={!isEdit || loading}
-                        height={40}
-                        className="p"
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur}
-                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                        format={"YYYY-MM-DD"}
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
-            />
             <FormField
               control={form.control}
               name="gender"
@@ -373,6 +349,30 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
+            />
+            <Controller
+              control={form.control}
+              name="date_of_birth"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("dateval", value);
+                return (
+                  <ConfigProvider>
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Tanggal Lahir</FormLabel>
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        disabled={!isEdit || loading}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur}
+                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                        format={"YYYY-MM-DD"}
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
             />
           </div>
           <FormField
