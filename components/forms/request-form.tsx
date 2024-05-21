@@ -46,6 +46,7 @@ import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
 import ImageUpload from "../image-upload";
 import Image from "next/image";
+import { PreviewImage } from "../modal/preview-image";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -110,6 +111,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     { id: "delivery", name: checked ? "Pengambilan" : "Pengantaran" },
     { id: "pick_up", name: checked ? "Pengembalian" : "Penjemputan" },
   ];
+  const [content, setContent] = useState(null);
+
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
@@ -226,17 +229,15 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       });
     }
   };
+  const onHandlePreview = (file: any) => {
+    setContent(file);
+    setOpen(true);
+  };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
 
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {!isEdit && (
@@ -484,6 +485,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormLabel>KTP Customer</FormLabel>
                 <div></div>
                 <Image
+                  onClick={() => {
+                    setOpen(true);
+                    onHandlePreview(initialData?.customer.id_photo);
+                  }}
                   src={initialData?.customer.id_photo}
                   width={300}
                   height={300}
@@ -592,10 +597,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <div className="md:grid md:grid-cols-3 gap-8">
                       {log?.photos?.map((photo: any) => (
                         <Image
+                          onClick={() => {
+                            setOpen(true);
+                            onHandlePreview(photo?.photo);
+                          }}
                           key={photo.id}
-                          src={
-                            "https://s3.app.transgo.id/main/user/1715524161515-103276969.jpeg"
-                          }
+                          src={photo.photo}
                           width={300}
                           height={300}
                           alt="photo"
@@ -635,6 +642,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           )}
         </form>
       </Form>
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
     </>
   );
 };
