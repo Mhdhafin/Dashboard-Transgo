@@ -185,7 +185,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       is_self_pickup: data?.is_self_pickup,
     };
     const newPayload = omitBy(payload, (value) => value === "");
-    console.log("data", payload, newPayload, data.time);
 
     if (initialData) {
       updateRequest(newPayload, {
@@ -509,7 +508,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.address)
-                      ? defaultValues?.address
+                      ? defaultValues?.address?.replace(/\n/g, "<br />")
                       : "-",
                   }}
                 />
