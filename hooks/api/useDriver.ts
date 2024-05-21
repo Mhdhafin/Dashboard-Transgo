@@ -36,7 +36,7 @@ type Body = {
   gender?: string;
   date_of_birth?: string;
   nik?: string;
-  password: string;
+  password?: string;
   file: string;
   id_photo: string;
 };
