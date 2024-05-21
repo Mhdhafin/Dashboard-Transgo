@@ -34,13 +34,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "berhasill",
+          title: "Berhasil!",
         });
       },
       onError: (error) => {
         toast({
           variant: "destructive",
-          title: "ada error cuyy",
+          title: "Oops! Ada error.",
           description: `Something went wrong: ${error.message}`,
         });
         queryClient.invalidateQueries({ queryKey: ["requests"] });
