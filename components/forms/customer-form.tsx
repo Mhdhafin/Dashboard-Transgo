@@ -294,24 +294,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <FormField
               control={form.control}
-              name="nik"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NIK</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="NIK"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="phone"
               render={({ field }) => (
                 <FormItem>
@@ -345,7 +327,23 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="nik"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NIK</FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="NIK"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="gender"
