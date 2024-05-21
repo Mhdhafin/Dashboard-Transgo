@@ -117,6 +117,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
+`;
+  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps:`;
   const defaultValues = initialData
     ? {
         customer: initialData?.customer?.id?.toString(),
@@ -134,22 +137,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         fleet: "",
         time: "",
         type: "",
-        address: "",
-        description: "",
+        address: predefinedAddress,
+        description: predefinedDesc,
         is_self_pickup: false,
       };
   console.log(initialData);
   console.log("defautl", defaultValues);
 
-  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: 
-
-*Tolong tambahkan detail lainnya jika ada...
-`;
-  const predefinedAddress = `Tuliskan alamat disini:
-  
-
-
-  Link Google Maps:`;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -184,8 +178,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
     };
-    const newPayload = omitBy(payload, (value) => value === "");
+    const newPayload = omitBy(
+      payload,
+      (value) => value === predefinedAddress || value === predefinedDesc,
+    );
 
+    console.log("payload", newPayload);
+    return;
     if (initialData) {
       updateRequest(newPayload, {
         onSuccess: () => {
@@ -523,10 +522,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="address"
-                        defaultValue={predefinedAddress}
                         placeholder="Alamat..."
                         className="col-span-4"
                         rows={8}
+                        value={field.value}
                         disabled={!isEdit || loading}
                         onChange={field.onChange}
                       />
@@ -557,11 +556,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
+                        value={field.value}
                         id="description"
                         placeholder="Deskripsi..."
                         className="col-span-4"
                         rows={8}
-                        defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
                         onChange={field.onChange}
                       />
