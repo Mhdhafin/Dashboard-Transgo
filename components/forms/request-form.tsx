@@ -228,6 +228,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           <Button
             disabled={loading}
             size="default"
+            variant="main"
             onClick={() => router.push(`/dashboard/requests/${requestId}/edit`)}
           >
             <PencilLine />
