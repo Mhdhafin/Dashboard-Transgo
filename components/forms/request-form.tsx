@@ -543,7 +543,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.description)
-                      ? defaultValues?.description
+                      ? defaultValues?.description?.replace(/\n/g, "<br />")
                       : "-",
                   }}
                 />
