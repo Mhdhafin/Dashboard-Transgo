@@ -91,7 +91,8 @@ const formSchema = z.object({
       required_error: "Color is required",
       invalid_type_error: "Color must be a string",
     })
-    .optional(),
+    .optional()
+    .nullable(),
   plate_number: z
     .string({
       required_error: "plate number is required",
@@ -116,7 +117,8 @@ const editFormSchema = z.object({
       required_error: "Color is required",
       invalid_type_error: "Color must be a string",
     })
-    .optional(),
+    .optional()
+    .nullable(),
   plate_number: z
     .string({
       required_error: "plate number is required",
@@ -384,7 +386,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Warna"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />

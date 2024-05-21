@@ -49,9 +49,9 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string().optional(),
-  password: z.string().optional(),
-  date_of_birth: z.any().optional(),
+  gender: z.string().optional().nullable(),
+  password: z.string().optional().nullable(),
+  date_of_birth: z.any().optional().nullable(),
   file: z.any(),
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
@@ -277,7 +277,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                         // type="password"
                         disabled={loading}
                         placeholder="Password"
-                        {...field}
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -329,8 +330,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
+                    value={field.value ?? ""}
+                    defaultValue={field.value ?? ""}
                   >
                     <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
