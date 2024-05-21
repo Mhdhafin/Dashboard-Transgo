@@ -33,7 +33,7 @@ export const useGetDetailDriver = (id: string | number) => {
 type Body = {
   name: string;
   email: string;
-  gender: string;
+  gender?: string;
   date_of_birth?: string;
   nik?: string;
   password: string;
