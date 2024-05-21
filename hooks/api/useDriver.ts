@@ -45,7 +45,7 @@ export const usePostDriver = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postDriver = (body: Body) => {
+  const postDriver = (body: any) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
@@ -61,7 +61,7 @@ export const useEditDriver = (id: number | string) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const editDriverFn = (body: Omit<Body, "password">) => {
+  const editDriverFn = (body: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
