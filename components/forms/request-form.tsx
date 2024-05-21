@@ -142,7 +142,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
 
   const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
 `;
-  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps:`;
+  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps: `;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
