@@ -65,7 +65,7 @@ export const pendingColumns: ColumnDef<any>[] = [
       <span>
         {dayjs(row.original.start_date)
           .locale("id")
-          .format("dddd, D MMMM YYYY HH:mm:ss")}
+          .format("dddd, D MMMM YYYY - HH:mm:ss")}
       </span>
     ),
   },
@@ -139,7 +139,7 @@ export const completedColumns: ColumnDef<any>[] = [
       <span>
         {dayjs(row.original.start_date)
           .locale("id")
-          .format("dddd, D MMMM YYYY HH:mm:ss")}
+          .format("dddd, D MMMM YYYY - HH:mm:ss")}
       </span>
     ),
   },
