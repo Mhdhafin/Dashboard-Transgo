@@ -69,8 +69,8 @@ const formSchema = z.object({
   pic: z.string().min(1, { message: "Please select a pic" }),
   time: z.any({ required_error: "Please select a time" }),
   type: z.string().min(1, { message: "Please select a type" }),
-  address: z.string().optional(),
-  description: z.string().optional(),
+  address: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
 });
 
@@ -141,9 +141,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         description: predefinedDesc,
         is_self_pickup: false,
       };
-  console.log(initialData);
   console.log("defautl", defaultValues);
-
+  console.log("predefinedAddress", predefinedAddress, defaultValues?.address);
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -180,7 +179,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     };
     const newPayload = omitBy(
       payload,
-      (value) => value === predefinedAddress || value === predefinedDesc,
+      (value) => value == predefinedAddress || value == predefinedDesc,
     );
 
     console.log("payload", newPayload);
@@ -236,6 +235,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
+  function makeUrlsClickable(str: string) {
+    const urlRegex = /(\bhttps?:\/\/[^\s]+(\.[^\s]+)*(\/[^\s]*)?\b)/g;
+    return str.replace(
+      urlRegex,
+      (url: any) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
+    );
+  }
 
   return (
     <>
@@ -502,11 +509,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
-                <div
+                <p
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.address)
-                      ? defaultValues?.address?.replace(/\n/g, "<br />")
+                      ? makeUrlsClickable(
+                          defaultValues?.address?.replace(/\n/g, "<br />"),
+                        )
                       : "-",
                   }}
                 />
@@ -524,7 +533,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         placeholder="Alamat..."
                         className="col-span-4"
                         rows={8}
-                        value={field.value}
+                        value={field.value ?? predefinedAddress}
                         disabled={!isEdit || loading}
                         onChange={field.onChange}
                       />
@@ -537,11 +546,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
-                <div
+                <p
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.description)
-                      ? defaultValues?.description?.replace(/\n/g, "<br />")
+                      ? makeUrlsClickable(
+                          defaultValues?.description?.replace(/\n/g, "<br />"),
+                        )
                       : "-",
                   }}
                 />
@@ -555,7 +566,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
-                        value={field.value}
+                        value={field.value ?? predefinedDesc}
                         id="description"
                         placeholder="Deskripsi..."
                         className="col-span-4"
