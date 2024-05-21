@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useToast } from "../ui/use-toast";
+import { PasswordInput } from "../password-input";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
@@ -68,7 +69,7 @@ export default function UserAuthForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder="Masukkan email..."
                     disabled={loading}
                     {...field}
                   />
@@ -85,10 +86,8 @@ export default function UserAuthForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password..."
-                    disabled={loading}
+                  <PasswordInput
+                    placeholder="Masukkan password..."
                     {...field}
                   />
                 </FormControl>
@@ -98,7 +97,7 @@ export default function UserAuthForm() {
           />
           <Button
             disabled={loading}
-            className="mt-6 ml-auto w-full bg-main text-white hover:text-black "
+            className="mt-6 ml-auto w-full bg-main text-white hover:bg-main/90"
             type="submit"
           >
             Masuk

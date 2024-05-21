@@ -49,6 +49,34 @@ const ImgSchema = z.object({
   fileUrl: z.string(),
   url: z.string(),
 });
+const fileSchema = z.custom<any>(
+  (val: any) => {
+    // if (!(val instanceof FileList)) return false;
+    if (val.length == 0) return false;
+    console.log("hello");
+    for (let i = 0; i < val.length; i++) {
+      const file = val[i];
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(file.type)) return false; // Limit file types
+    }
+    return true;
+  },
+  {
+    message:
+      "Invalid file(s). Ensure you have selected up to  file of type JPEG, PNG, or GIF and size less than 2MB each.",
+  },
+);
+const editFileSchema = z.custom<any>(
+  (val: any) => {
+    // if (!(val instanceof FileList)) return false;
+    if (val.length == 0) return false;
+    return true;
+  },
+  {
+    message:
+      "Invalid file(s). Ensure you have selected up to 1 file of type JPEG, PNG, or GIF and size less than 2MB each.",
+  },
+);
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z
@@ -57,16 +85,47 @@ const formSchema = z.object({
       invalid_type_error: "Name must be a string",
     })
     .min(3, { message: "Name must be at least 3 characters" }),
-  photos: z.any(),
-  color: z.string({
-    required_error: "Color is required",
-    invalid_type_error: "Color must be a string",
+  photos: fileSchema,
+  color: z
+    .string({
+      required_error: "Color is required",
+      invalid_type_error: "Color must be a string",
+    })
+    .optional(),
+  plate_number: z
+    .string({
+      required_error: "plate number is required",
+      invalid_type_error: "plate number must be a string",
+    })
+    .min(1, { message: "plate number is required" }),
+  type: z.string({ required_error: "type is required" }).min(1, {
+    message: "type is required",
   }),
-  plate_number: z.string({
-    required_error: "Color is required",
-    invalid_type_error: "Color must be a string",
+});
+
+const editFormSchema = z.object({
+  name: z
+    .string({
+      required_error: "Name is required",
+      invalid_type_error: "Name must be a string",
+    })
+    .min(3, { message: "Name must be at least 3 characters" }),
+  photos: editFileSchema,
+  color: z
+    .string({
+      required_error: "Color is required",
+      invalid_type_error: "Color must be a string",
+    })
+    .optional(),
+  plate_number: z
+    .string({
+      required_error: "plate number is required",
+      invalid_type_error: "plate number must be a string",
+    })
+    .min(1, { message: "plate number is required" }),
+  type: z.string({ required_error: "type is required" }).min(1, {
+    message: "type is required",
   }),
-  type: z.string({ required_error: "type is required" }),
 });
 
 type FleetFormValues = z.infer<typeof formSchema>;
@@ -102,7 +161,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     : "fleet successfully created!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
-
   const { mutate: createFleet } = usePostFleet();
   const { mutate: editFleet } = useEditFleet(fleetId as string);
   const axiosAuth = useAxiosAuth();
@@ -118,7 +176,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       };
 
   const form = useForm<CustomerFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(!initialData ? formSchema : editFormSchema),
     defaultValues,
   });
 
@@ -146,13 +204,28 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   };
 
   const onSubmit = async (data: CustomerFormValues) => {
+    let isPresign: boolean = false;
+    for (let i = 0; i < data?.photos?.length; i++) {
+      if (data?.photos[i]?.photo) {
+        isPresign = false;
+        break;
+      } else {
+        isPresign = true;
+      }
+    }
     setLoading(true);
     if (initialData) {
-      const uploadImageRes = await uploadImage(data?.photos);
-      const filteredURL = uploadImageRes?.map(
-        (item: { download_url: string; upload_url: string }) =>
-          item.download_url,
-      );
+      let filteredURL: string[] = [];
+      if (isPresign) {
+        const uploadImageRes = await uploadImage(data?.photos);
+
+        filteredURL = uploadImageRes?.map(
+          (item: { download_url: string; upload_url: string }) =>
+            item.download_url,
+        );
+      } else {
+        filteredURL = data?.photos?.map((item: any) => item.photo);
+      }
       editFleet(
         { ...data, photos: filteredURL },
         {
@@ -214,12 +287,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
 
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {/* {initialData && (
@@ -344,7 +411,11 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             )}
           />
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto  bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}

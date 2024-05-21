@@ -36,9 +36,9 @@ export const useGetDetailFleet = (id: number) => {
 type PayloadBody = {
   name: string;
   type: string;
-  color: string;
+  color?: string;
   plate_number: string;
-  photos: string[];
+  photos?: string[];
 };
 
 export const usePostFleet = () => {

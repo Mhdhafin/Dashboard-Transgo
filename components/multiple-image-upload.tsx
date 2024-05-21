@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { PreviewImage } from "./modal/preview-image";
+import { useState } from "react";
 
 export interface MulitpleImageUploadResponse {
   data?: FileList | null;
@@ -26,6 +28,8 @@ export default function MulitpleImageUpload({
   disabled,
 }: MulitpleImageUploadProps) {
   const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState(null);
 
   const onDeleteFile = (file: any) => {
     // onChange(null);
@@ -40,8 +44,18 @@ export default function MulitpleImageUpload({
     onChange(filesArr);
   };
 
+  const onHandlePreview = (file: any) => {
+    setContent(file?.photo ? file?.photo : URL.createObjectURL(file));
+    setOpen(true);
+  };
+
   return (
     <>
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
       <div className="mb-6">
         <Input
           type="file"
@@ -70,6 +84,10 @@ export default function MulitpleImageUpload({
             )}
             <div className="relative w-auto h-[200px]">
               <Image
+                onClick={() => {
+                  setOpen(true);
+                  onHandlePreview(item);
+                }}
                 fill
                 className=""
                 alt="Image"

@@ -45,11 +45,11 @@ const ImgSchema = z.object({
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  nik: z.string().optional(),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string({ required_error: "Tolong pilih jenis kelamin" }),
-  password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir dibutuhkan" }),
+  gender: z.string().optional(),
+  password: z.string().optional(),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone: z.string({ required_error: "Nomor telepon diperlukan" }),
   emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
@@ -58,10 +58,10 @@ const formSchema = z.object({
 const formEditSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  nik: z.string().optional(),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string({ required_error: "Tolong pilih jenis kelamin" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir dibutuhkan" }),
+  gender: z.string().optional(),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone: z.string({ required_error: "Nomor telepon diperlukan" }),
   emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
@@ -294,24 +294,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <FormField
               control={form.control}
-              name="nik"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NIK</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="NIK"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="phone"
               render={({ field }) => (
                 <FormItem>
@@ -345,7 +327,23 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="nik"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>NIK</FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="NIK"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="gender"
@@ -429,7 +427,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             </span>
           )}
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}

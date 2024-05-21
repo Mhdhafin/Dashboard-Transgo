@@ -46,6 +46,7 @@ import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
 import ImageUpload from "../image-upload";
 import Image from "next/image";
+import { PreviewImage } from "../modal/preview-image";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -110,6 +111,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     { id: "delivery", name: checked ? "Pengambilan" : "Pengantaran" },
     { id: "pick_up", name: checked ? "Pengembalian" : "Penjemputan" },
   ];
+  const [content, setContent] = useState(null);
+
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
@@ -137,10 +140,34 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   console.log(initialData);
   console.log("defautl", defaultValues);
 
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: 
+
+*Tolong tambahkan detail lainnya jika ada...
+`;
+  const predefinedAddress = `Tuliskan alamat disini:
+  
+
+
+  Link Google Maps:`;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  let wording = "";
+  if (initialData?.type === "delivery") {
+    if (initialData?.is_self_pickup) {
+      wording = "Pengambilan";
+    } else {
+      wording = "Pengantaran";
+    }
+  } else if (initialData?.type === "pick_up") {
+    if (initialData?.is_self_pickup) {
+      wording = "Pengembalian";
+    } else {
+      wording = "Penjemputan";
+    }
+  }
 
   const endlogs = initialData?.logs?.filter((log: any) => log.type === "end");
 
@@ -202,23 +229,22 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       });
     }
   };
+  const onHandlePreview = (file: any) => {
+    setContent(file);
+    setOpen(true);
+  };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
 
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         {!isEdit && (
           <Button
             disabled={loading}
             size="default"
+            variant="main"
             onClick={() => router.push(`/dashboard/requests/${requestId}/edit`)}
           >
             <PencilLine />
@@ -363,7 +389,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   setChecked(false);
                 }
                 return (
-                  <FormItem className="space-x-2 items-center">
+                  <FormItem className="flex space-x-2 items-center space-y-0">
                     <FormControl className="disabled:opacity-100">
                       <Checkbox
                         disabled={!isEdit || loading}
@@ -371,7 +397,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel>Oleh Customer</FormLabel>
+                    <FormLabel className="cursor-pointer">
+                      Oleh Customer
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 );
@@ -457,6 +485,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormLabel>KTP Customer</FormLabel>
                 <div></div>
                 <Image
+                  onClick={() => {
+                    setOpen(true);
+                    onHandlePreview(initialData?.customer.id_photo);
+                  }}
                   src={initialData?.customer.id_photo}
                   width={300}
                   height={300}
@@ -488,11 +520,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="address"
-                        defaultValue={field.value}
+                        defaultValue={predefinedAddress}
                         placeholder="Alamat..."
                         className="col-span-4"
+                        rows={8}
                         disabled={!isEdit || loading}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -524,7 +556,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         id="description"
                         placeholder="Deskripsi..."
                         className="col-span-4"
-                        defaultValue={field.value}
+                        rows={8}
+                        defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
                       />
                     </FormControl>
@@ -541,9 +574,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={(dayjs as any).duration(
-                      initialData?.progress_duration_second * 1000,
-                    ).format("HH:mm")}
+                    value={(dayjs as any)
+                      .duration(initialData?.progress_duration_second * 1000)
+                      .format("HH:mm")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -554,52 +587,66 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           {!isEdit && (
             <div className="">
               <FormLabel>Foto Bukti Serah terima</FormLabel>
-              {endlogs?.map((log: any) => (
-                <>
-                  <div className="md:grid md:grid-cols-3 gap-8">
-                    {log?.photos?.map((photo: any) => (
-                      <Image
-                        key={photo.id}
-                        src={
-                          "https://s3.app.transgo.id/main/user/1715524161515-103276969.jpeg"
-                        }
-                        width={300}
-                        height={300}
-                        alt="photo"
-                      />
-                    ))}
-                  </div>
+              {(initialData?.status === "pending" ||
+                initialData?.status === "on_progress") && (
+                <h1 className="">{`Request ${wording} belum selesai dilakukan `}</h1>
+              )}
+              {initialData?.status === "done" &&
+                endlogs?.map((log: any) => (
+                  <>
+                    <div className="md:grid md:grid-cols-3 gap-8">
+                      {log?.photos?.map((photo: any) => (
+                        <Image
+                          onClick={() => {
+                            setOpen(true);
+                            onHandlePreview(photo?.photo);
+                          }}
+                          key={photo.id}
+                          src={photo.photo}
+                          width={300}
+                          height={300}
+                          alt="photo"
+                        />
+                      ))}
+                    </div>
 
-                  <div
-                    className="md:grid md:grid-cols-3 gap-8  mt-6"
-                    key={log.id}
-                  >
-                    <FormItem>
-                      <FormLabel>Deskripsi Driver</FormLabel>
-                      <div
-                        className="border border-gray-200 rounded-md px-2 py-1 break-words"
-                        dangerouslySetInnerHTML={{
-                          __html: !isEmpty(log?.description)
-                            ? log?.description
-                            : "-",
-                        }}
-                      />
-                    </FormItem>
-                  </div>
-                </>
-              ))}
+                    <div
+                      className="md:grid md:grid-cols-3 gap-8  mt-6"
+                      key={log.id}
+                    >
+                      <FormItem>
+                        <FormLabel>Deskripsi Driver</FormLabel>
+                        <div
+                          className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                          dangerouslySetInnerHTML={{
+                            __html: !isEmpty(log?.description)
+                              ? log?.description
+                              : "-",
+                          }}
+                        />
+                      </FormItem>
+                    </div>
+                  </>
+                ))}
             </div>
           )}
 
-          {/* {!isEdit && <p>{evidences?.description}</p>} */}
-
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}
         </form>
       </Form>
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
     </>
   );
 };

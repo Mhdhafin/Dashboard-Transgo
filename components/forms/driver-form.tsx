@@ -47,11 +47,11 @@ export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string().min(1, { message: "Tolong pilih jenis kelamin" }),
-  password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
+  gender: z.string().optional(),
+  password: z.string().optional(),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
@@ -59,9 +59,9 @@ const formSchema = z.object({
 const formEditSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
@@ -110,7 +110,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const defaultValues = initialData
     ? {
         name: initialData?.name,
-        nik: initialData?.nik,
+        // nik: initialData?.nik,
         email: initialData?.email,
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
@@ -118,7 +118,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       }
     : {
         name: "",
-        nik: "",
+        // nik: "",
         email: "",
         password: "",
         date_of_birth: "",
@@ -286,7 +286,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               />
             )}
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="nik"
               render={({ field }) => (
@@ -302,7 +302,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="phone_number"
@@ -319,30 +319,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <Controller
-              control={form.control}
-              name="date_of_birth"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("dateval", value);
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Tanggal Lahir</FormLabel>
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        disabled={!isEdit || loading}
-                        height={40}
-                        className="p"
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur}
-                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                        format={"YYYY-MM-DD"}
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
             />
             <FormField
               control={form.control}
@@ -374,6 +350,30 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
+            <Controller
+              control={form.control}
+              name="date_of_birth"
+              render={({ field: { onChange, onBlur, value, ref } }) => {
+                console.log("dateval", value);
+                return (
+                  <ConfigProvider>
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Tanggal Lahir</FormLabel>
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        disabled={!isEdit || loading}
+                        height={40}
+                        className="p"
+                        onChange={onChange} // send value to hook form
+                        onBlur={onBlur}
+                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                        format={"YYYY-MM-DD"}
+                      />
+                    </Space>
+                  </ConfigProvider>
+                );
+              }}
+            />
           </div>
           <FormField
             control={form.control}
@@ -399,7 +399,11 @@ export const DriverForm: React.FC<DriverFormProps> = ({
             </span>
           )}
           {isEdit && (
-            <Button disabled={loading} className="ml-auto" type="submit">
+            <Button
+              disabled={loading}
+              className="ml-auto bg-main hover:bg-main/90"
+              type="submit"
+            >
               {action}
             </Button>
           )}

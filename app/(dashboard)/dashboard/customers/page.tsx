@@ -35,7 +35,7 @@ export default async function page() {
           <Heading title="Customers" />
           <Link
             href={"/dashboard/customers/create"}
-            className={cn(buttonVariants({ variant: "default" }))}
+            className={cn(buttonVariants({ variant: "main" }))}
           >
             <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>

@@ -44,7 +44,7 @@ export default async function page({ searchParams }: paramsProps) {
 
           <Link
             href={"/dashboard/employee/new"}
-            className={cn(buttonVariants({ variant: "default" }))}
+            className={cn(buttonVariants({ variant: "main" }))}
           >
             <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>

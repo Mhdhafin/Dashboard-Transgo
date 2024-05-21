@@ -5,7 +5,8 @@ import { IMG_MAX_LIMIT } from "./forms/product-form";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { PreviewImage } from "./modal/preview-image";
 
 export interface ImageUploadResponse {
   data?: File;
@@ -27,6 +28,8 @@ export default function ImageUpload({
 }: ImageUploadProps) {
   const { toast } = useToast();
   const inputFile = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState(null);
 
   const onDeleteFile = () => {
     onChange(null);
@@ -43,9 +46,18 @@ export default function ImageUpload({
       inputFile.current.type = "file";
     }
   };
+  const onHandlePreview = (file: any) => {
+    setContent(file?.url ? file?.url : URL.createObjectURL(file?.data));
+    setOpen(true);
+  };
 
   return (
     <div>
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
       <div className="mb-6">
         <Input
           ref={inputFile}
@@ -82,6 +94,10 @@ export default function ImageUpload({
             )}
             <div className="relative w-[500px] h-[300px]">
               <Image
+                onClick={() => {
+                  setOpen(true);
+                  onHandlePreview(value);
+                }}
                 fill
                 className="object-fit"
                 alt="Image"

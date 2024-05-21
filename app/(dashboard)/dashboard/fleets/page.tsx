@@ -47,7 +47,7 @@ const page = async ({ searchParams }: paramsProps) => {
 
           <Link
             href={"/dashboard/fleets/create"}
-            className={cn(buttonVariants({ variant: "default" }))}
+            className={cn(buttonVariants({ variant: "main" }))}
           >
             <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>
