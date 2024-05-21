@@ -50,8 +50,8 @@ const formSchema = z.object({
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
   gender: z.string().optional(),
-  password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
+  password: z.string().optional(),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
@@ -61,7 +61,7 @@ const formEditSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
-  date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
+  date_of_birth: z.any().optional(),
   file: z.any(),
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
