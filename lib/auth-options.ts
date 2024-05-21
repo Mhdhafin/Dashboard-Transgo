@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
             }
           }
         } catch (error) {
-          throw new Error("error cuyy");
+          throw new Error("Ops! Ada error.");
         }
       },
     }),
