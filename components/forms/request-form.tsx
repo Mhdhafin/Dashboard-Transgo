@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import isEmpty from "lodash/isEmpty";
+import { omitBy } from "lodash";
 
 import {
   Form,
@@ -66,10 +67,10 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   customer: z.string().min(1, { message: "Please select a customer" }),
   pic: z.string().min(1, { message: "Please select a pic" }),
-  time: z.any({ required_error: "time is required" }),
+  time: z.any({ required_error: "Please select a time" }),
   type: z.string().min(1, { message: "Please select a type" }),
-  address: z.string({ required_error: "address is required" }),
-  description: z.string({ required_error: "description is required" }),
+  address: z.string().optional(),
+  description: z.string().optional(),
   is_self_pickup: z.boolean(),
 });
 
@@ -177,8 +178,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
     };
+    const newPayload = omitBy(payload, (value) => value === "");
+    console.log("data", payload, newPayload, data.time);
+
     if (initialData) {
-      updateRequest(payload, {
+      updateRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -200,7 +204,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         },
       });
     } else {
-      createRequest(payload, {
+      createRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -519,6 +523,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -553,6 +558,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         rows={8}
                         defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
