@@ -39,7 +39,6 @@ import MulitpleImageUpload, {
 } from "../multiple-image-upload";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
-import { PreviewImage } from "../modal/preview-image";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
