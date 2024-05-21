@@ -151,6 +151,21 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     defaultValues,
   });
 
+  let wording = "";
+  if (initialData?.type === "delivery") {
+    if (initialData?.is_self_pickup) {
+      wording = "Pengambilan";
+    } else {
+      wording = "Pengantaran";
+    }
+  } else if (initialData?.type === "pick_up") {
+    if (initialData?.is_self_pickup) {
+      wording = "Pengembalian";
+    } else {
+      wording = "Penjemputan";
+    }
+  }
+
   const endlogs = initialData?.logs?.filter((log: any) => log.type === "end");
 
   const onSubmit = async (data: RequestFormValues) => {
@@ -567,44 +582,47 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           {!isEdit && (
             <div className="">
               <FormLabel>Foto Bukti Serah terima</FormLabel>
-              {endlogs?.map((log: any) => (
-                <>
-                  <div className="md:grid md:grid-cols-3 gap-8">
-                    {log?.photos?.map((photo: any) => (
-                      <Image
-                        key={photo.id}
-                        src={
-                          "https://s3.app.transgo.id/main/user/1715524161515-103276969.jpeg"
-                        }
-                        width={300}
-                        height={300}
-                        alt="photo"
-                      />
-                    ))}
-                  </div>
+              {(initialData?.status === "pending" ||
+                initialData?.status === "on_progress") && (
+                <h1 className="">{`Request ${wording} belum selesai dilakukan `}</h1>
+              )}
+              {initialData?.status === "done" &&
+                endlogs?.map((log: any) => (
+                  <>
+                    <div className="md:grid md:grid-cols-3 gap-8">
+                      {log?.photos?.map((photo: any) => (
+                        <Image
+                          key={photo.id}
+                          src={
+                            "https://s3.app.transgo.id/main/user/1715524161515-103276969.jpeg"
+                          }
+                          width={300}
+                          height={300}
+                          alt="photo"
+                        />
+                      ))}
+                    </div>
 
-                  <div
-                    className="md:grid md:grid-cols-3 gap-8  mt-6"
-                    key={log.id}
-                  >
-                    <FormItem>
-                      <FormLabel>Deskripsi Driver</FormLabel>
-                      <div
-                        className="border border-gray-200 rounded-md px-2 py-1 break-words"
-                        dangerouslySetInnerHTML={{
-                          __html: !isEmpty(log?.description)
-                            ? log?.description
-                            : "-",
-                        }}
-                      />
-                    </FormItem>
-                  </div>
-                </>
-              ))}
+                    <div
+                      className="md:grid md:grid-cols-3 gap-8  mt-6"
+                      key={log.id}
+                    >
+                      <FormItem>
+                        <FormLabel>Deskripsi Driver</FormLabel>
+                        <div
+                          className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                          dangerouslySetInnerHTML={{
+                            __html: !isEmpty(log?.description)
+                              ? log?.description
+                              : "-",
+                          }}
+                        />
+                      </FormItem>
+                    </div>
+                  </>
+                ))}
             </div>
           )}
-
-          {/* {!isEdit && <p>{evidences?.description}</p>} */}
 
           {isEdit && (
             <Button
