@@ -34,8 +34,8 @@ type Body = {
   name: string;
   email: string;
   gender: string;
-  date_of_birth: string;
-  nik: string;
+  date_of_birth?: string;
+  nik?: string;
   password: string;
   file: string;
   id_photo: string;

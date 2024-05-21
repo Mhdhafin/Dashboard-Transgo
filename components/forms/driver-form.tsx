@@ -47,9 +47,9 @@ export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string().min(1, { message: "Tolong pilih jenis kelamin" }),
+  gender: z.string().optional(),
   password: z.string().min(8, { message: "Password minimal harus 8 karakter" }),
   date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
   file: z.any(),
@@ -59,7 +59,7 @@ const formSchema = z.object({
 const formEditSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
+  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
   date_of_birth: z.any({ required_error: "Tanggal lahir diperlukan" }),
   file: z.any(),
@@ -110,7 +110,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const defaultValues = initialData
     ? {
         name: initialData?.name,
-        nik: initialData?.nik,
+        // nik: initialData?.nik,
         email: initialData?.email,
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
@@ -118,7 +118,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       }
     : {
         name: "",
-        nik: "",
+        // nik: "",
         email: "",
         password: "",
         date_of_birth: "",
@@ -286,7 +286,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               />
             )}
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="nik"
               render={({ field }) => (
@@ -302,7 +302,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="phone_number"
