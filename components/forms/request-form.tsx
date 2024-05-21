@@ -1,4 +1,3 @@
-//@ts-check
 "use client";
 import * as z from "zod";
 import dayjs from "dayjs";
@@ -11,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import isEmpty from "lodash/isEmpty";
+import { omitBy } from "lodash";
 
 import {
   Form,
@@ -67,10 +67,10 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   customer: z.string().min(1, { message: "Please select a customer" }),
   pic: z.string().min(1, { message: "Please select a pic" }),
-  time: z.any({ required_error: "time is required" }),
+  time: z.any({ required_error: "Please select a time" }),
   type: z.string().min(1, { message: "Please select a type" }),
-  address: z.string({ required_error: "address is required" }),
-  description: z.string({ required_error: "description is required" }),
+  address: z.string().optional(),
+  description: z.string().optional(),
   is_self_pickup: z.boolean(),
 });
 
@@ -141,9 +141,15 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   console.log(initialData);
   console.log("defautl", defaultValues);
 
-  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: 
+
+*Tolong tambahkan detail lainnya jika ada...
 `;
-  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps: `;
+  const predefinedAddress = `Tuliskan alamat disini:
+  
+
+
+  Link Google Maps:`;
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -178,8 +184,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
     };
+    const newPayload = omitBy(payload, (value) => value === "");
+    console.log("data", payload, newPayload, data.time);
+
     if (initialData) {
-      updateRequest(payload, {
+      updateRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -201,7 +210,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         },
       });
     } else {
-      createRequest(payload, {
+      createRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -441,7 +450,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     disabled={!isEdit || loading}
                     value={dayjs(defaultValues?.time)
                       .locale("id")
-                      .format("HH:mm:ss - dddd, DD MMMM YYYY")}
+                      .format("HH:mm:ss - dddd,DD MMMM (YYYY)")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -464,7 +473,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           onChange={onChange} // send value to hook form
                           onBlur={onBlur} // notify when input is touched/blur
                           value={value ? dayjs(value).locale("id") : undefined}
-                          format={"HH:mm:ss - dddd, DD MMMM YYYY"}
+                          format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
                           showTime
                         />
                       </Space>
@@ -520,6 +529,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -554,6 +564,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         rows={8}
                         defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
