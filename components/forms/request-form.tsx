@@ -184,7 +184,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     );
 
     console.log("payload", newPayload);
-    return;
     if (initialData) {
       updateRequest(newPayload, {
         onSuccess: () => {
