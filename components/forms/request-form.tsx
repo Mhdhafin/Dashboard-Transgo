@@ -469,7 +469,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           onChange={onChange} // send value to hook form
                           onBlur={onBlur} // notify when input is touched/blur
                           value={value ? dayjs(value).locale("id") : undefined}
-                          format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
+                          format={"HH:mm:ss - dddd, DD MMMM YYYY"}
                           showTime
                         />
                       </Space>
