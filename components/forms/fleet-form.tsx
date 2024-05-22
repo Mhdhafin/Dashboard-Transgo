@@ -63,7 +63,7 @@ const fileSchema = z.custom<any>(
   },
   {
     message:
-      "Invalid file(s). Ensure you have selected up to  file of type JPEG, PNG, or GIF and size less than 2MB each.",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
   },
 );
 const editFileSchema = z.custom<any>(
@@ -74,7 +74,7 @@ const editFileSchema = z.custom<any>(
   },
   {
     message:
-      "Invalid file(s). Ensure you have selected up to 1 file of type JPEG, PNG, or GIF and size less than 2MB each.",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
   },
 );
 export const IMG_MAX_LIMIT = 3;
