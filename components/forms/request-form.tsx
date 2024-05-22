@@ -189,7 +189,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
             variant: "success",
-            title: "Request berhasil diubah!",
+            title: "Request Task berhasil diubah!",
           });
           // router.refresh();
           router.push(`/dashboard/requests`);
@@ -211,7 +211,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
             variant: "success",
-            title: "Request berhasil dibuat!",
+            title: "Request Task berhasil dibuat!",
+            description: "Driver akan menerima notifikasi request ini.",
           });
           // router.refresh();
           router.push(`/dashboard/requests`);
