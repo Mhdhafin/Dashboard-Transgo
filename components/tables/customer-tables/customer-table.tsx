@@ -9,7 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,24 +123,38 @@ export function CustomerTable<TData, TValue>({
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
         limit: pageSize,
-        q: searchDebounce || '',
+        q: searchValue || "",
       })}`,
       {
         scroll: false,
       },
     );
-
+    console.log("params", searchParams.get("q"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
+
+  React.useEffect(() => {
+    if (searchValue?.length !== 0) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: 1,
+          limit: pageSize,
+          q: searchDebounce || "",
+        })}`,
+        {
+          scroll: false,
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchDebounce]);
 
   return (
     <>
       <Input
         placeholder={`Cari customers...`}
         value={searchValue as any}
-        onChange={(event) =>
-          setSearchValue(event.target.value)
-        }
+        onChange={(event) => setSearchValue(event.target.value)}
         className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
@@ -154,9 +168,9 @@ export function CustomerTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
