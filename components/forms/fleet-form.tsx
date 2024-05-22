@@ -314,7 +314,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nama</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nama
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -331,7 +333,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipe</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Tipe
+                  </FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -364,7 +368,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               name="plate_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plat Nomor</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Plat Nomor
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -400,7 +406,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             name="photos"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Foto fleet</FormLabel>
+                <FormLabel className="relative label-required">
+                  Foto fleet
+                </FormLabel>
                 <FormControl className="disabled:opacity-100">
                   <MulitpleImageUpload
                     onChange={field.onChange}
