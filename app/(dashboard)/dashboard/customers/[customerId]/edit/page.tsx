@@ -21,8 +21,8 @@ export default function Page({ params }: { params: { customerId: string } }) {
         {!isFetching && data?.data && (
           <CustomerForm
             categories={[
-              { _id: "male", name: "Male" },
-              { _id: "female", name: "Female" },
+              { _id: "male", name: "Laki-laki" },
+              { _id: "female", name: "Perempuan" },
             ]}
             initialData={{
               ...data?.data,

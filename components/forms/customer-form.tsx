@@ -35,6 +35,7 @@ import dayjs from "dayjs";
 import MulitpleImageUpload, {
   MulitpleImageUploadResponse,
 } from "../multiple-image-upload";
+import { omitBy } from "lodash";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -75,27 +76,86 @@ const editFileSchema = z.custom<any>(
   },
 );
 const formSchema = z.object({
-  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
-  nik: z.string().optional().nullable(),
-  email: z.string().email({ message: "Email harus valid" }),
+  name: z
+    .string({ required_error: "Nama diperlukan" })
+    .min(3, { message: "Nama minimal harus 3 karakter" }),
+  nik: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        if (val !== undefined && val !== null && val !== "") {
+          return val.length >= 16;
+        }
+
+        return true;
+      },
+      { message: "NIK minimal harus 16 karakter" },
+    ),
+  email: z
+    .string({ required_error: "Email diperlukan" })
+    .email({ message: "Email harus valid" }),
   gender: z.string().optional().nullable(),
-  password: z.string().optional().nullable(),
+  password: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        if (val !== undefined && val !== null && val !== "") {
+          return val.length >= 8;
+        }
+
+        return true;
+      },
+      { message: "Password minimal harus 8 karakter" },
+    ),
   date_of_birth: z.any().optional().nullable(),
+  emergency_phone_number: z
+    .string({
+      required_error: "Nomor Emergency diperlukan",
+    })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
   id_cards: fileSchema,
-  phone: z.string({ required_error: "Nomor telepon diperlukan" }),
-  emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
 });
 
 const formEditSchema = z.object({
-  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
+  name: z
+    .string({ required_error: "Nama diperlukan" })
+    .min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().optional().nullable(),
-  email: z.string().email({ message: "Email harus valid" }),
+  nik: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        if (val !== undefined && val !== null && val !== "") {
+          return val.length >= 16;
+        }
+
+        return true;
+      },
+      { message: "NIK minimal harus 16 karakter" },
+    ),
+  email: z
+    .string({ required_error: "Email diperlukan" })
+    .email({ message: "Email harus valid" }),
   gender: z.string().optional().nullable(),
   date_of_birth: z.any().optional().nullable(),
+  emergency_phone_number: z
+    .string({
+      required_error: "Nomor Emergency diperlukan",
+    })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
   id_cards: editFileSchema,
-  phone: z.string({ required_error: "Nomor telepon diperlukan" }),
-  emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -153,7 +213,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       }
     : {
         name: "",
+        nik: "",
         email: "",
+        date_of_birth: "",
+        gender: "",
         id_cards: [],
         phone_number: "",
         emergency_phone_number: "",
@@ -214,65 +277,77 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       }
       const newData: any = { ...data };
       newData.file = undefined;
-      newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
+      newData.date_of_birth = data?.date_of_birth
+        ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+        : "";
 
-      updateCustomer(
-        { ...newData, id_cards: filteredURL },
+      const newPayload = omitBy(
         {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["customers"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            router.push(`/dashboard/customers`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
+          ...newData,
+          id_cards: filteredURL,
         },
+        (value) => value == "" || value == null,
       );
+
+      updateCustomer(newPayload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          router.push(`/dashboard/customers`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
+          });
+        },
+      });
     } else {
       const uploadImageRes = await uploadImage(data?.id_cards);
       const filteredURL = uploadImageRes.map(
         (item: { download_url: string; upload_url: string }) =>
           item.download_url,
       );
-      createCustomer(
-        {
-          ...data,
-          date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
-          id_cards: filteredURL,
+      const payload = {
+        ...data,
+        date_of_birth: data?.date_of_birth
+          ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+          : "",
+        id_cards: filteredURL,
+      };
+
+      const newPayload = omitBy(payload, (value) => value == "");
+
+      createCustomer(newPayload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          // router.refresh();
+          router.push(`/dashboard/customers`);
         },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["customers"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            // router.refresh();
-            router.push(`/dashboard/customers`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
+        onSettled: () => {
+          setLoading(false);
         },
-      );
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
+          });
+        },
+      });
     }
   };
 
@@ -300,7 +375,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Customer"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -319,7 +395,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Email"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -350,7 +427,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <FormField
               control={form.control}
-              name="phone"
+              name="phone_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative label-required">
@@ -360,7 +437,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Telepon"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -370,7 +448,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
             <FormField
               control={form.control}
-              name="emergency_phone"
+              name="emergency_phone_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative label-required">
@@ -380,13 +458,15 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Emergency"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="nik"
