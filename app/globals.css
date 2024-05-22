@@ -84,6 +84,13 @@
     height: 100vh; /* Fallback */
     height: 100dvh;
   }
+
+  .label-required::before {
+    content: "*";
+    color: theme("colors.red.500");
+    position: absolute;
+    left: -0.5rem; /* Adjust as needed */
+  }
 }
 
 /* .ant-picker-footer {

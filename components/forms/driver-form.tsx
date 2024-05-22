@@ -33,6 +33,7 @@ import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
+import { isEmpty } from "lodash";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -44,6 +45,37 @@ const ImgSchema = z.object({
   url: z.string(),
 });
 export const IMG_MAX_LIMIT = 3;
+const fileSchema = z.custom<File>(
+  (val: any) => {
+    if (!(val.data instanceof File)) return false;
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    console.log("val", val.data.type);
+    if (!allowedTypes.includes(val.data.type)) return false; // Limit file types
+    return true;
+  },
+  {
+    message:
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB.",
+  },
+);
+const editFileSchema = z.custom<File>(
+  (val: any) => {
+    console.log("val", val);
+    if (!val) return false;
+    console.log("1", !(val.data instanceof File) || isEmpty(val));
+
+    if (!(val.data instanceof File) && isEmpty(val)) return false;
+    console.log("2");
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (isEmpty(val) && !allowedTypes.includes(val.data.type)) return false; // Limit file types
+    return true;
+  },
+  {
+    message:
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB.",
+  },
+);
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
@@ -52,7 +84,7 @@ const formSchema = z.object({
   gender: z.string().optional().nullable(),
   password: z.string().optional().nullable(),
   date_of_birth: z.any().optional().nullable(),
-  file: z.any(),
+  photo_profile: fileSchema,
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
 
@@ -62,12 +94,12 @@ const formEditSchema = z.object({
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z.string().email({ message: "Email harus valid" }),
   date_of_birth: z.any().optional(),
-  file: z.any(),
+  photo_profile: editFileSchema,
   phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
 });
 
 type DriverFormValues = z.infer<typeof formSchema> & {
-  file: ImageUploadResponse;
+  photo_profile: ImageUploadResponse;
 };
 
 interface DriverFormProps {
@@ -114,7 +146,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         email: initialData?.email,
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
-        file: initialData?.file,
+        photo_profile: initialData?.photo_profile,
       }
     : {
         name: "",
@@ -156,13 +188,12 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
-    const uploadImageResponse = await uploadImage(data?.file);
+    const uploadImageResponse = await uploadImage(data?.photo_profile);
     const newData: any = { ...data };
-    newData.file = undefined;
     newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
 
     if (uploadImageResponse) {
-      newData.id_photo = uploadImageResponse.download_url;
+      newData.photo_profile = uploadImageResponse.download_url;
     }
 
     if (initialData) {
@@ -187,11 +218,10 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         },
       });
     } else {
-      const uploadImageResponse = await uploadImage(data?.file);
-      delete data?.file;
+      const uploadImageResponse = await uploadImage(data?.photo_profile);
       const payload = {
         ...data,
-        id_photo: uploadImageResponse.download_url,
+        photo_profile: uploadImageResponse.download_url,
         date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
       };
       createDriver(payload, {
@@ -235,7 +265,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nama</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nama
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -252,7 +284,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Email
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -309,7 +343,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               name="phone_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nomor Telepon</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nomor Telepon
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -378,10 +414,12 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           </div>
           <FormField
             control={form.control}
-            name="file"
+            name="photo_profile"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Foto Driver</FormLabel>
+                <FormLabel className="relative label-required">
+                  Foto Driver
+                </FormLabel>
                 <FormControl className="disabled:opacity-100">
                   <ImageUpload
                     disabled={!isEdit || loading}
@@ -394,11 +432,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               </FormItem>
             )}
           />
-          {form.formState.errors.file && (
-            <span className="text-red-500">
-              {form.formState.errors.file.message?.toString()}
-            </span>
-          )}
           {isEdit && (
             <Button
               disabled={loading}

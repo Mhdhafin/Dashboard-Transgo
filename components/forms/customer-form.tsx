@@ -32,6 +32,9 @@ import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import ImageUpload, { ImageUploadResponse } from "../image-upload";
 import dayjs from "dayjs";
+import MulitpleImageUpload, {
+  MulitpleImageUploadResponse,
+} from "../multiple-image-upload";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -43,14 +46,42 @@ const ImgSchema = z.object({
   url: z.string(),
 });
 export const IMG_MAX_LIMIT = 3;
+const fileSchema = z.custom<any>(
+  (val: any) => {
+    // if (!(val instanceof FileList)) return false;
+    if (val.length == 0) return false;
+    console.log("hello");
+    for (let i = 0; i < val.length; i++) {
+      const file = val[i];
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(file.type)) return false; // Limit file types
+    }
+    return true;
+  },
+  {
+    message:
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
+  },
+);
+const editFileSchema = z.custom<any>(
+  (val: any) => {
+    // if (!(val instanceof FileList)) return false;
+    if (val.length == 0) return false;
+    return true;
+  },
+  {
+    message:
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
+  },
+);
 const formSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
-  nik: z.string().optional(),
+  nik: z.string().optional().nullable(),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string().optional(),
-  password: z.string().optional(),
-  date_of_birth: z.any().optional(),
-  file: z.any(),
+  gender: z.string().optional().nullable(),
+  password: z.string().optional().nullable(),
+  date_of_birth: z.any().optional().nullable(),
+  id_cards: fileSchema,
   phone: z.string({ required_error: "Nomor telepon diperlukan" }),
   emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
 });
@@ -58,17 +89,17 @@ const formSchema = z.object({
 const formEditSchema = z.object({
   name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z.string().optional(),
+  nik: z.string().optional().nullable(),
   email: z.string().email({ message: "Email harus valid" }),
-  gender: z.string().optional(),
-  date_of_birth: z.any().optional(),
-  file: z.any(),
+  gender: z.string().optional().nullable(),
+  date_of_birth: z.any().optional().nullable(),
+  id_cards: editFileSchema,
   phone: z.string({ required_error: "Nomor telepon diperlukan" }),
   emergency_phone: z.string({ required_error: "Nomor Emergency diperlukan" }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
-  file: ImageUploadResponse;
+  id_cards: MulitpleImageUploadResponse;
 };
 
 interface CustomerFormProps {
@@ -116,18 +147,14 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         email: initialData?.email,
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
-        file: initialData?.file,
+        id_cards: initialData?.id_cards,
         phone_number: initialData?.phone_number,
         emergency_phone_number: initialData?.emergency_phone_number,
       }
     : {
         name: "",
-        nik: "",
         email: "",
-        password: "",
-        date_of_birth: "",
-        gender: "",
-        file: undefined,
+        id_cards: [],
         phone_number: "",
         emergency_phone_number: "",
       };
@@ -137,68 +164,92 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     defaultValues,
   });
 
-  const uploadImage = async (file: ImageUploadResponse | undefined) => {
-    if (!file?.data) {
-      return undefined;
+  const uploadImage = async (file: any) => {
+    console.log("fiel", file);
+    const file_names = [];
+    for (let i = 0; i < file?.length; i++) {
+      file_names.push(file?.[i].name);
     }
 
-    const presignQuery = {
-      file_name: file?.data?.name,
+    const response = await axiosAuth.post("/storages/presign/list", {
+      file_names: file_names,
       folder: "user",
-    };
+    });
 
-    const response = await axiosAuth.get("/storages/presign", {
-      params: presignQuery,
-    });
-    await axios.put(response.data.upload_url, file?.data, {
-      headers: {
-        "Content-Type": file?.data?.type,
-      },
-    });
+    for (let i = 0; i < file_names.length; i++) {
+      const file_data = file;
+      await axios.put(response.data[i].upload_url, file_data[i], {
+        headers: {
+          "Content-Type": file_data[i].type,
+        },
+      });
+    }
 
     return response.data;
   };
 
   const onSubmit = async (data: CustomerFormValues) => {
+    let isPresign: boolean = false;
+    for (let i = 0; i < data?.id_cards?.length; i++) {
+      if (data?.id_cards[i]?.photo) {
+        isPresign = false;
+        break;
+      } else {
+        isPresign = true;
+      }
+    }
+    console.log("data", data);
     setLoading(true);
     if (initialData) {
-      const uploadImageResponse = await uploadImage(data?.file);
+      let filteredURL: string[] = [];
+      if (isPresign) {
+        const uploadImageRes = await uploadImage(data?.id_cards);
 
+        filteredURL = uploadImageRes?.map(
+          (item: { download_url: string; upload_url: string }) =>
+            item.download_url,
+        );
+      } else {
+        filteredURL = data?.id_cards?.map((item: any) => item.photo);
+      }
       const newData: any = { ...data };
       newData.file = undefined;
       newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
 
-      if (uploadImageResponse) {
-        newData.id_photo = uploadImageResponse.download_url;
-      }
-      updateCustomer(newData, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.push(`/dashboard/customers`);
+      updateCustomer(
+        { ...newData, id_cards: filteredURL },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["customers"] });
+            toast({
+              variant: "success",
+              title: toastMessage,
+            });
+            router.push(`/dashboard/customers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              description: `error: ${error.message}`,
+            });
+          },
         },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
+      );
     } else {
-      const uploadImageResponse = await uploadImage(data?.file);
-
+      const uploadImageRes = await uploadImage(data?.id_cards);
+      const filteredURL = uploadImageRes.map(
+        (item: { download_url: string; upload_url: string }) =>
+          item.download_url,
+      );
       createCustomer(
         {
           ...data,
           date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
-          id_photo: uploadImageResponse.download_url,
+          id_cards: filteredURL,
         },
         {
           onSuccess: () => {
@@ -242,7 +293,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nama</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nama
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -259,7 +312,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Email
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -283,7 +338,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                         // type="password"
                         disabled={loading}
                         placeholder="Password"
-                        {...field}
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -297,7 +353,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nomor Telepon</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nomor Telepon
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -315,7 +373,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               name="emergency_phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nomor Emergency</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Nomor Emergency
+                  </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
@@ -337,7 +397,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="NIK"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -353,13 +414,13 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
+                    value={field.value ?? ""}
+                    defaultValue={field.value ?? ""}
                   >
                     <FormControl className="disabled:opacity-100">
                       <SelectTrigger>
                         <SelectValue
-                          defaultValue={field.value}
+                          defaultValue={field.value ?? ""}
                           placeholder="Pilih jenis kelamin"
                         />
                       </SelectTrigger>
@@ -405,12 +466,14 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           </div>
           <FormField
             control={form.control}
-            name="file"
+            name="id_cards"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Foto KTP</FormLabel>
+                <FormLabel className="relative label-required">
+                  Foto KTP
+                </FormLabel>
                 <FormControl className="disabled:opacity-100">
-                  <ImageUpload
+                  <MulitpleImageUpload
                     disabled={!isEdit || loading}
                     onChange={field.onChange}
                     value={field.value}
@@ -421,11 +484,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               </FormItem>
             )}
           />
-          {form.formState.errors.file && (
-            <span className="text-red-500">
-              {form.formState.errors.file.message?.toString()}
-            </span>
-          )}
           {isEdit && (
             <Button
               disabled={loading}

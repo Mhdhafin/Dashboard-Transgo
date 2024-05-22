@@ -16,7 +16,7 @@ export interface ImageUploadResponse {
 interface ImageUploadProps {
   onChange?: any;
   onRemove: (value?: ImageUploadResponse) => void;
-  value?: ImageUploadResponse;
+  value?: any;
   disabled?: boolean;
 }
 
@@ -30,7 +30,6 @@ export default function ImageUpload({
   const inputFile = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
-
   const onDeleteFile = () => {
     onChange(null);
   };
@@ -47,7 +46,7 @@ export default function ImageUpload({
     }
   };
   const onHandlePreview = (file: any) => {
-    setContent(file?.url ? file?.url : URL.createObjectURL(file?.data));
+    setContent(file?.data ? URL.createObjectURL(file?.data!) : file);
     setOpen(true);
   };
 
@@ -101,7 +100,7 @@ export default function ImageUpload({
                 fill
                 className="object-fit"
                 alt="Image"
-                src={value.url || URL.createObjectURL(value.data!)}
+                src={!value?.data ? value : URL.createObjectURL(value.data)}
               />
             </div>
           </div>
