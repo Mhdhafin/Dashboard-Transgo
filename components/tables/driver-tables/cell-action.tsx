@@ -34,7 +34,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "Berhasil!",
+          title: "Driver berhasil dihapus!",
         });
       },
       onError: (error) => {

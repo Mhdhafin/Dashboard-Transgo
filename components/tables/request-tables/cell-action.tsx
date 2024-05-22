@@ -34,7 +34,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "Berhasil!",
+          title: "Request Task berhasil dihapus!",
         });
       },
       onError: (error) => {
