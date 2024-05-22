@@ -93,7 +93,9 @@ const formSchema = z.object({
     .min(8, { message: "Password minimal harus 8" }),
   date_of_birth: z.any().optional().nullable(),
   photo_profile: fileSchema,
-  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
 });
 
 const formEditSchema = z.object({
@@ -107,7 +109,9 @@ const formEditSchema = z.object({
     .email({ message: "Email harus valid" }),
   date_of_birth: z.any().optional(),
   photo_profile: editFileSchema,
-  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
   password: z
     .string({ required_error: "Password diperlukan" })
     .min(8, { message: "Password minimal harus 8" }),
@@ -164,14 +168,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         photo_profile: initialData?.photo_profile,
         phone_number: initialData?.phone_number,
       }
-    : {
-        name: "",
-        // nik: "",
-        email: "",
-        password: "",
-        date_of_birth: "",
-        gender: "",
-      };
+    : {};
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -295,7 +292,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Driver"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -314,7 +312,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Email"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -373,7 +372,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Telepon"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
