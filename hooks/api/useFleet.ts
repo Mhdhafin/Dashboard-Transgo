@@ -45,7 +45,7 @@ export const usePostFleet = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postFleet = (body: PayloadBody) => {
+  const postFleet = (body: any) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
@@ -61,7 +61,7 @@ export const useEditFleet = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const editFleet = (body: PayloadBody) => {
+  const editFleet = (body: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 

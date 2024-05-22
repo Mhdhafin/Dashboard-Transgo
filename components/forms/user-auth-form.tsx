@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -29,6 +29,7 @@ export default function UserAuthForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const errorParams = searchParams.get("error");
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -47,11 +48,24 @@ export default function UserAuthForm() {
   };
 
   useEffect(() => {
+    // Check if the URL has an error parameter
+    if (searchParams.has("error")) {
+      // Create a new URL object from the current URL
+      const url = new URL(window.location.href);
+
+      // Remove the error parameter
+      url.searchParams.delete("error");
+
+      // Replace the current URL with the new one without the error parameter
+      router.replace(url.pathname + url.search, undefined);
+    }
+  }, [router, searchParams]);
+  useEffect(() => {
     if (errorParams) {
       setTimeout(() => {
         toast({
           variant: "destructive",
-          title: "incorrect email or password",
+          title: "Email atau password salah",
         });
       });
     }

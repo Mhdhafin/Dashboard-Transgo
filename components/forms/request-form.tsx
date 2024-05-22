@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import isEmpty from "lodash/isEmpty";
+import { omitBy } from "lodash";
 
 import {
   Form,
@@ -66,10 +67,10 @@ const formSchema = z.object({
   // imgUrl: z.array(ImgSchema),
   customer: z.string().min(1, { message: "Please select a customer" }),
   pic: z.string().min(1, { message: "Please select a pic" }),
-  time: z.any({ required_error: "time is required" }),
+  time: z.any({ required_error: "Please select a time" }),
   type: z.string().min(1, { message: "Please select a type" }),
-  address: z.string({ required_error: "address is required" }),
-  description: z.string({ required_error: "description is required" }),
+  address: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
 });
 
@@ -116,6 +117,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
+`;
+  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps:`;
   const defaultValues = initialData
     ? {
         customer: initialData?.customer?.id?.toString(),
@@ -133,16 +137,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         fleet: "",
         time: "",
         type: "",
-        address: "",
-        description: "",
+        address: predefinedAddress,
+        description: predefinedDesc,
         is_self_pickup: false,
       };
-  console.log(initialData);
   console.log("defautl", defaultValues);
-
-  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
-`;
-  const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps: `;
+  console.log("predefinedAddress", predefinedAddress, defaultValues?.address);
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -177,8 +177,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
     };
+    const newPayload = omitBy(
+      payload,
+      (value) => value == predefinedAddress || value == predefinedDesc,
+    );
+
+    console.log("payload", newPayload);
     if (initialData) {
-      updateRequest(payload, {
+      updateRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -200,7 +206,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         },
       });
     } else {
-      createRequest(payload, {
+      createRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -229,6 +235,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
+  function makeUrlsClickable(str: string) {
+    const urlRegex = /(\bhttps?:\/\/[^\s]+(\.[^\s]+)*(\/[^\s]*)?\b)/g;
+    return str.replace(
+      urlRegex,
+      (url: any) =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
+    );
+  }
 
   return (
     <>
@@ -440,7 +454,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     disabled={!isEdit || loading}
                     value={dayjs(defaultValues?.time)
                       .locale("id")
-                      .format("HH:mm:ss - dddd, DD MMMM YYYY")}
+                      .format("HH:mm:ss - dddd,DD MMMM (YYYY)")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -463,7 +477,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           onChange={onChange} // send value to hook form
                           onBlur={onBlur} // notify when input is touched/blur
                           value={value ? dayjs(value).locale("id") : undefined}
-                          format={"HH:mm:ss - dddd, DD MMMM YYYY"}
+                          format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
                           showTime
                         />
                       </Space>
@@ -495,11 +509,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
-                <div
+                <p
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.address)
-                      ? defaultValues?.address
+                      ? makeUrlsClickable(
+                          defaultValues?.address?.replace(/\n/g, "<br />"),
+                        )
                       : "-",
                   }}
                 />
@@ -514,11 +530,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="address"
-                        defaultValue={predefinedAddress}
                         placeholder="Alamat..."
                         className="col-span-4"
                         rows={8}
+                        value={field.value ?? predefinedAddress}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -529,11 +546,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
-                <div
+                <p
                   className="border border-gray-200 rounded-md px-2 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.description)
-                      ? defaultValues?.description
+                      ? makeUrlsClickable(
+                          defaultValues?.description?.replace(/\n/g, "<br />"),
+                        )
                       : "-",
                   }}
                 />
@@ -547,12 +566,13 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     <FormLabel>Deskripsi</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
+                        value={field.value ?? predefinedDesc}
                         id="description"
                         placeholder="Deskripsi..."
                         className="col-span-4"
                         rows={8}
-                        defaultValue={predefinedDesc}
                         disabled={!isEdit || loading}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
