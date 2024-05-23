@@ -277,9 +277,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         filteredURL = data?.id_cards?.map((item: any) => item.photo);
       }
       const newData: any = { ...data };
-      // newData.date_of_birth = data?.date_of_birth
-      //   ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
-      //   : "";
+      newData.date_of_birth = data?.date_of_birth
+        ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+        : "";
+
       const newPayload = convertEmptyStringsToNull({
         ...newData,
         id_cards: filteredURL,
