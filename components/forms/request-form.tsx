@@ -339,7 +339,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 console.log(field);
                 return (
                   <FormItem>
-                    <FormLabel>Customer</FormLabel>
+                    <FormLabel className="relative label-required">
+                      Customer
+                    </FormLabel>
                     <Select
                       disabled={!isEdit || loading}
                       onValueChange={field.onChange}
@@ -394,7 +396,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="fleet"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fleet</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Fleet
+                  </FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -448,7 +452,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="pic"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>PIC</FormLabel>
+                  <FormLabel className="relative label-required">PIC</FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -529,7 +533,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipe Task</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Tipe Task
+                  </FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -601,7 +607,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                   return (
                     <ConfigProvider locale={locale}>
                       <Space size={12} direction="vertical">
-                        <FormLabel>Waktu</FormLabel>
+                        <FormLabel className="relative label-required">
+                          Waktu
+                        </FormLabel>
                         <DatePicker
                           disabled={loading}
                           style={{ width: "100%" }}
