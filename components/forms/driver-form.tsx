@@ -423,14 +423,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               <FormItem>
                 <FormLabel>Tanggal Lahir</FormLabel>
                 <FormControl className="disabled:opacity-100">
-                  <Input
-                    disabled={!isEdit || loading}
-                    value={
-                      initialData?.date_of_birth
-                        ? dayjs(initialData?.date_of_birth).format("YYYY-MM-DD")
-                        : "-"
-                    }
-                  />
+                  <Input disabled value={initialData?.date_of_birth ?? "-"} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
