@@ -48,7 +48,7 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "color",
     header: "Warna",
-    cell: ({ row }) => <span>{row.original.color}</span>,
+    cell: ({ row }) => <span>{row.original.color ?? "-"}</span>,
   },
   {
     id: "actions",
