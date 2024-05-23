@@ -36,6 +36,7 @@ import MulitpleImageUpload, {
   MulitpleImageUploadResponse,
 } from "../multiple-image-upload";
 import { omitBy } from "lodash";
+import { convertEmptyStringsToNull } from "@/lib/utils";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -109,7 +110,7 @@ const formSchema = z.object({
 
         return true;
       },
-      { message: "Password minimal harus 8 karakter" },
+      { message: "Password minimal harus 5 karakter" },
     ),
   date_of_birth: z.any().optional().nullable(),
   emergency_phone_number: z
@@ -276,37 +277,36 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         filteredURL = data?.id_cards?.map((item: any) => item.photo);
       }
       const newData: any = { ...data };
-      newData.file = undefined;
-      newData.date_of_birth = data?.date_of_birth
-        ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
-        : "";
-      updateCustomer(
-        {
-          ...newData,
-          id_cards: filteredURL,
+      // newData.date_of_birth = data?.date_of_birth
+      //   ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+      //   : "";
+      const newPayload = convertEmptyStringsToNull({
+        ...newData,
+        id_cards: filteredURL,
+      });
+
+      console.log("payload", newPayload);
+      updateCustomer(newPayload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          router.push(`/dashboard/customers`);
         },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["customers"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            router.push(`/dashboard/customers`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              //@ts-ignore
-              description: `error: ${error?.response?.data?.message}`,
-            });
-          },
+        onSettled: () => {
+          setLoading(false);
         },
-      );
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
+          });
+        },
+      });
     } else {
       const uploadImageRes = await uploadImage(data?.id_cards);
       const filteredURL = uploadImageRes.map(
@@ -321,8 +321,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         id_cards: filteredURL,
       };
 
-      const newPayload = omitBy(payload, (value) => value == "");
-
+      const newPayload = omitBy(
+        payload,
+        (value) => value === undefined || value === null || value === "",
+      );
+      console.log("payload create", newPayload);
       createCustomer(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -463,25 +466,34 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="nik"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NIK</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="NIK"
-                      value={field.value ?? ""}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>NIK</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input disabled value={initialData?.nik ?? "-"} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="nik"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NIK</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Input
+                        disabled={!isEdit || loading}
+                        placeholder="NIK"
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="gender"
