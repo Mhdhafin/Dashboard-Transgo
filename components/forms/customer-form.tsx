@@ -91,7 +91,7 @@ const formSchema = z.object({
 
         return true;
       },
-      { message: "NIK minimal harus 16 karakter" },
+      { message: "NIK harus 16 karakter" },
     ),
   email: z
     .string({ required_error: "Email diperlukan" })
@@ -140,7 +140,7 @@ const formEditSchema = z.object({
 
         return true;
       },
-      { message: "NIK minimal harus 16 karakter" },
+      { message: "NIK harus 16 karakter" },
     ),
   email: z
     .string({ required_error: "Email diperlukan" })
