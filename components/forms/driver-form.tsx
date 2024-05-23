@@ -424,9 +424,11 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={dayjs(initialData?.date_of_birth).format(
-                      "YYYY-MM-DD",
-                    )}
+                    value={
+                      initialData?.date_of_birth
+                        ? dayjs(initialData?.date_of_birth).format("YYYY-MM-DD")
+                        : "-"
+                    }
                   />
                 </FormControl>
                 <FormMessage />

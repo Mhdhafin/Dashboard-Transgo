@@ -520,10 +520,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <FormLabel>Tanggal Lahir</FormLabel>
                 <FormControl className="disabled:opacity-100">
                   <Input
-                    disabled={!isEdit || loading}
-                    value={dayjs(initialData?.date_of_birth).format(
-                      "YYYY-MM-DD",
-                    )}
+                    disabled
+                    value={
+                      initialData?.date_of_birth
+                        ? dayjs(initialData?.date_of_birth).format("YYYY-MM-DD")
+                        : ""
+                    }
                   />
                 </FormControl>
                 <FormMessage />
