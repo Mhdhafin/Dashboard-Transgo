@@ -34,6 +34,7 @@ import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
 import { isEmpty, isObject, omitBy, transform } from "lodash";
+import { convertEmptyStringsToNull } from "@/lib/utils";
 
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -90,7 +91,7 @@ const formSchema = z.object({
   gender: z.string().optional().nullable(),
   password: z
     .string({ required_error: "Password diperlukan" })
-    .min(8, { message: "Password minimal harus 8" }),
+    .min(5, { message: "Password minimal harus 5" }),
   date_of_birth: z.any().optional().nullable(),
   photo_profile: fileSchema,
   phone_number: z
@@ -210,19 +211,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
     return response.data;
   };
 
-  const convertEmptyStringsToNull = (obj: any) => {
-    return transform(obj, (result: any, value: any, key: any) => {
-      if (isObject(value)) {
-        result[key] = convertEmptyStringsToNull(value);
-      } else {
-        result[key] = value === "" ? null : value;
-      }
-    });
-  };
-
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
-
+    console.log("data", data);
     if (initialData) {
       const uploadImageResponse = await uploadImage(data?.photo_profile);
       const newData: any = { ...data };
@@ -236,6 +227,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       const newPayload = convertEmptyStringsToNull(
         omitBy(newData, (val) => val === undefined),
       );
+      console.log("payload edit", newPayload);
 
       updateDriver(newPayload, {
         onSuccess: () => {
@@ -266,8 +258,11 @@ export const DriverForm: React.FC<DriverFormProps> = ({
           ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
           : "",
       };
-      const newPayload = omitBy(payload, (value) => value == "");
-
+      const newPayload = omitBy(
+        payload,
+        (value) => value === "" || value === undefined || value === null,
+      );
+      console.log("payload create", newPayload);
       createDriver(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -405,36 +400,46 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jenis Kelamin</FormLabel>
-                  <Select
-                    disabled={!isEdit || loading}
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                    defaultValue={field.value ?? ""}
-                  >
-                    <FormControl className="disabled:opacity-100">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih jenis kelamin" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* @ts-ignore  */}
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Jenis Kelamin</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input disabled value={initialData?.gender ?? "-"} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jenis Kelamin</FormLabel>
+                    <Select
+                      disabled={!isEdit || loading}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                      defaultValue={field.value ?? ""}
+                    >
+                      <FormControl className="disabled:opacity-100">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih jenis kelamin" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* @ts-ignore  */}
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Tanggal Lahir</FormLabel>
