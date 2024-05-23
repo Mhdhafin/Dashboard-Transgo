@@ -7,18 +7,19 @@ import {
 import { RequestTable } from "@/components/tables/request-tables/request-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetRequests } from "@/hooks/api/useRequest";
-import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 const Request = () => {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const page = Number(searchParams.get("page")) || 1;
+  const pageLimit = Number(searchParams.get("limit")) || 10;
+  const q = searchParams.get("q") || "";
 
-  const page = Number(searchParams.get('page')) || 1;
-  const pageLimit = Number(searchParams.get('limit')) || 10;
-  const q = searchParams.get('q') || '';
-
-  const [tab, setTab] = useState("pending");
-  const defaultTab = searchParams.get("status") ?? tab;
+  const defaultTab = searchParams.get("status") ?? "pending";
 
   const { data: pendingData, isFetching: isFetchingPendingData } =
     useGetRequests(
@@ -58,20 +59,45 @@ const Request = () => {
       "done",
     );
 
+  const createQueryString = React.useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
   return (
     <div>
       <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="pending" onClick={() => setTab("pending")}>
+          <TabsTrigger
+            value="pending"
+            onClick={() => {
+              router.push(
+                pathname + "?" + createQueryString("status", "pending"),
+              );
+            }}
+          >
             Pending
           </TabsTrigger>
           <TabsTrigger
             value="on_progress"
-            onClick={() => setTab("on_progress")}
+            onClick={() => {
+              router.push(
+                pathname + "?" + createQueryString("status", "on_progress"),
+              );
+            }}
           >
             On Progress
           </TabsTrigger>
-          <TabsTrigger value="done" onClick={() => setTab("done")}>
+          <TabsTrigger
+            value="done"
+            onClick={() => {
+              router.push(pathname + "?" + createQueryString("status", "done"));
+            }}
+          >
             Done
           </TabsTrigger>
         </TabsList>

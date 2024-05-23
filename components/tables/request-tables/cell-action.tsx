@@ -73,13 +73,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/dashboard/requests/${data?.id}/edit`)}}
+              router.push(`/dashboard/requests/${data?.id}/edit`);
+            }}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={(e) => {
-            e.stopPropagation();
-            setOpen(true)}}>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+          >
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
