@@ -112,6 +112,7 @@ const formEditSchema = z.object({
   phone_number: z
     .string({ required_error: "Nomor telepon diperlukan" })
     .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
+  password: z.string().optional(),
 });
 
 type DriverFormValues = z.infer<typeof formSchema> & {
@@ -166,8 +167,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         phone_number: initialData?.phone_number,
       }
     : {};
-  console.log(initialData);
-  console.log("defautl", defaultValues);
 
   const form = useForm<DriverFormValues>({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
