@@ -146,7 +146,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: initialData?.address,
         description: initialData?.description,
         is_self_pickup: initialData?.is_self_pickup,
-        distance: initialData?.distance,
+        distance: initialData?.distance?.toString(),
       }
     : {
         customer: "",
@@ -195,7 +195,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     };
     const newPayload = omitBy(
       payload,
-      (value) => value == predefinedAddress || value == predefinedDesc,
+      (value) =>
+        value == predefinedAddress ||
+        value == predefinedDesc ||
+        value == "" ||
+        value == null,
     );
 
     if (initialData) {
