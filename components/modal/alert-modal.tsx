@@ -28,17 +28,23 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
   return (
     <Modal
-      title="Are you sure?"
-      description="This action cannot be undone."
+      title="Apakah Anda yakin?"
+      description="Data yang dihapus tidak dapat dikembalikan."
       isOpen={isOpen}
       onClose={onClose}
     >
       <div className="pt-6 space-x-2 flex items-center justify-end w-full">
-        <Button disabled={loading} variant="outline" onClick={onClose}>
-          Cancel
+        <Button disabled={loading} variant="outline" onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}>
+          Batalkan
         </Button>
-        <Button disabled={loading} variant="destructive" onClick={onConfirm}>
-          Continue
+        <Button disabled={loading} variant="destructive" onClick={(e) => {
+          e.stopPropagation();
+          onConfirm();
+        }}>
+          Hapus
         </Button>
       </div>
     </Modal>
