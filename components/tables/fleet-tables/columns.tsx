@@ -28,19 +28,12 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Nama",
-    cell: ({ row }) => (
-      <Link href={`/dashboard/fleets/${row.original.id}/detail`}>
-        {row.original.name}
-      </Link>
-    ),
   },
   {
     accessorKey: "type",
     header: "Tipe",
     cell: ({ row }) => (
-      <span>
-        {row.original.type=="car"?"Mobil":"Motor"}
-      </span>
+      <span>{row.original.type == "car" ? "Mobil" : "Motor"}</span>
     ),
   },
   {

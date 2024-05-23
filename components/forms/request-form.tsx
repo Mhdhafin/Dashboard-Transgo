@@ -3,7 +3,7 @@ import * as z from "zod";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import { PencilLine } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -15,7 +15,6 @@ import { omitBy } from "lodash";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,45 +32,33 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 // import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
-import FileUpload from "../file-upload";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
-import { useGetCustomers } from "@/hooks/api/useCustomer";
+import { useGetInfinityCustomers } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
-import { useGetFleets } from "@/hooks/api/useFleet";
+import { useGetInfinityFleets } from "@/hooks/api/useFleet";
 import { Textarea } from "@/components/ui/textarea";
-import { useGetDrivers } from "@/hooks/api/useDriver";
+import { useGetInfinityDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
 import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
-import ImageUpload from "../image-upload";
+import { Select as AntdSelect } from "antd";
+
 import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
-const ImgSchema = z.object({
-  fileName: z.string(),
-  name: z.string(),
-  fileSize: z.number(),
-  size: z.number(),
-  fileKey: z.string(),
-  key: z.string(),
-  fileUrl: z.string(),
-  url: z.string(),
-});
+import { useDebounce } from "use-debounce";
 dayjs.locale("id");
-export const IMG_MAX_LIMIT = 3;
 
 // perlu dipisah
 const formSchema = z.object({
-  fleet: z.string().min(1, { message: "Please select a fleet" }),
+  fleet: z.string().min(1, { message: "Tolong pilih fleet" }),
   // imgUrl: z.array(ImgSchema),
-  customer: z.string().min(1, { message: "Please select a customer" }),
-  pic: z.string().min(1, { message: "Please select a pic" }),
-  time: z.any({ required_error: "Please select a time" }),
-  type: z.string().min(1, { message: "Please select a type" }),
+  customer: z.string().min(1, { message: "Tolong pilih customer" }),
+  pic: z.string().min(1, { message: "Tolong pilih pic" }),
+  time: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
+  type: z.string().min(1, { message: "Tipe diperlukan" }),
   address: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
+  distance: z.string({ required_error: "Jarak diperlukan" }),
 });
 
 type RequestFormValues = z.infer<typeof formSchema>;
@@ -86,9 +73,36 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   isEdit,
 }) => {
   const { requestId } = useParams();
-  const { data: customers } = useGetCustomers({ limit: 10, page: 1 });
-  const { data: fleets } = useGetFleets({ limit: 10, page: 1 });
-  const { data: drivers } = useGetDrivers({ limit: 10, page: 1 });
+
+  const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
+  const [searchFleetTerm, setSearchFleetTerm] = useState("");
+  const [searchDriverTerm, setSearchDriverTerm] = useState("");
+  const [searchCustomerDebounce] = useDebounce(searchCustomerTerm, 500);
+  const [searchFleetDebounce] = useDebounce(searchFleetTerm, 500);
+  const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
+
+  const {
+    data: customers,
+    fetchNextPage: fetchNextCustomers,
+    hasNextPage: hasNextCustomers,
+    isFetchingNextPage: isFetchingNextCustomers,
+  } = useGetInfinityCustomers(searchCustomerDebounce);
+
+  const {
+    data: fleets,
+    fetchNextPage: fetchNextFleets,
+    hasNextPage: hasNextFleets,
+    isFetchingNextPage: isFetchingNextFleets,
+  } = useGetInfinityFleets(searchFleetDebounce);
+
+  // const { data: fleets } = useGetFleets({ limit: 10, page: 1 });
+  const {
+    data: drivers,
+    fetchNextPage: fetchNextDrivers,
+    hasNextPage: hasNextDrivers,
+    isFetchingNextPage: isFetchingNextDrivers,
+  } = useGetInfinityDrivers(searchDriverDebounce);
+
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -104,7 +118,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     : initialData
     ? "Edit a request for driver"
     : "Add a new request for driver";
-  const toastMessage = initialData ? "Product updated." : "Product created.";
+  const toastMessage = initialData
+    ? "Request Task berhasil diubah!"
+    : "Request Task berhasil dibuat!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
   const [checked, setChecked] = useState(false);
@@ -130,19 +146,18 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: initialData?.address,
         description: initialData?.description,
         is_self_pickup: initialData?.is_self_pickup,
+        distance: initialData?.distance,
       }
     : {
         customer: "",
         pic: "",
         fleet: "",
-        time: "",
         type: "",
         address: predefinedAddress,
         description: predefinedDesc,
         is_self_pickup: false,
       };
-  console.log("defautl", defaultValues);
-  console.log("predefinedAddress", predefinedAddress, defaultValues?.address);
+
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -176,20 +191,20 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       address: data?.address,
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
+      distance: parseFloat(data?.distance),
     };
     const newPayload = omitBy(
       payload,
       (value) => value == predefinedAddress || value == predefinedDesc,
     );
 
-    console.log("payload", newPayload);
     if (initialData) {
       updateRequest(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
             variant: "success",
-            title: "Request Task berhasil diubah!",
+            title: toastMessage,
           });
           // router.refresh();
           router.push(`/dashboard/requests`);
@@ -211,7 +226,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
             variant: "success",
-            title: "Request Task berhasil dibuat!",
+            title: toastMessage,
             description: "Driver akan menerima notifikasi request ini.",
           });
           // router.refresh();
@@ -245,6 +260,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     );
   }
 
+  const Option = AntdSelect;
+  const handleScrollCustomers = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      fetchNextCustomers();
+    }
+  };
+
+  const handleScrollFleets = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      fetchNextFleets();
+    }
+  };
+
+  const handleScrollDrivers = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      fetchNextDrivers();
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -267,127 +304,182 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          {/* <FormField
-            control={form.control}
-            name="imgUrl"
-            render={({ field }) => (
+          <div className="md:grid md:grid-cols-3 gap-8">
+            {!isEdit ? (
               <FormItem>
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <FileUpload
-                    onChange={field.onChange}
-                    value={field.value}
-                    onRemove={field.onChange}
+                <FormLabel>Customer</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.customer?.name}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          /> */}
-          <div className="md:grid md:grid-cols-3 gap-8">
-            <FormField
-              control={form.control}
-              name="customer"
-              render={({ field }) => {
-                console.log(field);
-                return (
-                  <FormItem>
-                    <FormLabel>Customer</FormLabel>
-                    <Select
-                      disabled={!isEdit || loading}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <FormControl className="disabled:opacity-100">
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={field.value}
-                            placeholder="Select a customer"
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* @ts-ignore  */}
-                        {customers?.data?.items.map((item) => (
-                          <SelectItem key={item.id} value={item.id.toString()}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            ) : (
+              <FormField
+                name="customer"
+                control={form.control}
+                render={({ field }) => (
+                  <Space size={12} direction="vertical">
+                    <FormLabel className="relative label-required">
+                      Customer
+                    </FormLabel>
+                    <FormControl>
+                      <AntdSelect
+                        showSearch
+                        value={field.value}
+                        placeholder="Pilih Customer"
+                        style={{ width: "100%" }}
+                        onSearch={setSearchCustomerTerm}
+                        onChange={field.onChange}
+                        onPopupScroll={handleScrollCustomers}
+                        filterOption={false}
+                        notFoundContent={
+                          isFetchingNextCustomers ? (
+                            <p className="px-3 text-sm">loading</p>
+                          ) : null
+                        }
+                      >
+                        {customers?.pages.map((page: any, pageIndex: any) =>
+                          page.data.items.map((item: any, itemIndex: any) => {
+                            return (
+                              <Option key={item.id} value={item.id.toString()}>
+                                {item.name}
+                              </Option>
+                            );
+                          }),
+                        )}
 
-            <FormField
-              control={form.control}
-              name="fleet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fleet</FormLabel>
-                  <Select
-                    disabled={!isEdit || loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl className="disabled:opacity-100">
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a fleet"
-                        />
-                      </SelectTrigger>
+                        {isFetchingNextCustomers && (
+                          <Option disabled>
+                            <p className="px-3 text-sm">loading</p>
+                          </Option>
+                        )}
+                      </AntdSelect>
                     </FormControl>
-                    <SelectContent>
-                      {fleets?.data?.items?.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                      {/* @ts-ignore  */}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="pic"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>PIC</FormLabel>
-                  <Select
+                    <FormMessage />
+                  </Space>
+                )}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Fleet</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
                     disabled={!isEdit || loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl className="disabled:opacity-100">
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a gender"
-                        />
-                      </SelectTrigger>
+                    value={initialData?.fleet?.name}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                name="fleet"
+                control={form.control}
+                render={({ field }) => (
+                  <Space size={12} direction="vertical">
+                    <FormLabel className="relative label-required">
+                      Fleet
+                    </FormLabel>
+                    <FormControl>
+                      <AntdSelect
+                        showSearch
+                        value={field.value}
+                        placeholder="Pilih Fleet"
+                        style={{ width: "100%" }}
+                        onSearch={setSearchFleetTerm}
+                        onChange={field.onChange}
+                        onPopupScroll={handleScrollFleets}
+                        filterOption={false}
+                        notFoundContent={
+                          isFetchingNextFleets ? (
+                            <p className="px-3 text-sm">loading</p>
+                          ) : null
+                        }
+                      >
+                        {fleets?.pages.map((page: any, pageIndex: any) =>
+                          page.data.items.map((item: any, itemIndex: any) => {
+                            return (
+                              <Option key={item.id} value={item.id.toString()}>
+                                {item.name}
+                              </Option>
+                            );
+                          }),
+                        )}
+
+                        {isFetchingNextFleets && (
+                          <Option disabled>
+                            <p className="px-3 text-sm">loading</p>
+                          </Option>
+                        )}
+                      </AntdSelect>
                     </FormControl>
-                    <SelectContent>
-                      {drivers?.data?.items?.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                      {/* @ts-ignore  */}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </Space>
+                )}
+              />
+            )}
+
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>PIC</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.driver?.name}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                name="pic"
+                control={form.control}
+                render={({ field }) => (
+                  <Space size={12} direction="vertical">
+                    <FormLabel className="relative label-required">
+                      PIC
+                    </FormLabel>
+                    <FormControl>
+                      <AntdSelect
+                        showSearch
+                        value={field.value}
+                        placeholder="Pilih PIC"
+                        style={{ width: "100%" }}
+                        onSearch={setSearchDriverTerm}
+                        onChange={field.onChange}
+                        onPopupScroll={handleScrollDrivers}
+                        filterOption={false}
+                        notFoundContent={
+                          isFetchingNextDrivers ? (
+                            <p className="px-3 text-sm">loading</p>
+                          ) : null
+                        }
+                      >
+                        {drivers?.pages.map((page: any, pageIndex: any) =>
+                          page.data.items.map((item: any, itemIndex: any) => {
+                            return (
+                              <Option key={item.id} value={item.id.toString()}>
+                                {item.name}
+                              </Option>
+                            );
+                          }),
+                        )}
+
+                        {isFetchingNextDrivers && (
+                          <Option disabled>
+                            <p className="px-3 text-sm">loading</p>
+                          </Option>
+                        )}
+                      </AntdSelect>
+                    </FormControl>
+                    <FormMessage />
+                  </Space>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="is_self_pickup"
@@ -414,12 +506,15 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 );
               }}
             />
+
             <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipe Task</FormLabel>
+                  <FormLabel className="relative label-required">
+                    Tipe Task
+                  </FormLabel>
                   <Select
                     disabled={!isEdit || loading}
                     onValueChange={field.onChange}
@@ -461,26 +556,32 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormMessage />
               </FormItem>
             ) : (
-              <Controller
+              <FormField
                 control={form.control}
                 name="time"
                 render={({ field: { onChange, onBlur, value, ref } }) => {
-                  console.log(dayjs(value).locale("id"));
                   return (
                     <ConfigProvider locale={locale}>
                       <Space size={12} direction="vertical">
-                        <FormLabel>Waktu</FormLabel>
-                        <DatePicker
-                          disabled={loading}
-                          style={{ width: "100%" }}
-                          height={40}
-                          className="p"
-                          onChange={onChange} // send value to hook form
-                          onBlur={onBlur} // notify when input is touched/blur
-                          value={value ? dayjs(value).locale("id") : undefined}
-                          format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
-                          showTime
-                        />
+                        <FormLabel className="relative label-required">
+                          Waktu
+                        </FormLabel>
+                        <FormControl>
+                          <DatePicker
+                            disabled={loading}
+                            style={{ width: "100%" }}
+                            height={40}
+                            className="p"
+                            onChange={onChange} // send value to hook form
+                            onBlur={onBlur} // notify when input is touched/blur
+                            value={
+                              value ? dayjs(value).locale("id") : undefined
+                            }
+                            format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
+                            showTime
+                          />
+                        </FormControl>
+                        <FormMessage />
                       </Space>
                     </ConfigProvider>
                   );
@@ -507,6 +608,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             </div>
           )}
           <div className="md:grid md:grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="distance"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="relative label-required">
+                    Jarak (dalam KM)
+                  </FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Jarak"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      type="number"
+                      step={0.1}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
@@ -604,7 +727,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               <FormLabel>Foto Bukti Serah terima</FormLabel>
               {(initialData?.status === "pending" ||
                 initialData?.status === "on_progress") && (
-                <h1 className="">{`Request ${wording} belum selesai dilakukan `}</h1>
+                <p className="text-sm">{`Request ${wording} belum selesai dilakukan `}</p>
               )}
               {initialData?.status === "done" &&
                 endlogs?.map((log: any) => (

@@ -9,7 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,22 +125,37 @@ export function FleetTable<TData, TValue>({
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
         limit: pageSize,
-        q: searchValue,
+        q: searchValue || "",
       })}`,
       {
         scroll: false,
       },
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
+
+  React.useEffect(() => {
+    if (searchValue?.length !== 0) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: 1,
+          limit: pageSize,
+          q: searchDebounce || "",
+        })}`,
+        {
+          scroll: false,
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchDebounce]);
 
   return (
     <>
       <Input
         placeholder={`Cari fleets...`}
         value={searchValue as any}
-        onChange={(event) =>
-          setSearchValue(event.target.value)
-        }
+        onChange={(event) => setSearchValue(event.target.value)}
         className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
@@ -154,9 +169,9 @@ export function FleetTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -167,6 +182,10 @@ export function FleetTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
+                  onClick={() =>
+                    router.push(`/dashboard/fleets/${row.original.id}/detail`)
+                  }
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

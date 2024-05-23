@@ -7,7 +7,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
 
-var duration = require('dayjs/plugin/duration');
+var duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
 export const pendingColumns: ColumnDef<any>[] = [
@@ -40,21 +40,38 @@ export const pendingColumns: ColumnDef<any>[] = [
     header: "Tipe Tasks",
     cell: ({ row }) => {
       const getType = () => {
-        if (row.original.type == "delivery" && row.original.is_self_pickup == false) return "Pengantaran";
-        if (row.original.type == "delivery" && row.original.is_self_pickup == true) return "Pengambilan";
-        if (row.original.type == "pick_up" && row.original.is_self_pickup == false) return "Penjemputan";
-        if (row.original.type == "pick_up" && row.original.is_self_pickup == true) return "Pengembalian";
+        if (
+          row.original.type == "delivery" &&
+          row.original.is_self_pickup == false
+        )
+          return "Pengantaran";
+        if (
+          row.original.type == "delivery" &&
+          row.original.is_self_pickup == true
+        )
+          return "Pengambilan";
+        if (
+          row.original.type == "pick_up" &&
+          row.original.is_self_pickup == false
+        )
+          return "Penjemputan";
+        if (
+          row.original.type == "pick_up" &&
+          row.original.is_self_pickup == true
+        )
+          return "Pengembalian";
       };
 
       return <span>{getType()}</span>;
-    }
+    },
   },
   {
     accessorKey: "fleet.name",
     header: "Nama Kendaraan",
     cell: ({ row }) => (
       <span>
-        {row.original.fleet.name} ({row.original.fleet.type=="car"?"Mobil":"Motor"})
+        {row.original.fleet.name} (
+        {row.original.fleet.type == "car" ? "Mobil" : "Motor"})
       </span>
     ),
   },
@@ -103,32 +120,44 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "customer.name",
     header: "Customer",
-    cell: ({ row }) => (
-      <Link href={`/dashboard/requests/${row.original.id}/detail`}>
-        {row.original.customer.name}
-      </Link>
-    ),
   },
   {
     accessorKey: "type",
     header: "Tipe Tasks",
     cell: ({ row }) => {
       const getType = () => {
-        if (row.original.type == "delivery" && row.original.is_self_pickup == false) return "Pengantaran";
-        if (row.original.type == "delivery" && row.original.is_self_pickup == true) return "Pengambilan";
-        if (row.original.type == "pick_up" && row.original.is_self_pickup == false) return "Penjemputan";
-        if (row.original.type == "pick_up" && row.original.is_self_pickup == true) return "Pengembalian";
+        if (
+          row.original.type == "delivery" &&
+          row.original.is_self_pickup == false
+        )
+          return "Pengantaran";
+        if (
+          row.original.type == "delivery" &&
+          row.original.is_self_pickup == true
+        )
+          return "Pengambilan";
+        if (
+          row.original.type == "pick_up" &&
+          row.original.is_self_pickup == false
+        )
+          return "Penjemputan";
+        if (
+          row.original.type == "pick_up" &&
+          row.original.is_self_pickup == true
+        )
+          return "Pengembalian";
       };
 
       return <span>{getType()}</span>;
-    }
+    },
   },
   {
     accessorKey: "fleet.name",
     header: "Nama Kendaraan",
     cell: ({ row }) => (
       <span>
-        {row.original.fleet.name} ({row.original.fleet.type=="car"?"Mobil":"Motor"})
+        {row.original.fleet.name} (
+        {row.original.fleet.type == "car" ? "Mobil" : "Motor"})
       </span>
     ),
   },
@@ -153,12 +182,13 @@ export const completedColumns: ColumnDef<any>[] = [
     header: "Durasi",
     cell: ({ row }) => {
       return (
-      <span>
-        {(dayjs as any).duration(
-          row.original.progress_duration_second * 1000,
-        ).format("HH:mm")}
-      </span>
-    )},
+        <span>
+          {(dayjs as any)
+            .duration(row.original.progress_duration_second * 1000)
+            .format("HH:mm")}
+        </span>
+      );
+    },
   },
   {
     id: "actions",

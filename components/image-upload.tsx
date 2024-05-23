@@ -57,20 +57,18 @@ export default function ImageUpload({
         onClose={() => setOpen(false)}
         content={content}
       />
-      <div className="mb-6">
-        <Input
-          ref={inputFile}
-          type="file"
-          id="file"
-          className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          accept="image/*"
-          disabled={disabled}
-          onChange={(e) => {
-            onUpdateFile({ data: e.target.files![0] });
-          }}
-        />
-      </div>
-      <div className="mb-4 flex items-center gap-4">
+      <Input
+        ref={inputFile}
+        type="file"
+        id="file"
+        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        accept="image/*"
+        disabled={disabled}
+        onChange={(e) => {
+          onUpdateFile({ data: e.target.files![0] });
+        }}
+      />
+      <div className="flex items-center gap-4">
         {!!value && (
           <div
             key={value.data?.name ?? value.url}

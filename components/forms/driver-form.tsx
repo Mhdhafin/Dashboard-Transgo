@@ -33,7 +33,8 @@ import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
-import { isEmpty } from "lodash";
+import { isEmpty, omitBy } from "lodash";
+
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -47,9 +48,10 @@ const ImgSchema = z.object({
 export const IMG_MAX_LIMIT = 3;
 const fileSchema = z.custom<File>(
   (val: any) => {
+    console.log("val", val);
+    if (!val) return false;
     if (!(val.data instanceof File)) return false;
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    console.log("val", val.data.type);
     if (!allowedTypes.includes(val.data.type)) return false; // Limit file types
     return true;
   },
@@ -77,25 +79,42 @@ const editFileSchema = z.custom<File>(
   },
 );
 const formSchema = z.object({
-  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
+  name: z
+    .string({ required_error: "Nama diperlukan" })
+    .min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
-  email: z.string().email({ message: "Email harus valid" }),
+  email: z
+    .string({ required_error: "Email diperlukan" })
+    .email({ message: "Email harus valid" }),
   gender: z.string().optional().nullable(),
-  password: z.string().optional().nullable(),
+  password: z
+    .string({ required_error: "Password diperlukan" })
+    .min(8, { message: "Password minimal harus 8" }),
   date_of_birth: z.any().optional().nullable(),
   photo_profile: fileSchema,
-  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
 });
 
 const formEditSchema = z.object({
-  name: z.string().min(3, { message: "Nama minimal harus 3 karakter" }),
+  name: z
+    .string({ required_error: "Nama diperlukan" })
+    .min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
   // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
-  email: z.string().email({ message: "Email harus valid" }),
+  email: z
+    .string({ required_error: "Email diperlukan" })
+    .email({ message: "Email harus valid" }),
   date_of_birth: z.any().optional(),
   photo_profile: editFileSchema,
-  phone_number: z.string({ required_error: "Nomor telepon diperlukan" }),
+  phone_number: z
+    .string({ required_error: "Nomor telepon diperlukan" })
+    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
+  password: z
+    .string({ required_error: "Password diperlukan" })
+    .min(8, { message: "Password minimal harus 8" }),
 });
 
 type DriverFormValues = z.infer<typeof formSchema> & {
@@ -147,15 +166,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
         photo_profile: initialData?.photo_profile,
+        phone_number: initialData?.phone_number,
       }
-    : {
-        name: "",
-        // nik: "",
-        email: "",
-        password: "",
-        date_of_birth: "",
-        gender: "",
-      };
+    : {};
   console.log(initialData);
   console.log("defautl", defaultValues);
 
@@ -188,16 +201,19 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
-    const uploadImageResponse = await uploadImage(data?.photo_profile);
-    const newData: any = { ...data };
-    newData.date_of_birth = dayjs(data?.date_of_birth).format("YYYY-MM-DD");
-
-    if (uploadImageResponse) {
-      newData.photo_profile = uploadImageResponse.download_url;
-    }
 
     if (initialData) {
-      updateDriver(newData, {
+      const uploadImageResponse = await uploadImage(data?.photo_profile);
+      const newData: any = { ...data };
+      newData.date_of_birth = data?.date_of_birth
+        ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+        : "";
+
+      if (uploadImageResponse) {
+        newData.photo_profile = uploadImageResponse.download_url;
+      }
+      const newPayload = omitBy(newData, (value) => value == "");
+      updateDriver(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
           toast({
@@ -222,9 +238,13 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       const payload = {
         ...data,
         photo_profile: uploadImageResponse.download_url,
-        date_of_birth: dayjs(data?.date_of_birth).format("YYYY-MM-DD"),
+        date_of_birth: data?.date_of_birth
+          ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
+          : "",
       };
-      createDriver(payload, {
+      const newPayload = omitBy(payload, (value) => value == "");
+
+      createDriver(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
           toast({
@@ -272,7 +292,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Driver"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -291,7 +312,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Email"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
@@ -299,27 +321,27 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               )}
             />
 
-            {!initialData && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl className="disabled:opacity-100">
-                      <Input
-                        // type="password"
-                        disabled={loading}
-                        placeholder="Password"
-                        value={field.value ?? ""}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="relative label-required">
+                    Password
+                  </FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      // type="password"
+                      disabled={loading}
+                      placeholder="Password"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* <FormField
               control={form.control}
@@ -350,7 +372,8 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nomor Telepon"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
