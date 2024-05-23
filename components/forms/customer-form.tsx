@@ -120,7 +120,7 @@ const formSchema = z.object({
   id_cards: fileSchema,
   phone_number: z
     .string({ required_error: "Nomor telepon diperlukan" })
-    .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
+    .min(10, { message: "Nomor Telepon minimal harus 10 digit" }),
 });
 
 const formEditSchema = z.object({
