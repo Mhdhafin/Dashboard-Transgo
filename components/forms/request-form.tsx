@@ -193,17 +193,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       is_self_pickup: data?.is_self_pickup,
       distance: parseFloat(data?.distance),
     };
-    const newPayload = omitBy(
-      payload,
-      (value) =>
-        value == predefinedAddress ||
-        value == predefinedDesc ||
-        value == "" ||
-        value == null,
-    );
+    // const newPayload = omitBy(
+    //   payload,
+    //   (value) =>
+    //     value == predefinedAddress ||
+    //     value == predefinedDesc ||
+    //     value == "" ||
+    //     value == null,
+    // );
 
     if (initialData) {
-      updateRequest(newPayload, {
+      updateRequest(payload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
@@ -225,7 +225,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         },
       });
     } else {
-      createRequest(newPayload, {
+      createRequest(payload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["requests"] });
           toast({
