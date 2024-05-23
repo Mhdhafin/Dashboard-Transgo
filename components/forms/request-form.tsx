@@ -1,9 +1,9 @@
 "use client";
 import * as z from "zod";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import { PencilLine } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -15,7 +15,6 @@ import { omitBy } from "lodash";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,40 +32,20 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 // import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
-import FileUpload from "../file-upload";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
-import { useInView } from "react-intersection-observer";
-import {
-  useGetCustomers,
-  useGetInfinityCustomers,
-} from "@/hooks/api/useCustomer";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { useGetFleets, useGetInfinityFleets } from "@/hooks/api/useFleet";
+import { useGetInfinityCustomers } from "@/hooks/api/useCustomer";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetInfinityFleets } from "@/hooks/api/useFleet";
 import { Textarea } from "@/components/ui/textarea";
-import { useGetDrivers, useGetInfinityDrivers } from "@/hooks/api/useDriver";
+import { useGetInfinityDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
 import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
-import ImageUpload from "../image-upload";
 import { Select as AntdSelect } from "antd";
 
 import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
 import { useDebounce } from "use-debounce";
-const ImgSchema = z.object({
-  fileName: z.string(),
-  name: z.string(),
-  fileSize: z.number(),
-  size: z.number(),
-  fileKey: z.string(),
-  key: z.string(),
-  fileUrl: z.string(),
-  url: z.string(),
-});
 dayjs.locale("id");
-export const IMG_MAX_LIMIT = 3;
 
 // perlu dipisah
 const formSchema = z.object({
