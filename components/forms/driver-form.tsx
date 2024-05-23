@@ -112,9 +112,6 @@ const formEditSchema = z.object({
   phone_number: z
     .string({ required_error: "Nomor telepon diperlukan" })
     .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
-  password: z
-    .string({ required_error: "Password diperlukan" })
-    .min(8, { message: "Password minimal harus 8" }),
 });
 
 type DriverFormValues = z.infer<typeof formSchema> & {
