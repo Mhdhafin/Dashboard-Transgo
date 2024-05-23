@@ -97,7 +97,7 @@ export function FleetTable<TData, TValue>({
       pageIndex: fallbackPage - 1,
       pageSize: fallbackPerPage,
     });
-
+  console.log("data", data);
   const table = useReactTable({
     data,
     columns,
@@ -184,7 +184,9 @@ export function FleetTable<TData, TValue>({
                 <TableRow
                   className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
                   onClick={() =>
-                    router.push(`/dashboard/fleets/${row.original.id}/detail`)
+                    router.push(
+                      `/dashboard/fleets/${(row.original as any).id}/detail`,
+                    )
                   }
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
