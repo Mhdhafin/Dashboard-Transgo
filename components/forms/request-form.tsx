@@ -78,6 +78,7 @@ const formSchema = z.object({
   address: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
+  distance: z.string({ required_error: "distance diperlukan" }),
 });
 
 type RequestFormValues = z.infer<typeof formSchema>;
@@ -156,6 +157,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: initialData?.address,
         description: initialData?.description,
         is_self_pickup: initialData?.is_self_pickup,
+        distance: initialData?.distance,
       }
     : {
         customer: "",
@@ -202,6 +204,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       address: data?.address,
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
+      distance: parseFloat(data?.distance),
     };
     const newPayload = omitBy(
       payload,
@@ -647,6 +650,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             </div>
           )}
           <div className="md:grid md:grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="distance"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="relative label-required">
+                    Jarak (dalam KM)
+                  </FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Jarak"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      type="number"
+                      step={0.1}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
