@@ -182,6 +182,10 @@ export function FleetTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
+                  onClick={() =>
+                    router.push(`/dashboard/fleets/${row.original.id}/detail`)
+                  }
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >

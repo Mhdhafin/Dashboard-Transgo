@@ -28,11 +28,6 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "name",
     header: "Nama",
-    cell: ({ row }) => (
-      <Link href={`/dashboard/drivers/${row.original.id}/detail`}>
-        {row.original.name}
-      </Link>
-    ),
   },
   {
     accessorKey: "phone_number",

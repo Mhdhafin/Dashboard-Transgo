@@ -28,11 +28,6 @@ export const columns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Nama",
-    cell: ({ row }) => (
-      <Link href={`/dashboard/customers/${row.original.id}/detail`}>
-        {row.original.name}
-      </Link>
-    ),
   },
   {
     accessorKey: "phone_number",
