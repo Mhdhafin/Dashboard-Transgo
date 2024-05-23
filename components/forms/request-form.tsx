@@ -1,7 +1,7 @@
 "use client";
 import * as z from "zod";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { ConfigProvider, DatePicker, Space } from "antd";
@@ -37,15 +37,21 @@ import FileUpload from "../file-upload";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
-import { useGetCustomers } from "@/hooks/api/useCustomer";
-import { useQueryClient } from "@tanstack/react-query";
-import { useGetFleets } from "@/hooks/api/useFleet";
+import { useInView } from "react-intersection-observer";
+import {
+  useGetCustomers,
+  useGetInfinityCustomers,
+} from "@/hooks/api/useCustomer";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useGetFleets, useGetInfinityFleets } from "@/hooks/api/useFleet";
 import { Textarea } from "@/components/ui/textarea";
-import { useGetDrivers } from "@/hooks/api/useDriver";
+import { useGetDrivers, useGetInfinityDrivers } from "@/hooks/api/useDriver";
 import { useEditRequest, usePostRequest } from "@/hooks/api/useRequest";
 import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
 import ImageUpload from "../image-upload";
+import { Select as AntdSelect } from "antd";
+
 import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
 const ImgSchema = z.object({
@@ -86,9 +92,29 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   isEdit,
 }) => {
   const { requestId } = useParams();
-  const { data: customers } = useGetCustomers({ limit: 10, page: 1 });
-  const { data: fleets } = useGetFleets({ limit: 10, page: 1 });
-  const { data: drivers } = useGetDrivers({ limit: 10, page: 1 });
+  const [searchTerm, setSearchTerm] = useState("");
+  const {
+    data: customers,
+    fetchNextPage: fetchNextCustomers,
+    hasNextPage: hasNextCustomers,
+    isFetchingNextPage: isFetchingNextCustomers,
+  } = useGetInfinityCustomers();
+
+  const {
+    data: fleets,
+    fetchNextPage: fetchNextFleets,
+    hasNextPage: hasNextFleets,
+    isFetchingNextPage: isFetchingNextFleets,
+  } = useGetInfinityFleets();
+
+  // const { data: fleets } = useGetFleets({ limit: 10, page: 1 });
+  const {
+    data: drivers,
+    fetchNextPage: fetchNextDrivers,
+    hasNextPage: hasNextDrivers,
+    isFetchingNextPage: isFetchingNextDrivers,
+  } = useGetInfinityDrivers();
+
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -245,6 +271,27 @@ export const RequestForm: React.FC<RequestFormProps> = ({
     );
   }
 
+  const { ref, inView } = useInView();
+  useEffect(() => {
+    if (inView && hasNextCustomers) {
+      fetchNextCustomers();
+    }
+  }, [fetchNextCustomers, inView, hasNextCustomers]);
+
+  useEffect(() => {
+    if (inView && hasNextFleets) {
+      fetchNextFleets();
+    }
+  }, [fetchNextFleets, inView, hasNextFleets]);
+
+  useEffect(() => {
+    if (inView && hasNextDrivers) {
+      fetchNextDrivers();
+    }
+  }, [fetchNextDrivers, inView, hasNextDrivers]);
+
+  const Option = AntdSelect;
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -307,13 +354,34 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {/* @ts-ignore  */}
-                        {customers?.data?.items.map((item) => (
-                          <SelectItem key={item.id} value={item.id.toString()}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
+                      <SelectContent className="w-full overflow-auto h-[200px]">
+                        {customers?.pages?.map(
+                          (page, pageIndex) =>
+                            page?.data?.items?.map(
+                              (item: any, itemIndex: any) => {
+                                const isLastItem =
+                                  pageIndex === customers.pages.length - 1 &&
+                                  itemIndex === page?.data?.items.length - 1;
+                                console.log(isLastItem, pageIndex, itemIndex);
+                                return (
+                                  <>
+                                    <SelectItem
+                                      key={item.id}
+                                      value={item.id.toString()}
+                                      ref={isLastItem ? ref : null}
+                                    >
+                                      {item.name}
+                                    </SelectItem>
+                                  </>
+                                );
+                              },
+                            ),
+                        )}
+                        <div>
+                          {isFetchingNextCustomers && (
+                            <p className="px-3 text-sm">Loading...</p>
+                          )}
+                        </div>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -321,7 +389,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="fleet"
@@ -342,13 +409,34 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {fleets?.data?.items?.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                      {/* @ts-ignore  */}
+                    <SelectContent className="w-full overflow-auto h-[200px]">
+                      {fleets?.pages?.map(
+                        (page, pageIndex) =>
+                          page?.data?.items?.map(
+                            (item: any, itemIndex: any) => {
+                              const isLastItem =
+                                pageIndex === fleets.pages.length - 1 &&
+                                itemIndex === page?.data?.items.length - 1;
+                              console.log(isLastItem, pageIndex, itemIndex);
+                              return (
+                                <>
+                                  <SelectItem
+                                    key={item.id}
+                                    value={item.id.toString()}
+                                    ref={isLastItem ? ref : null}
+                                  >
+                                    {item.name}
+                                  </SelectItem>
+                                </>
+                              );
+                            },
+                          ),
+                      )}
+                      <div>
+                        {isFetchingNextFleets && (
+                          <p className="px-3 text-sm">Loading...</p>
+                        )}
+                      </div>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -375,13 +463,34 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {drivers?.data?.items?.map((item: any) => (
-                        <SelectItem key={item.id} value={item.id.toString()}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                      {/* @ts-ignore  */}
+                    <SelectContent className="w-full overflow-auto h-[200px]">
+                      {drivers?.pages?.map(
+                        (page, pageIndex) =>
+                          page?.data?.items?.map(
+                            (item: any, itemIndex: any) => {
+                              const isLastItem =
+                                pageIndex === drivers.pages.length - 1 &&
+                                itemIndex === page?.data?.items.length - 1;
+                              console.log(isLastItem, pageIndex, itemIndex);
+                              return (
+                                <>
+                                  <SelectItem
+                                    key={item.id}
+                                    value={item.id.toString()}
+                                    ref={isLastItem ? ref : null}
+                                  >
+                                    {item.name}
+                                  </SelectItem>
+                                </>
+                              );
+                            },
+                          ),
+                      )}
+                      <div>
+                        {isFetchingNextDrivers && (
+                          <p className="px-3 text-sm">Loading...</p>
+                        )}
+                      </div>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -414,6 +523,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 );
               }}
             />
+
             <FormField
               control={form.control}
               name="type"
@@ -447,6 +557,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 </FormItem>
               )}
             />
+            {/* <Controller
+              control={form.control}
+              name="pic"
+              render={({ field: { onChange, onBlur, value } }) => {
+                return (
+                  <AntdSelect
+                    showSearch
+                    placeholder="Select a person"
+                    optionFilterProp="children"
+                    onChange={onChange}
+                    onSearch={setSearchTerm}
+                    filterOption={false}
+                  >
+                    {drivers?.data?.items?.map((item: any) => (
+                      <Option key={item.id} value={item.id.toString()}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </AntdSelect>
+                );
+              }}
+            /> */}
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Waktu</FormLabel>

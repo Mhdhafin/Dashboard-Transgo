@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/drivers";
@@ -14,6 +19,25 @@ export const useGetDrivers = (params: any) => {
   return useQuery({
     queryKey: ["drivers", params],
     queryFn: getDrivers,
+  });
+};
+
+export const useGetInfinityDrivers = () => {
+  const axiosAuth = useAxiosAuth();
+  const getDrivers = ({ pageParam = 1 }) => {
+    return axiosAuth.get(baseEndpoint, {
+      params: {
+        limit: 10,
+        page: pageParam,
+      },
+    });
+  };
+
+  return useInfiniteQuery({
+    queryKey: ["drivers"],
+    queryFn: getDrivers,
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });
 };
 

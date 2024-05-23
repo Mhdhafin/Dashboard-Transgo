@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/customers";
@@ -12,6 +17,25 @@ export const useGetCustomers = (params: any) => {
   return useQuery({
     queryKey: ["customers", params],
     queryFn: getCustomers,
+  });
+};
+
+export const useGetInfinityCustomers = () => {
+  const axiosAuth = useAxiosAuth();
+  const getCustomers = ({ pageParam = 1 }) => {
+    return axiosAuth.get(baseEndpoint, {
+      params: {
+        limit: 10,
+        page: pageParam,
+      },
+    });
+  };
+
+  return useInfiniteQuery({
+    queryKey: ["customers"],
+    queryFn: getCustomers,
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });
 };
 
