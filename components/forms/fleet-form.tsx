@@ -157,8 +157,16 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imgLoading, setImgLoading] = useState(false);
-  const title = initialData ? "Edit Fleet" : "Create Fleet";
-  const description = initialData ? "Edit a fleet" : "Add a new fleet";
+  const title = !isEdit
+    ? "Detail Fleet"
+    : initialData
+    ? "Edit Fleet"
+    : "Create Fleet";
+  const description = !isEdit
+    ? ""
+    : initialData
+    ? "Edit a fleet"
+    : "Add a new fleet";
   const toastMessage = initialData
     ? "fleet changed successfully!"
     : "fleet successfully created!";
@@ -386,24 +394,37 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Warna</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="Warna"
-                      value={field.value ?? ""}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Warna</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.color ?? "-"}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Warna</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Input
+                        disabled={!isEdit || loading}
+                        placeholder="Warna"
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
           <FormField
             control={form.control}
