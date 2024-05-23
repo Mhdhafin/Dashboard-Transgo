@@ -156,6 +156,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: predefinedAddress,
         description: predefinedDesc,
         is_self_pickup: false,
+        distance: "0",
       };
 
   const form = useForm<RequestFormValues>({
