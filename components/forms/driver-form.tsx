@@ -328,28 +328,29 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="relative label-required">
-                    Password
-                  </FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      // type="password"
-                      disabled={loading}
-                      placeholder="Password"
-                      value={field.value ?? ""}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isEdit && (
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Password
+                    </FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Input
+                        // type="password"
+                        disabled={!isEdit || loading}
+                        placeholder="Password"
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* <FormField
               control={form.control}
