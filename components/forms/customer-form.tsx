@@ -86,7 +86,7 @@ const formSchema = z.object({
     .refine(
       (val) => {
         if (val !== undefined && val !== null && val !== "") {
-          return val.length >= 16;
+          return val.length == 16;
         }
 
         return true;
@@ -135,7 +135,7 @@ const formEditSchema = z.object({
     .refine(
       (val) => {
         if (val !== undefined && val !== null && val !== "") {
-          return val.length >= 16;
+          return val.length == 16;
         }
 
         return true;
