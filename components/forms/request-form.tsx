@@ -736,7 +736,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               <FormLabel>Foto Bukti Serah terima</FormLabel>
               {(initialData?.status === "pending" ||
                 initialData?.status === "on_progress") && (
-                <h1 className="">{`Request ${wording} belum selesai dilakukan `}</h1>
+                <p className="text-sm">{`Request ${wording} belum selesai dilakukan `}</p>
               )}
               {initialData?.status === "done" &&
                 endlogs?.map((log: any) => (
