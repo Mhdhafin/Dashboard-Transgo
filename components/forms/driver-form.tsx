@@ -33,7 +33,7 @@ import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
-import { isEmpty, omitBy } from "lodash";
+import { isEmpty, isObject, omitBy, transform } from "lodash";
 
 const ImgSchema = z.object({
   fileName: z.string(),
@@ -179,7 +179,9 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         photo_profile: initialData?.photo_profile,
         phone_number: initialData?.phone_number,
       }
-    : {};
+    : {
+        date_of_birth: null,
+      };
 
   const form = useForm<DriverFormValues>({
     resolver: zodResolver(!initialData ? formSchema : formEditSchema),
@@ -208,6 +210,16 @@ export const DriverForm: React.FC<DriverFormProps> = ({
     return response.data;
   };
 
+  const convertEmptyStringsToNull = (obj: any) => {
+    return transform(obj, (result: any, value: any, key: any) => {
+      if (isObject(value)) {
+        result[key] = convertEmptyStringsToNull(value);
+      } else {
+        result[key] = value === "" ? null : value;
+      }
+    });
+  };
+
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
 
@@ -221,7 +233,11 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       if (uploadImageResponse) {
         newData.photo_profile = uploadImageResponse.download_url;
       }
-      updateDriver(newData, {
+      const newPayload = convertEmptyStringsToNull(
+        omitBy(newData, (val) => val === undefined),
+      );
+
+      updateDriver(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
           toast({
