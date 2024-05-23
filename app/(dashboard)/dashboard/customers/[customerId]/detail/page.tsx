@@ -9,7 +9,7 @@ import React from "react";
 export default function Page({ params }: { params: { customerId: string } }) {
   const breadcrumbItems = [
     { title: "Customers", link: "/dashboard/customers" },
-    { title: "Edit", link: "/dashboard/customers/edit" },
+    { title: "Detail", link: "/dashboard/customers/detail" },
   ];
 
   const { data, isFetching } = useGetDetailCustomer(params.customerId);

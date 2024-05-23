@@ -112,7 +112,19 @@ const formEditSchema = z.object({
   phone_number: z
     .string({ required_error: "Nomor telepon diperlukan" })
     .min(10, { message: "Nomor Emergency minimal harus 10 digit" }),
-  password: z.string().optional(),
+  password: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (val !== undefined && val !== null && val !== "") {
+          return val.length >= 5;
+        }
+
+        return true;
+      },
+      { message: "Password minimal harus 5 karakter" },
+    ),
   gender: z.string().optional().nullable(),
 });
 
@@ -209,8 +221,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       if (uploadImageResponse) {
         newData.photo_profile = uploadImageResponse.download_url;
       }
-      const newPayload = omitBy(newData, (value) => value == "");
-      updateDriver(newPayload, {
+      updateDriver(newData, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
           toast({

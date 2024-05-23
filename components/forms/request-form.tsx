@@ -593,21 +593,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               />
             )}
           </div>
-          {!isEdit && initialData?.customer.id_photo && (
-            <div className="md:grid md:grid-cols-3 gap-8">
+          {!isEdit && initialData?.customer.id_cards && (
+            <div className="">
               <FormItem>
                 <FormLabel>KTP Customer</FormLabel>
-                <div></div>
-                <Image
-                  onClick={() => {
-                    setOpen(true);
-                    onHandlePreview(initialData?.customer.id_photo);
-                  }}
-                  src={initialData?.customer.id_photo}
-                  width={300}
-                  height={300}
-                  alt="photo"
-                />
+                <div className="md:grid md:grid-cols-3 gap-8">
+                  {initialData?.customer.id_cards?.map((image: any) => (
+                    <div
+                      key={image?.id}
+                      className="relative w-[300px] h-[200px] "
+                    >
+                      <Image
+                        onClick={() => {
+                          setOpen(true);
+                          onHandlePreview(image?.photo);
+                        }}
+                        src={image?.photo}
+                        fill
+                        alt={image.id}
+                      />
+                    </div>
+                  ))}
+                </div>
               </FormItem>
             </div>
           )}

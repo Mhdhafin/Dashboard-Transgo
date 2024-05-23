@@ -104,7 +104,7 @@ const formSchema = z.object({
     .refine(
       (val) => {
         if (val !== undefined && val !== null && val !== "") {
-          return val.length >= 8;
+          return val.length >= 5;
         }
 
         return true;
@@ -280,36 +280,33 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       newData.date_of_birth = data?.date_of_birth
         ? dayjs(data?.date_of_birth).format("YYYY-MM-DD")
         : "";
-
-      const newPayload = omitBy(
+      updateCustomer(
         {
           ...newData,
           id_cards: filteredURL,
         },
-        (value) => value == "" || value == null,
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["customers"] });
+            toast({
+              variant: "success",
+              title: toastMessage,
+            });
+            router.push(`/dashboard/customers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              //@ts-ignore
+              description: `error: ${error?.response?.data?.message}`,
+            });
+          },
+        },
       );
-
-      updateCustomer(newPayload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.push(`/dashboard/customers`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            //@ts-ignore
-            description: `error: ${error?.response?.data?.message}`,
-          });
-        },
-      });
     } else {
       const uploadImageRes = await uploadImage(data?.id_cards);
       const filteredURL = uploadImageRes.map(

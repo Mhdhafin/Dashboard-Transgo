@@ -39,6 +39,7 @@ import MulitpleImageUpload, {
 } from "../multiple-image-upload";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
+import { omitBy } from "lodash";
 const ImgSchema = z.object({
   fileName: z.string(),
   name: z.string(),
@@ -171,7 +172,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     ? initialData
     : {
         name: "",
-        color: "",
         type: "car",
         plate_number: "",
         photos: [],
@@ -258,30 +258,32 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         (item: { download_url: string; upload_url: string }) =>
           item.download_url,
       );
-      createFleet(
+
+      const newPayload = omitBy(
         { ...data, photos: filteredURL },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["fleets"] });
-            toast({
-              variant: "success",
-              title: toastMessage,
-            });
-            // router.refresh();
-            router.push(`/dashboard/fleets`);
-          },
-          onSettled: () => {
-            setLoading(false);
-          },
-          onError: (error) => {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! ada sesuatu yang error",
-              description: `error: ${error.message}`,
-            });
-          },
-        },
+        (value) => value == "" || value == null,
       );
+      createFleet(newPayload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["fleets"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          // router.refresh();
+          router.push(`/dashboard/fleets`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${error.message}`,
+          });
+        },
+      });
     }
   };
 

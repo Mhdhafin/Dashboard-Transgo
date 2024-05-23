@@ -11,7 +11,7 @@ import Spinner from "@/components/spinner";
 export default function Page({ params }: { params: { driverId: string } }) {
   const breadcrumbItems = [
     { title: "Driver", link: "/dashboard/drivers" },
-    { title: "Edit", link: "/dashboard/drivers/edit" },
+    { title: "Detail", link: "/dashboard/drivers/detail" },
   ];
 
   const { data, isFetching } = useGetDetailDriver(params.driverId);
