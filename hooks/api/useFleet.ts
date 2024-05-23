@@ -1,5 +1,4 @@
 import {
-  queryOptions,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -21,20 +20,27 @@ export const useGetFleets = (params: any) => {
   });
 };
 
-export const useGetInfinityFleets = () => {
+export const useGetInfinityFleets = (query?: string) => {
   const axiosAuth = useAxiosAuth();
-  const getFleets = ({ pageParam = 1 }) => {
+  const getFleets = ({
+    pageParam = 1,
+    query,
+  }: {
+    pageParam?: number;
+    query?: string;
+  }) => {
     return axiosAuth.get(baseEndpoint, {
       params: {
         limit: 10,
         page: pageParam,
+        q: query,
       },
     });
   };
 
   return useInfiniteQuery({
-    queryKey: ["fleets"],
-    queryFn: getFleets,
+    queryKey: ["fleets", query],
+    queryFn: ({ pageParam }) => getFleets({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });

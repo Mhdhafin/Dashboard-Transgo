@@ -22,20 +22,27 @@ export const useGetDrivers = (params: any) => {
   });
 };
 
-export const useGetInfinityDrivers = () => {
+export const useGetInfinityDrivers = (query?: string) => {
   const axiosAuth = useAxiosAuth();
-  const getDrivers = ({ pageParam = 1 }) => {
+  const getDrivers = ({
+    pageParam = 1,
+    query,
+  }: {
+    pageParam?: number;
+    query?: string;
+  }) => {
     return axiosAuth.get(baseEndpoint, {
       params: {
         limit: 10,
         page: pageParam,
+        q: query,
       },
     });
   };
 
   return useInfiniteQuery({
-    queryKey: ["drivers"],
-    queryFn: getDrivers,
+    queryKey: ["drivers", query],
+    queryFn: ({ pageParam }) => getDrivers({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });

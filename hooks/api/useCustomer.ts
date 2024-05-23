@@ -20,20 +20,27 @@ export const useGetCustomers = (params: any) => {
   });
 };
 
-export const useGetInfinityCustomers = () => {
+export const useGetInfinityCustomers = (query?: string) => {
   const axiosAuth = useAxiosAuth();
-  const getCustomers = ({ pageParam = 1 }) => {
+  const getCustomers = ({
+    pageParam = 1,
+    query,
+  }: {
+    pageParam?: number;
+    query?: string;
+  }) => {
     return axiosAuth.get(baseEndpoint, {
       params: {
         limit: 10,
         page: pageParam,
+        q: query,
       },
     });
   };
 
   return useInfiniteQuery({
-    queryKey: ["customers"],
-    queryFn: getCustomers,
+    queryKey: ["customers", query],
+    queryFn: ({ pageParam }) => getCustomers({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });
