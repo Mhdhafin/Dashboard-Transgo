@@ -418,30 +418,45 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 </FormItem>
               )}
             />
-            <Controller
-              control={form.control}
-              name="date_of_birth"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                console.log("dateval", value);
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Tanggal Lahir</FormLabel>
-                      <DatePicker
-                        style={{ width: "100%" }}
-                        disabled={!isEdit || loading}
-                        height={40}
-                        className="p"
-                        onChange={onChange} // send value to hook form
-                        onBlur={onBlur}
-                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                        format={"YYYY-MM-DD"}
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Tanggal Lahir</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={dayjs(initialData?.date_of_birth).format(
+                      "YYYY-MM-DD",
+                    )}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <Controller
+                control={form.control}
+                name="date_of_birth"
+                render={({ field: { onChange, onBlur, value, ref } }) => {
+                  console.log("dateval", value);
+                  return (
+                    <ConfigProvider>
+                      <Space size={12} direction="vertical">
+                        <FormLabel>Tanggal Lahir</FormLabel>
+                        <DatePicker
+                          style={{ width: "100%" }}
+                          disabled={!isEdit || loading}
+                          height={40}
+                          className="p"
+                          onChange={onChange} // send value to hook form
+                          onBlur={onBlur}
+                          value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
+                          format={"YYYY-MM-DD"}
+                        />
+                      </Space>
+                    </ConfigProvider>
+                  );
+                }}
+              />
+            )}
           </div>
           <FormField
             control={form.control}
