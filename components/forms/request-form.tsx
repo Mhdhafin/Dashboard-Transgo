@@ -646,7 +646,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               <FormItem>
                 <FormLabel>Alamat</FormLabel>
                 <p
-                  className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                  className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.address)
                       ? makeUrlsClickable(
@@ -683,7 +683,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
                 <p
-                  className="border border-gray-200 rounded-md px-2 py-1 break-words"
+                  className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
                     __html: !isEmpty(defaultValues?.description)
                       ? makeUrlsClickable(
