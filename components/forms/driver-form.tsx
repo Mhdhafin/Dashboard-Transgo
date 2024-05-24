@@ -404,7 +404,16 @@ export const DriverForm: React.FC<DriverFormProps> = ({
               <FormItem>
                 <FormLabel>Jenis Kelamin</FormLabel>
                 <FormControl className="disabled:opacity-100">
-                  <Input disabled value={initialData?.gender ?? "-"} />
+                  <Input
+                    disabled
+                    value={
+                      initialData?.gender === "male"
+                        ? "Laki-Laki"
+                        : initialData?.gender === "female"
+                        ? "Perempuan"
+                        : "-"
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
