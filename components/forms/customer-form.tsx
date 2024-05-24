@@ -425,7 +425,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             )}
-
             <FormField
               control={form.control}
               name="phone_number"
@@ -446,7 +445,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="emergency_phone_number"
@@ -495,39 +493,49 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 )}
               />
             )}
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jenis Kelamin</FormLabel>
-                  <Select
-                    disabled={!isEdit || loading}
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                    defaultValue={field.value ?? ""}
-                  >
-                    <FormControl className="disabled:opacity-100">
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value ?? ""}
-                          placeholder="Pilih jenis kelamin"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* @ts-ignore  */}
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Jenis Kelamin</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input disabled value={initialData?.gender ?? "-"} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jenis Kelamin</FormLabel>
+                    <Select
+                      disabled={!isEdit || loading}
+                      onValueChange={field.onChange}
+                      value={field.value ?? ""}
+                      defaultValue={field.value ?? ""}
+                    >
+                      <FormControl className="disabled:opacity-100">
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value ?? ""}
+                            placeholder="Pilih jenis kelamin"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* @ts-ignore  */}
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Tanggal Lahir</FormLabel>
