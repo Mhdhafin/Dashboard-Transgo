@@ -58,10 +58,7 @@ const formSchema = z.object({
   address: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
-  distance: z.preprocess(
-    (val: any) => parseInt(val, 10),
-    z.number().min(0, "Distance cannot be less than 0"),
-  ),
+  distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
 });
 
 type RequestFormValues = z.infer<typeof formSchema>;
@@ -159,6 +156,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: predefinedAddress,
         description: predefinedDesc,
         is_self_pickup: false,
+        distance: 0,
       };
 
   const form = useForm<RequestFormValues>({
@@ -637,10 +635,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         disabled={!isEdit || loading}
                         placeholder="Jarak"
                         value={field.value}
-                        min={0}
                         onChange={(e) => {
                           let inputValue = e.target.value;
-                          if (inputValue === "") {
+                          if (inputValue === "" || inputValue == undefined) {
                             field.onChange(0);
                             return;
                           }
