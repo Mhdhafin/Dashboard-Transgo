@@ -58,7 +58,10 @@ const formSchema = z.object({
   address: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   is_self_pickup: z.boolean(),
-  distance: z.string({ required_error: "Jarak diperlukan" }),
+  distance: z.preprocess(
+    (val: any) => parseInt(val, 10),
+    z.number().min(0, "Distance cannot be less than 0"),
+  ),
 });
 
 type RequestFormValues = z.infer<typeof formSchema>;
@@ -146,7 +149,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: initialData?.address,
         description: initialData?.description,
         is_self_pickup: initialData?.is_self_pickup,
-        distance: initialData?.distance?.toString(),
+        distance: initialData?.distance,
       }
     : {
         customer: "",
@@ -156,7 +159,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         address: predefinedAddress,
         description: predefinedDesc,
         is_self_pickup: false,
-        distance: "0",
       };
 
   const form = useForm<RequestFormValues>({
@@ -192,7 +194,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
       address: data?.address,
       description: data?.description,
       is_self_pickup: data?.is_self_pickup,
-      distance: parseFloat(data?.distance),
+      distance: data?.distance,
     };
     // const newPayload = omitBy(
     //   payload,
@@ -623,24 +625,37 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             <FormField
               control={form.control}
               name="distance"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="relative label-required">
-                    Jarak (dalam KM)
-                  </FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="Jarak"
-                      value={field.value ?? ""}
-                      onChange={field.onChange}
-                      type="number"
-                      step={0.1}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                console.log(typeof field.value, field.value);
+                return (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Jarak (dalam KM)
+                    </FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Input
+                        disabled={!isEdit || loading}
+                        placeholder="Jarak"
+                        value={field.value}
+                        min={0}
+                        onChange={(e) => {
+                          let inputValue = e.target.value;
+                          if (inputValue === "") {
+                            field.onChange(0);
+                            return;
+                          }
+                          // Remove leading zeroes
+                          inputValue = inputValue.replace(/^0+(?!$)/, "");
+                          field.onChange(inputValue);
+                        }}
+                        type="number"
+                        step={0.1}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             {!isEdit ? (
               <FormItem>
