@@ -30,7 +30,7 @@ import { useToast } from "../ui/use-toast";
 import FileUpload from "../file-upload";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, convertEmptyStringsToNull } from "@/lib/utils";
 import { usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
@@ -236,10 +236,10 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       } else {
         filteredURL = data?.photos?.map((item: any) => item.photo);
       }
-      const newPayload = omitBy(
-        { ...data, photos: filteredURL },
-        (value) => value === "",
-      );
+      const newPayload = convertEmptyStringsToNull({
+        ...data,
+        photos: filteredURL,
+      });
 
       editFleet(newPayload, {
         onSuccess: () => {
