@@ -125,7 +125,6 @@ export function EmployeeTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
   });
-  console.log("table", table.getRowModel().rows?.length);
 
   const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
 

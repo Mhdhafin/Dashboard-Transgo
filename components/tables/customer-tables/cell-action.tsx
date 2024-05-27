@@ -11,7 +11,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
 import { useDeleteCustomer } from "@/hooks/api/useCustomer";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,7 +30,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const { mutateAsync: deleteCustomer } = useDeleteCustomer(id);
 
   const onConfirm = async () => {
-    console.log("hello");
     deleteCustomer(id, {
       onSuccess: () => {
         toast({

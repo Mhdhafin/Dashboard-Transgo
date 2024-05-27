@@ -23,8 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
 import { useEditDriver, usePostDriver } from "@/hooks/api/useDriver";
 import { useQueryClient } from "@tanstack/react-query";
@@ -33,23 +31,11 @@ import axios from "axios";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import { ConfigProvider, DatePicker, Space } from "antd";
 import dayjs from "dayjs";
-import { isEmpty, isObject, omitBy, transform } from "lodash";
+import { isEmpty, omitBy } from "lodash";
 import { convertEmptyStringsToNull } from "@/lib/utils";
 
-const ImgSchema = z.object({
-  fileName: z.string(),
-  name: z.string(),
-  fileSize: z.number(),
-  size: z.number(),
-  fileKey: z.string(),
-  key: z.string(),
-  fileUrl: z.string(),
-  url: z.string(),
-});
-export const IMG_MAX_LIMIT = 3;
 const fileSchema = z.custom<File>(
   (val: any) => {
-    console.log("val", val);
     if (!val) return false;
     if (!(val.data instanceof File)) return false;
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -63,12 +49,9 @@ const fileSchema = z.custom<File>(
 );
 const editFileSchema = z.custom<File>(
   (val: any) => {
-    console.log("val", val);
     if (!val) return false;
-    console.log("1", !(val.data instanceof File) || isEmpty(val));
 
     if (!(val.data instanceof File) && isEmpty(val)) return false;
-    console.log("2");
 
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     if (isEmpty(val) && !allowedTypes.includes(val.data.type)) return false; // Limit file types
@@ -147,9 +130,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
   const { driverId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
   const title = !isEdit
     ? "Detail Driver"
     : initialData
@@ -213,7 +194,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
 
   const onSubmit = async (data: DriverFormValues) => {
     setLoading(true);
-    console.log("data", data);
     if (initialData) {
       const uploadImageResponse = await uploadImage(data?.photo_profile);
       const newData: any = { ...data };
@@ -227,7 +207,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
       const newPayload = convertEmptyStringsToNull(
         omitBy(newData, (val) => val === undefined),
       );
-      console.log("payload edit", newPayload);
 
       updateDriver(newPayload, {
         onSuccess: () => {
@@ -262,7 +241,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
         payload,
         (value) => value === "" || value === undefined || value === null,
       );
-      console.log("payload create", newPayload);
       createDriver(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -362,24 +340,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 )}
               />
             )}
-
-            {/* <FormField
-              control={form.control}
-              name="nik"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NIK</FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Input
-                      disabled={!isEdit || loading}
-                      placeholder="NIK"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <FormField
               control={form.control}
               name="phone_number"
@@ -462,7 +422,6 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                 control={form.control}
                 name="date_of_birth"
                 render={({ field: { onChange, onBlur, value, ref } }) => {
-                  console.log("dateval", value);
                   return (
                     <ConfigProvider>
                       <Space size={12} direction="vertical">

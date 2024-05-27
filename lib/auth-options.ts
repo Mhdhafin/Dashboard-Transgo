@@ -37,11 +37,9 @@ export const authOptions: NextAuthOptions = {
             }
 
             if (res.ok && user) {
-              console.log("masukkk");
               // Any object returned will be saved in `user` property of the JWT
               return user.data;
             } else {
-              console.log("erorr");
               // If you return null then an error will be displayed advising the user to check their details.
               return null;
 

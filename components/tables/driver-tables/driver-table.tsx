@@ -131,7 +131,6 @@ export function DriverTable<TData, TValue>({
         scroll: false,
       },
     );
-    console.log("params", searchParams.get("q"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
 

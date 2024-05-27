@@ -30,29 +30,16 @@ import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
-import ImageUpload, { ImageUploadResponse } from "../image-upload";
 import dayjs from "dayjs";
 import MulitpleImageUpload, {
   MulitpleImageUploadResponse,
 } from "../multiple-image-upload";
 import { omitBy } from "lodash";
 import { convertEmptyStringsToNull } from "@/lib/utils";
-const ImgSchema = z.object({
-  fileName: z.string(),
-  name: z.string(),
-  fileSize: z.number(),
-  size: z.number(),
-  fileKey: z.string(),
-  key: z.string(),
-  fileUrl: z.string(),
-  url: z.string(),
-});
-export const IMG_MAX_LIMIT = 3;
 const fileSchema = z.custom<any>(
   (val: any) => {
     // if (!(val instanceof FileList)) return false;
     if (val.length == 0) return false;
-    console.log("hello");
     for (let i = 0; i < val.length; i++) {
       const file = val[i];
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -229,7 +216,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   });
 
   const uploadImage = async (file: any) => {
-    console.log("fiel", file);
     const file_names = [];
     for (let i = 0; i < file?.length; i++) {
       file_names.push(file?.[i].name);
@@ -262,7 +248,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         isPresign = true;
       }
     }
-    console.log("data", data);
     setLoading(true);
     if (initialData) {
       let filteredURL: string[] = [];
@@ -286,7 +271,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         id_cards: filteredURL,
       });
 
-      console.log("payload", newPayload);
       updateCustomer(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -326,7 +310,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         payload,
         (value) => value === undefined || value === null || value === "",
       );
-      console.log("payload create", newPayload);
       createCustomer(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -558,7 +541,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 control={form.control}
                 name="date_of_birth"
                 render={({ field: { onChange, onBlur, value, ref } }) => {
-                  console.log("dateval", value);
                   return (
                     <ConfigProvider>
                       <Space size={12} direction="vertical">

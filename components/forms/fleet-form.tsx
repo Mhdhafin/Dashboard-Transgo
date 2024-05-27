@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,14 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
-import FileUpload from "../file-upload";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn, convertEmptyStringsToNull } from "@/lib/utils";
-import { usePostDriver } from "@/hooks/api/useDriver";
+import { convertEmptyStringsToNull } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
 import MulitpleImageUpload, {
@@ -40,21 +33,10 @@ import MulitpleImageUpload, {
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import { omitBy } from "lodash";
-const ImgSchema = z.object({
-  fileName: z.string(),
-  name: z.string(),
-  fileSize: z.number(),
-  size: z.number(),
-  fileKey: z.string(),
-  key: z.string(),
-  fileUrl: z.string(),
-  url: z.string(),
-});
 const fileSchema = z.custom<any>(
   (val: any) => {
     // if (!(val instanceof FileList)) return false;
     if (val.length == 0) return false;
-    console.log("hello");
     for (let i = 0; i < val.length; i++) {
       const file = val[i];
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -131,8 +113,6 @@ const editFormSchema = z.object({
   }),
 });
 
-type FleetFormValues = z.infer<typeof formSchema>;
-
 type CustomerFormValues = z.infer<typeof formSchema> & {
   photos: MulitpleImageUploadResponse;
 };
@@ -154,9 +134,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const { fleetId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
   const title = !isEdit
     ? "Detail Fleet"
     : initialData
@@ -248,7 +226,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             variant: "success",
             title: toastMessage,
           });
-          // router.refresh();
           router.push(`/dashboard/fleets`);
         },
         onSettled: () => {
@@ -297,22 +274,10 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     }
   };
 
-  // const triggerImgUrlValidation = () => form.trigger("imgUrl");
-
   return (
     <>
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )} */}
       </div>
       <Separator />
       <Form {...form}>

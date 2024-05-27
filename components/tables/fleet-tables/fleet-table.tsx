@@ -97,7 +97,6 @@ export function FleetTable<TData, TValue>({
       pageIndex: fallbackPage - 1,
       pageSize: fallbackPerPage,
     });
-  console.log("data", data);
   const table = useReactTable({
     data,
     columns,

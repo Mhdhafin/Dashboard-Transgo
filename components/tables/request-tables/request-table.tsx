@@ -112,7 +112,6 @@ export function RequestTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
   });
-  console.log("data", table.getState(), columns);
 
   // console.log("table", table.getRowModel().rows);
 

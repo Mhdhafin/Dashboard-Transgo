@@ -10,8 +10,6 @@ import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import isEmpty from "lodash/isEmpty";
-import { omitBy } from "lodash";
-
 import {
   Form,
   FormControl,
@@ -30,7 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from "../ui/use-toast";
 import { useGetInfinityCustomers } from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
@@ -107,7 +104,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
   const title = !isEdit
     ? "Detail Request"
     : initialData
@@ -624,7 +620,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               control={form.control}
               name="distance"
               render={({ field }) => {
-                console.log(typeof field.value, field.value);
                 return (
                   <FormItem>
                     <FormLabel className="relative label-required">

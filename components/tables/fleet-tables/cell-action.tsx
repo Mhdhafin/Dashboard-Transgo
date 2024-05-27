@@ -30,7 +30,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const { mutateAsync: deleteFleet } = useDeleteFleet(id);
 
   const onConfirm = async () => {
-    console.log("hello");
     deleteFleet(id, {
       onSuccess: () => {
         toast({
