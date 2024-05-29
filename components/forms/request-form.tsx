@@ -42,6 +42,7 @@ import { Select as AntdSelect } from "antd";
 import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
 import { useDebounce } from "use-debounce";
+import { id, is } from "date-fns/locale";
 dayjs.locale("id");
 
 // perlu dipisah
@@ -154,7 +155,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         is_self_pickup: false,
         distance: 0,
       };
-
+  console.log(defaultValues);
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -342,6 +343,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           ) : null
                         }
                       >
+                        {isEdit && (
+                          <Option value={initialData.customer.id.toString()}>
+                            {initialData.customer.name}
+                          </Option>
+                        )}
                         {customers?.pages.map((page: any, pageIndex: any) =>
                           page.data.items.map((item: any, itemIndex: any) => {
                             return (
@@ -400,6 +406,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           ) : null
                         }
                       >
+                        {isEdit && (
+                          <Option value={initialData.fleet.id.toString()}>
+                            {initialData.fleet.name}
+                          </Option>
+                        )}
                         {fleets?.pages.map((page: any, pageIndex: any) =>
                           page.data.items.map((item: any, itemIndex: any) => {
                             return (
@@ -459,6 +470,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           ) : null
                         }
                       >
+                        {isEdit && (
+                          <Option value={initialData.driver.id.toString()}>
+                            {initialData.driver.name}
+                          </Option>
+                        )}
                         {drivers?.pages.map((page: any, pageIndex: any) =>
                           page.data.items.map((item: any, itemIndex: any) => {
                             return (
