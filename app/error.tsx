@@ -15,6 +15,8 @@ export default function GlobalError({
     // Log the error to an error reporting service
     console.error(error);
     Sentry.captureException(error);
+
+    throw new Error("eror");
   }, [error]);
 
   return (
