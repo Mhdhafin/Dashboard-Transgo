@@ -24,7 +24,7 @@ const Request = () => {
   const { data: pendingData, isFetching: isFetchingPendingData } =
     useGetRequests(
       {
-        limit: 30,
+        limit: pageLimit,
         page: page,
         q: q,
         status: "pending",
