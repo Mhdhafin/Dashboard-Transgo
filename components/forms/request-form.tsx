@@ -788,7 +788,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       key={log.id}
                     >
                       <FormItem>
-                        <FormLabel>Deskripsi Driver</FormLabel>
+                        <FormLabel>Catatan Driver</FormLabel>
                         <div
                           className="border border-gray-200 rounded-md px-2 py-1 break-words"
                           dangerouslySetInnerHTML={{
