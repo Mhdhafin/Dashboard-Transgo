@@ -344,8 +344,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         }
                       >
                         {isEdit && (
-                          <Option value={initialData.customer.id.toString()}>
-                            {initialData.customer.name}
+                          <Option value={initialData?.customer?.id?.toString()}>
+                            {initialData?.customer?.name}
                           </Option>
                         )}
                         {customers?.pages.map((page: any, pageIndex: any) =>
@@ -407,8 +407,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         }
                       >
                         {isEdit && (
-                          <Option value={initialData.fleet.id.toString()}>
-                            {initialData.fleet.name}
+                          <Option value={initialData?.fleet?.id?.toString()}>
+                            {initialData?.fleet?.name}
                           </Option>
                         )}
                         {fleets?.pages.map((page: any, pageIndex: any) =>
@@ -471,8 +471,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         }
                       >
                         {isEdit && (
-                          <Option value={initialData.driver.id.toString()}>
-                            {initialData.driver.name}
+                          <Option value={initialData?.driver?.id?.toString()}>
+                            {initialData?.driver?.name}
                           </Option>
                         )}
                         {drivers?.pages.map((page: any, pageIndex: any) =>
