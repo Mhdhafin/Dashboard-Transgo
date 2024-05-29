@@ -129,7 +129,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   const { mutate: createRequest } = usePostRequest();
   const { mutate: updateRequest } = useEditRequest(requestId as string);
 
-  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx: \n\n\n*tolong tambahkan detail lainnya jika ada...
+  const predefinedDesc = `Jumlah penagihan ke Customer: Rp. xxx.xxx \n\n\n*tolong tambahkan detail lainnya jika ada...
 `;
   const predefinedAddress = `Tuliskan alamat disini: \n\n\nLink Google Maps:`;
   const defaultValues = initialData
