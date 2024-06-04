@@ -567,7 +567,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                     disabled={!isEdit || loading}
                     value={dayjs(defaultValues?.time)
                       .locale("id")
-                      .format("HH:mm:ss - dddd,DD MMMM (YYYY)")}
+                      .format("HH:mm:ss - dddd, DD MMMM (YYYY)")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -594,7 +594,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                             value={
                               value ? dayjs(value).locale("id") : undefined
                             }
-                            format={"HH:mm:ss - dddd,DD MMMM (YYYY)"}
+                            format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
                             showTime
                           />
                         </FormControl>
