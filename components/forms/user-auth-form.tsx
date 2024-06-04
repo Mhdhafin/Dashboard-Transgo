@@ -20,7 +20,7 @@ import { PasswordInput } from "../password-input";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
-  password: z.string(),
+  password: z.string().min(5, { message: "Password minimal 5 karakter" }),
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -110,7 +110,7 @@ export default function UserAuthForm() {
             )}
           />
           <Button
-            disabled={loading}
+            disabled={!form.formState.isValid}
             className="mt-6 ml-auto w-full bg-main text-white hover:bg-main/90"
             type="submit"
           >
