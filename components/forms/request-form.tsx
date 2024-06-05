@@ -156,7 +156,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
         is_self_pickup: false,
         distance: 0,
       };
-  console.log(defaultValues);
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,

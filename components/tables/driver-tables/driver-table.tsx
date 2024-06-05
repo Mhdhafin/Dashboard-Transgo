@@ -70,9 +70,6 @@ export function DriverTable<TData, TValue>({
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
 
-  /* this can be used to get the selectedrows 
-  console.log("value", table.getFilteredSelectedRowModel()); */
-
   // Create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
@@ -112,8 +109,6 @@ export function DriverTable<TData, TValue>({
     manualPagination: true,
     manualFiltering: true,
   });
-
-  // console.log("table", table.getRowModel().rows);
 
   const [searchValue, setSearchValue] = React.useState<string | null>(
     searchParams?.get("q") ?? null,

@@ -70,9 +70,6 @@ export function CustomerTable<TData, TValue>({
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
 
-  /* this can be used to get the selectedrows 
-  console.log("value", table.getFilteredSelectedRowModel()); */
-
   // Create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
@@ -129,7 +126,6 @@ export function CustomerTable<TData, TValue>({
         scroll: false,
       },
     );
-    console.log("params", searchParams.get("q"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
 
