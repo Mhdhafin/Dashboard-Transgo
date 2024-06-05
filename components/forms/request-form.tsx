@@ -43,6 +43,7 @@ import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
 import { useDebounce } from "use-debounce";
 import { id, is } from "date-fns/locale";
+import { convertTime } from "@/lib/utils";
 dayjs.locale("id");
 
 // perlu dipisah
@@ -747,9 +748,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={(dayjs as any)
-                      .duration(initialData?.progress_duration_second * 1000)
-                      .format("HH:mm")}
+                    value={convertTime(initialData?.progress_duration_second)}
                   />
                 </FormControl>
                 <FormMessage />

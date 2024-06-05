@@ -1,35 +1,14 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
-import { User } from "@/constants/data";
-import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
+import { convertTime } from "@/lib/utils";
 
 var duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
 export const pendingColumns: ColumnDef<any>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={table.getIsAllPageRowsSelected()}
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "customer.name",
     header: "Customer",
@@ -98,25 +77,6 @@ export const pendingColumns: ColumnDef<any>[] = [
 ];
 
 export const completedColumns: ColumnDef<any>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={table.getIsAllPageRowsSelected()}
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "customer.name",
     header: "Customer",
@@ -182,11 +142,7 @@ export const completedColumns: ColumnDef<any>[] = [
     header: "Durasi",
     cell: ({ row }) => {
       return (
-        <span>
-          {(dayjs as any)
-            .duration(row.original.progress_duration_second * 1000)
-            .format("HH:mm")}
-        </span>
+        <span>{convertTime(row?.original?.progress_duration_second)}</span>
       );
     },
   },
