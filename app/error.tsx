@@ -1,30 +1,21 @@
-"use client"; // Error components must be Client Components
+"use client";
 
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
-import NextError from "next/error";
 
-export default function GlobalError({
+export default function ErrorPage({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
+    // Log the error to Sentry
     Sentry.captureException(error);
-
-    throw new Error("eror");
   }, [error]);
 
   return (
-    <html>
-      <body>
-        {/* This is the default Next.js error component but it doesn't allow omitting the statusCode property yet. */}
-        <NextError statusCode={undefined as any} />
-      </body>
-    </html>
+    <div>
+      <h2>Something went wrong!</h2>
+    </div>
   );
 }
