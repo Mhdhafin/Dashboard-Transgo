@@ -1,12 +1,10 @@
 "use client";
 import { Trash } from "lucide-react";
 import Image from "next/image";
-import { IMG_MAX_LIMIT } from "./forms/product-form";
 import { Button } from "./ui/button";
-import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
 import { useRef, useState } from "react";
-import { PreviewImage, getDimensionImage } from "./modal/preview-image";
+import { PreviewImage } from "./modal/preview-image";
 
 export interface ImageUploadResponse {
   data?: File;
@@ -26,7 +24,6 @@ export default function ImageUpload({
   value,
   disabled,
 }: ImageUploadProps) {
-  const { toast } = useToast();
   const inputFile = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
