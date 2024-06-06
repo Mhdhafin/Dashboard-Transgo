@@ -94,11 +94,6 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
       onClose();
     }
   };
-  console.log(
-    dimension.height,
-    dimension.width,
-    `${(dimension.height / dimension.width) * 100}`,
-  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
@@ -134,7 +129,6 @@ export const getDimensionImage = (
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     const img = document.createElement("img");
-    console.log("src", src, img);
     img.onload = () => {
       resolve({ width: img.width, height: img.height });
     };

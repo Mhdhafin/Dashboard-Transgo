@@ -36,8 +36,6 @@ export default function ImageUpload({
 
   const onUpdateFile = async (file: ImageUploadResponse) => {
     onChange(file);
-    // const dimension = await getDimensionImage(file);
-    // console.log("dime", dimension);
   };
 
   const onResetFile = () => {
