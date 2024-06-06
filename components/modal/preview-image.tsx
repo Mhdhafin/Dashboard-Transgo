@@ -42,7 +42,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-[900px] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-[700px] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-8 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg md:w-full",
         className,
       )}
       {...props}
@@ -62,11 +62,29 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
   onClose,
   content,
 }) => {
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [dimension, setDimension] = useState<{ width: number; height: number }>(
+    { width: 0, height: 0 },
+  );
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchImageDimension = async () => {
+        try {
+          const imageDimension = await getDimensionImage(content);
+          setDimension(imageDimension);
+        } catch (error) {
+          console.log("error to fetch dimension image:", error);
+        }
+      };
+
+      fetchImageDimension();
+    }
+  }, [isOpen, content]);
 
   if (!isMounted) {
     return null;
@@ -76,14 +94,52 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
       onClose();
     }
   };
+  console.log(
+    dimension.height,
+    dimension.width,
+    `${(dimension.height / dimension.width) * 100}`,
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent>
-        <div className="relative w-[800px] h-[600px]">
-          <Image fill src={content} alt="photo" />
+        <div
+          className="relative w-full h-[800px]"
+          style={
+            {
+              // paddingTop: `${(dimension.height / dimension.width) * 100}%`,
+            }
+          }
+        >
+          <Image
+            // width={565}
+            // height={266}
+            fill
+            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+            src={content}
+            alt="photo"
+            style={{
+              objectFit: "contain",
+              top: 0,
+              left: 0,
+            }}
+          />
         </div>
       </DialogContent>
     </Dialog>
   );
+};
+export const getDimensionImage = (
+  src: any,
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement("img");
+    console.log("src", src, img);
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+
+    img.onerror = reject;
+    img.src = src;
+  });
 };

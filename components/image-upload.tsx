@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
 import { useRef, useState } from "react";
-import { PreviewImage } from "./modal/preview-image";
+import { PreviewImage, getDimensionImage } from "./modal/preview-image";
 
 export interface ImageUploadResponse {
   data?: File;
@@ -34,8 +34,10 @@ export default function ImageUpload({
     onChange(null);
   };
 
-  const onUpdateFile = (file: ImageUploadResponse) => {
+  const onUpdateFile = async (file: ImageUploadResponse) => {
     onChange(file);
+    // const dimension = await getDimensionImage(file);
+    // console.log("dime", dimension);
   };
 
   const onResetFile = () => {
@@ -89,14 +91,14 @@ export default function ImageUpload({
                 </Button>
               </div>
             )}
-            <div className="relative w-[500px] h-[300px]">
+            <div className="relative w-[300px] max-w-[900px] h-[200px] max-h-[800px]">
               <Image
                 onClick={() => {
                   setOpen(true);
                   onHandlePreview(value);
                 }}
                 fill
-                className="object-fit"
+                className="object-contain cursor-pointer"
                 alt="Image"
                 src={!value?.data ? value : URL.createObjectURL(value.data)}
               />

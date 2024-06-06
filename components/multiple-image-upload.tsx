@@ -89,7 +89,7 @@ export default function MulitpleImageUpload({
                   onHandlePreview(item);
                 }}
                 fill
-                className=""
+                className="cursor-pointer"
                 alt="Image"
                 src={item?.photo || URL.createObjectURL(item)}
               />

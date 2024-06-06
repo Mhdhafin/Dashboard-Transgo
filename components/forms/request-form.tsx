@@ -610,22 +610,26 @@ export const RequestForm: React.FC<RequestFormProps> = ({
             <div className="">
               <FormItem>
                 <FormLabel>KTP Customer</FormLabel>
-                <div className="md:grid md:grid-cols-3 gap-8">
+                <div className="flex flex-wrap gap-2">
                   {initialData?.customer.id_cards?.map((image: any) => (
-                    <div
-                      key={image?.id}
-                      className="relative w-[300px] h-[200px] "
-                    >
-                      <Image
-                        onClick={() => {
-                          setOpen(true);
-                          onHandlePreview(image?.photo);
-                        }}
-                        src={image?.photo}
-                        fill
-                        alt={image.id}
-                      />
-                    </div>
+                    <>
+                      <div
+                        key={image?.id}
+                        className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
+                      >
+                        <Image
+                          className="object-contain cursor-pointer"
+                          onClick={() => {
+                            setOpen(true);
+                            onHandlePreview(image?.photo);
+                          }}
+                          fill
+                          src={image?.photo}
+                          sizes="(max-width: 768px) 100vw, 700px"
+                          alt={image.id}
+                        />
+                      </div>
+                    </>
                   ))}
                 </div>
               </FormItem>
@@ -765,19 +769,25 @@ export const RequestForm: React.FC<RequestFormProps> = ({
               {initialData?.status === "done" &&
                 endlogs?.map((log: any) => (
                   <>
-                    <div className="md:grid md:grid-cols-3 gap-8">
+                    <div className="flex flex-wrap gap-2">
                       {log?.photos?.map((photo: any) => (
-                        <Image
-                          onClick={() => {
-                            setOpen(true);
-                            onHandlePreview(photo?.photo);
-                          }}
+                        <div
                           key={photo.id}
-                          src={photo.photo}
-                          width={300}
-                          height={300}
-                          alt="photo"
-                        />
+                          className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
+                        >
+                          <Image
+                            className="object-contain cursor-pointer"
+                            onClick={() => {
+                              setOpen(true);
+                              onHandlePreview(photo?.photo);
+                            }}
+                            key={photo.id}
+                            src={photo.photo}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 700px"
+                            alt="photo"
+                          />
+                        </div>
                       ))}
                     </div>
 

@@ -7,7 +7,7 @@ import React from "react";
 
 export default function Page({ params }: { params: { requestId: string } }) {
   const breadcrumbItems = [
-    { title: "Requests", link: "/dashboard/requests" },
+    { title: "Requests Tasks", link: "/dashboard/requests" },
     { title: "Detail", link: "/dashboard/requests/detail" },
   ];
 
