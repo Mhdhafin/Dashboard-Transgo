@@ -1,10 +1,10 @@
 "use client";
 import { Trash } from "lucide-react";
-import Image from "next/image";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useRef, useState } from "react";
 import { PreviewImage } from "./modal/preview-image";
+import CustomImage from "./custom-image";
 
 export interface ImageUploadResponse {
   data?: File;
@@ -65,11 +65,11 @@ export default function ImageUpload({
           onUpdateFile({ data: e.target.files![0] });
         }}
       />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-2">
         {!!value && (
           <div
             key={value.data?.name ?? value.url}
-            className="relative rounded-md overflow-hidden"
+            className="relative rounded-md overflow-hidden mb-4"
           >
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
@@ -87,14 +87,21 @@ export default function ImageUpload({
               </div>
             )}
             <div className="relative w-[300px] max-w-[900px] h-[200px] max-h-[800px]">
-              <Image
+              <CustomImage
                 onClick={() => {
                   setOpen(true);
                   onHandlePreview(value);
                 }}
-                fill
-                className="object-contain cursor-pointer"
-                alt="Image"
+                alt="Deskripsi gambar"
+                width="600px"
+                height="400px"
+                layout="responsive"
+                srcSet={`${
+                  !value?.data ? value : URL.createObjectURL(value.data)
+                } 500w,${
+                  !value?.data ? value : URL.createObjectURL(value.data)
+                } 1000w`}
+                sizes="(max-width: 600px) 480px, 800px"
                 src={!value?.data ? value : URL.createObjectURL(value.data)}
               />
             </div>

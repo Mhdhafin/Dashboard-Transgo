@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 interface PreviewImageProps {
   isOpen: boolean;
@@ -13,6 +12,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
+import CustomImage from "../custom-image";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -98,28 +98,13 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent>
-        <div
-          className="relative w-full h-[800px]"
-          style={
-            {
-              // paddingTop: `${(dimension.height / dimension.width) * 100}%`,
-            }
-          }
-        >
-          <Image
-            // width={565}
-            // height={266}
-            fill
-            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-            src={content}
-            alt="photo"
-            style={{
-              objectFit: "contain",
-              top: 0,
-              left: 0,
-            }}
-          />
-        </div>
+        <CustomImage
+          sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+          src={content}
+          alt="photo"
+          layout="responsive"
+          srcSet={`${content} 500w,${content} 1000w`}
+        />
       </DialogContent>
     </Dialog>
   );

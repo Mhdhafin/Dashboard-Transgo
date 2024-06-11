@@ -1,6 +1,5 @@
 "use client";
 import { Trash } from "lucide-react";
-import Image from "next/image";
 import { IMG_MAX_LIMIT } from "./forms/product-form";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
@@ -8,6 +7,7 @@ import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { PreviewImage } from "./modal/preview-image";
 import { useState } from "react";
+import CustomImage from "./custom-image";
 
 export interface MulitpleImageUploadResponse {
   data?: FileList | null;
@@ -83,14 +83,19 @@ export default function MulitpleImageUpload({
               </div>
             )}
             <div className="relative w-auto h-[200px]">
-              <Image
+              <CustomImage
                 onClick={() => {
                   setOpen(true);
                   onHandlePreview(item);
                 }}
-                fill
-                className="cursor-pointer"
-                alt="Image"
+                alt="Deskripsi gambar"
+                width="600px"
+                height="400px"
+                layout="responsive"
+                srcSet={`${item?.photo || URL.createObjectURL(item)} 500w,${
+                  item?.photo || URL.createObjectURL(item)
+                } 1000w`}
+                sizes="(max-width: 600px) 480px, 800px"
                 src={item?.photo || URL.createObjectURL(item)}
               />
             </div>

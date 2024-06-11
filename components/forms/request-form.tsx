@@ -39,11 +39,10 @@ import locale from "antd/locale/id_ID";
 import "dayjs/locale/id";
 import { Select as AntdSelect } from "antd";
 
-import Image from "next/image";
 import { PreviewImage } from "../modal/preview-image";
 import { useDebounce } from "use-debounce";
-import { id, is } from "date-fns/locale";
 import { convertTime } from "@/lib/utils";
+import CustomImage from "../custom-image";
 dayjs.locale("id");
 
 // perlu dipisah
@@ -617,15 +616,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         key={image?.id}
                         className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
                       >
-                        <Image
-                          className="object-contain cursor-pointer"
+                        <CustomImage
                           onClick={() => {
                             setOpen(true);
                             onHandlePreview(image?.photo);
                           }}
-                          fill
+                          width="600px"
+                          height="400px"
+                          layout="responsive"
+                          srcSet={`${image?.photo} 500w,${image?.photo} 1000w`}
+                          sizes="(max-width: 600px) 480px, 800px"
                           src={image?.photo}
-                          sizes="(max-width: 768px) 100vw, 700px"
                           alt={image.id}
                         />
                       </div>
@@ -775,16 +776,18 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           key={photo.id}
                           className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
                         >
-                          <Image
-                            className="object-contain cursor-pointer"
+                          <CustomImage
+                            width="600px"
+                            height="400px"
+                            layout="responsive"
+                            srcSet={`${photo?.photo} 500w,${photo?.photo} 1000w`}
+                            sizes="(max-width: 600px) 480px, 800px"
                             onClick={() => {
                               setOpen(true);
                               onHandlePreview(photo?.photo);
                             }}
                             key={photo.id}
                             src={photo.photo}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 700px"
                             alt="photo"
                           />
                         </div>
