@@ -8,6 +8,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { PreviewImage } from "./modal/preview-image";
 import { useState } from "react";
 import CustomImage from "./custom-image";
+import Image from "next/image";
 
 export interface MulitpleImageUploadResponse {
   data?: FileList | null;
@@ -67,9 +68,12 @@ export default function MulitpleImageUpload({
           onChange={(e) => onUpdateFile({ data: e.target.files })}
         />
       </div>
-      <div className="grid grid-cols-4 mb-4 items-center gap-4">
+      <div className="flex flex-wrap gap-4 ">
         {value.map((item: any) => (
-          <div key={item?.name ?? value.url} className="relative rounded-md">
+          <div
+            key={item?.name ?? value.url}
+            className="relative rounded-md cursor-pointer w-full h-[300px] sm:w-1/3 lg:w-1/4 xl:w-1/5"
+          >
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
                 <Button
@@ -82,23 +86,19 @@ export default function MulitpleImageUpload({
                 </Button>
               </div>
             )}
-            <div className="relative w-auto h-[200px]">
-              <CustomImage
-                onClick={() => {
-                  setOpen(true);
-                  onHandlePreview(item);
-                }}
-                alt="Deskripsi gambar"
-                width="600px"
-                height="400px"
-                layout="responsive"
-                srcSet={`${item?.photo || URL.createObjectURL(item)} 500w,${
-                  item?.photo || URL.createObjectURL(item)
-                } 1000w`}
-                sizes="(max-width: 600px) 480px, 800px"
-                src={item?.photo || URL.createObjectURL(item)}
-              />
-            </div>
+            <CustomImage
+              onClick={() => {
+                setOpen(true);
+                onHandlePreview(item);
+              }}
+              className="object-contain w-full h-full"
+              alt="Deskripsi gambar"
+              srcSet={`${item?.photo || URL.createObjectURL(item)} 500w,${
+                item?.photo || URL.createObjectURL(item)
+              } 1000w`}
+              sizes="(max-width: 600px) 480px, 800px"
+              src={item?.photo || URL.createObjectURL(item)}
+            />
           </div>
         ))}
       </div>

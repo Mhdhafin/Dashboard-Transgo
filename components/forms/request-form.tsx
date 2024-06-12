@@ -217,7 +217,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
           });
         },
       });
@@ -240,7 +241,8 @@ export const RequestForm: React.FC<RequestFormProps> = ({
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
           });
         },
       });
@@ -617,13 +619,11 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
                       >
                         <CustomImage
+                          className="w-full h-full object-contain"
                           onClick={() => {
                             setOpen(true);
                             onHandlePreview(image?.photo);
                           }}
-                          width="600px"
-                          height="400px"
-                          layout="responsive"
                           srcSet={`${image?.photo} 500w,${image?.photo} 1000w`}
                           sizes="(max-width: 600px) 480px, 800px"
                           src={image?.photo}
@@ -777,9 +777,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                           className="relative w-full h-[300px] cursor-pointer sm:w-1/3 lg:w-1/4 xl:w-1/5"
                         >
                           <CustomImage
-                            width="600px"
-                            height="400px"
-                            layout="responsive"
+                            className="w-full h-full object-contain"
                             srcSet={`${photo?.photo} 500w,${photo?.photo} 1000w`}
                             sizes="(max-width: 600px) 480px, 800px"
                             onClick={() => {

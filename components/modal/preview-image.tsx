@@ -13,6 +13,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
 import CustomImage from "../custom-image";
+import Image from "next/image";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -98,13 +99,37 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent>
-        <CustomImage
-          sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
-          src={content}
-          alt="photo"
-          layout="responsive"
-          srcSet={`${content} 500w,${content} 1000w`}
-        />
+        {/* <div
+          className="relative w-full h-[500px]"
+          style={
+            {
+              // paddingTop: `${(dimension.height / dimension.width) * 100}%`,
+            }
+          }
+        >
+          <Image
+            // width={565}
+            // height={266}
+            fill
+            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+            src={content}
+            alt="photo"
+            style={{
+              objectFit: "contain",
+              top: 0,
+              left: 0,
+            }}
+          />
+        </div> */}
+        <div className="relative w-full md:h-[700px] h-[500px]">
+          <CustomImage
+            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+            src={content}
+            alt="photo"
+            className=" object-contain w-full h-full"
+            srcSet={`${content} 500w,${content} 1000w`}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

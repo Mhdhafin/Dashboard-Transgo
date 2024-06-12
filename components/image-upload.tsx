@@ -65,11 +65,11 @@ export default function ImageUpload({
           onUpdateFile({ data: e.target.files![0] });
         }}
       />
-      <div className="flex items-center gap-4 mt-2">
+      <div className="flex flex-wrap gap-4 mt-2">
         {!!value && (
           <div
             key={value.data?.name ?? value.url}
-            className="relative rounded-md overflow-hidden mb-4"
+            className="relative rounded-md cursor-pointer w-full h-[300px] sm:w-1/3 lg:w-1/4 xl:w-1/5"
           >
             {!disabled && (
               <div className="z-10 absolute top-2 right-2">
@@ -86,25 +86,21 @@ export default function ImageUpload({
                 </Button>
               </div>
             )}
-            <div className="relative w-[300px] max-w-[900px] h-[200px] max-h-[800px]">
-              <CustomImage
-                onClick={() => {
-                  setOpen(true);
-                  onHandlePreview(value);
-                }}
-                alt="Deskripsi gambar"
-                width="600px"
-                height="400px"
-                layout="responsive"
-                srcSet={`${
-                  !value?.data ? value : URL.createObjectURL(value.data)
-                } 500w,${
-                  !value?.data ? value : URL.createObjectURL(value.data)
-                } 1000w`}
-                sizes="(max-width: 600px) 480px, 800px"
-                src={!value?.data ? value : URL.createObjectURL(value.data)}
-              />
-            </div>
+            <CustomImage
+              className="object-contain w-full h-full"
+              onClick={() => {
+                setOpen(true);
+                onHandlePreview(value);
+              }}
+              alt="Deskripsi gambar"
+              srcSet={`${
+                !value?.data ? value : URL.createObjectURL(value.data)
+              } 500w,${
+                !value?.data ? value : URL.createObjectURL(value.data)
+              } 1000w`}
+              sizes="(max-width: 600px) 480px, 800px"
+              src={!value?.data ? value : URL.createObjectURL(value.data)}
+            />
           </div>
         )}
       </div>

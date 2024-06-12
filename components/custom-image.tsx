@@ -21,16 +21,17 @@ const CustomImage: React.FC<CustomImageProps> = ({
   sizes,
   ...props
 }) => {
-  const style = {
-    width: layout === "responsive" ? "100%" : width,
-    height: layout === "responsive" ? "auto" : height,
-  };
+  // const style: React.CSSProperties = {
+  //   objectFit: "contain",
+  //   width: layout === "responsive" ? "100%" : width,
+  //   height: layout === "responsive" ? "100%" : height,
+  // };
 
   return (
     <img
       src={src}
       alt={alt}
-      style={style}
+      // style={style}
       className={className}
       loading="lazy"
       srcSet={srcSet}
