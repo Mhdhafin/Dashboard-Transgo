@@ -182,7 +182,7 @@ export function EmployeeTable<TData, TValue>({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
-
+  console.log("columns", columns);
   return (
     <>
       <Input

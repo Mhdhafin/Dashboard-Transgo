@@ -10,7 +10,7 @@ dayjs.extend(duration);
 
 export const pendingColumns: ColumnDef<any>[] = [
   {
-    accessorKey: "customer.name",
+    accessorKey: "name",
     header: "Customer",
     cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
@@ -78,7 +78,7 @@ export const pendingColumns: ColumnDef<any>[] = [
 
 export const completedColumns: ColumnDef<any>[] = [
   {
-    accessorKey: "customer.name",
+    accessorKey: "name",
     header: "Customer",
   },
   {

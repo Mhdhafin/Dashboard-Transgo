@@ -14,6 +14,16 @@ import {
 } from "@tanstack/react-query";
 import { getRequests } from "@/client/requestClient";
 import Request from "./request";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import client from "@/client/apiClient";
+import { RequestTable } from "@/components/tables/request-tables/request-table";
+import {
+  completedColumns,
+  pendingColumns,
+} from "@/components/tables/request-tables/columns";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import TabLists from "@/components/TabLists";
 const breadcrumbItems = [
   { title: "Requests Tasks", link: "/dashboard/requests" },
 ];
@@ -23,15 +33,29 @@ type paramsProps = {
   };
 };
 
-export const metadata: Metadata = {
-  title: "Requests | Transgo",
-  description: "Requests page",
-};
+// export const metadata: Metadata = {
+//   title: "Requests | Transgo",
+//   description: "Requests page",
+// };
 
-const page = async () => {
-  // const session = await getServerSession(authOptions);
-  const queryClient = new QueryClient();
+const page = async ({ searchParams }: paramsProps) => {
+  const session = await getServerSession(authOptions);
+  const page = Number(searchParams.page) || 1;
+  const pageLimit = Number(searchParams.limit) || 10;
+  const q = searchParams.q || null;
+  const status = searchParams.status ?? "pending";
 
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/requests?status=${status}&page=${page}&limit=${pageLimit}` +
+      (q ? `&q=${q}` : ""),
+    {
+      headers: {
+        Authorization: `Bearer ${session?.user.accessToken}`,
+      },
+    },
+  );
+  const requestRes = await res.json();
+  console.log("res", requestRes);
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
@@ -48,9 +72,39 @@ const page = async () => {
           </Link>
         </div>
         <Separator />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Request />
-        </HydrationBoundary>
+        <Tabs defaultValue={status} className="space-y-4">
+          <TabLists />
+          <TabsContent value="pending" className="space-y-4">
+            <RequestTable
+              columns={pendingColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+          <TabsContent value="on_progress" className="space-y-4">
+            <RequestTable
+              columns={completedColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+          <TabsContent value="done" className="space-y-4">
+            <RequestTable
+              columns={completedColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

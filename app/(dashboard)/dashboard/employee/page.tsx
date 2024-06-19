@@ -52,7 +52,7 @@ export default async function page({ searchParams }: paramsProps) {
         <Separator />
 
         <EmployeeTable
-          searchKey="country"
+          searchKey="email"
           pageNo={page}
           columns={columns}
           totalUsers={totalUsers}
