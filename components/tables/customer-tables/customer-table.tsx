@@ -116,26 +116,24 @@ export function CustomerTable<TData, TValue>({
   const [searchDebounce] = useDebounce(searchValue, 500);
 
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        limit: pageSize,
-        q: searchValue || "",
-      })}`,
-      {
-        scroll: false,
-      },
-    );
+    const query = createQueryString({
+      page: pageIndex + 1,
+      limit: pageSize,
+      q: searchDebounce,
+    });
+    router.push(`${pathname}?${query}`, {
+      scroll: false,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
 
   React.useEffect(() => {
-    if (searchValue?.length !== 0) {
+    if (!searchDebounce) {
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
       router.push(
         `${pathname}?${createQueryString({
           page: 1,
           limit: pageSize,
-          q: searchDebounce || "",
         })}`,
         {
           scroll: false,
