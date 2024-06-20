@@ -95,6 +95,20 @@ export function CustomerTable<TData, TValue>({
       pageSize: fallbackPerPage,
     });
 
+  React.useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        page: pageIndex + 1,
+        limit: pageSize,
+      })}`,
+      {
+        scroll: false,
+      },
+    );
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex, pageSize]);
+
   const table = useReactTable({
     data,
     columns,
@@ -110,38 +124,38 @@ export function CustomerTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  const [searchValue, setSearchValue] = React.useState<string | null>(
-    searchParams?.get("q") ?? null,
-  );
+  const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
+
   const [searchDebounce] = useDebounce(searchValue, 500);
 
   React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        limit: pageSize,
-        q: searchValue || "",
-      })}`,
-      {
-        scroll: false,
-      },
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, searchDebounce]);
-
-  React.useEffect(() => {
-    if (searchValue?.length !== 0) {
+    if (searchDebounce?.length > 0) {
       router.push(
         `${pathname}?${createQueryString({
-          page: 1,
-          limit: pageSize,
-          q: searchDebounce || "",
+          page: null,
+          limit: null,
+          q: searchDebounce,
         })}`,
         {
           scroll: false,
         },
       );
     }
+    if (searchDebounce?.length === 0 || searchDebounce === undefined) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: null,
+          limit: null,
+          q: null,
+        })}`,
+        {
+          scroll: false,
+        },
+      );
+    }
+
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDebounce]);
 
@@ -149,8 +163,10 @@ export function CustomerTable<TData, TValue>({
     <>
       <Input
         placeholder={`Cari customers...`}
-        value={searchValue as any}
-        onChange={(event) => setSearchValue(event.target.value)}
+        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+        onChange={(event) =>
+          table.getColumn(searchKey)?.setFilterValue(event.target.value)
+        }
         className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">

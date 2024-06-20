@@ -6,17 +6,8 @@ import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import type { Metadata } from "next";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import { getRequests } from "@/client/requestClient";
-import Request from "./request";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import client from "@/client/apiClient";
 import { RequestTable } from "@/components/tables/request-tables/request-table";
 import {
   completedColumns,
@@ -24,19 +15,21 @@ import {
 } from "@/components/tables/request-tables/columns";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import TabLists from "@/components/TabLists";
+import type { Metadata } from "next";
+
 const breadcrumbItems = [
   { title: "Requests Tasks", link: "/dashboard/requests" },
 ];
 type paramsProps = {
   searchParams: {
-    [key: string]: string | string[] | undefined;
+    [key: string]: string | undefined;
   };
 };
 
-// export const metadata: Metadata = {
-//   title: "Requests | Transgo",
-//   description: "Requests page",
-// };
+export const metadata: Metadata = {
+  title: "Requests | Transgo",
+  description: "Requests page",
+};
 
 const page = async ({ searchParams }: paramsProps) => {
   const session = await getServerSession(authOptions);
@@ -55,7 +48,7 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const requestRes = await res.json();
-  console.log("res", requestRes);
+
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">

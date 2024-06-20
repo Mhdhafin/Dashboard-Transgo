@@ -126,25 +126,22 @@ export function RequestTable<TData, TValue>({
   });
   const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
 
-  // const [searchValue, setSearchValue] = React.useState<string | null>(
-  //   searchParams?.get("q") ?? null,
-  // );
-  // const [searchDebounce] = useDebounce(searchValue, 500);
+  const [searchDebounce] = useDebounce(searchValue, 500);
 
   React.useEffect(() => {
-    if (searchValue?.length > 0) {
+    if (searchDebounce?.length > 0) {
       router.push(
         `${pathname}?${createQueryString({
           page: null,
           limit: null,
-          q: searchValue,
+          q: searchDebounce,
         })}`,
         {
           scroll: false,
         },
       );
     }
-    if (searchValue?.length === 0 || searchValue === undefined) {
+    if (searchDebounce?.length === 0 || searchDebounce === undefined) {
       router.push(
         `${pathname}?${createQueryString({
           page: null,
@@ -160,7 +157,7 @@ export function RequestTable<TData, TValue>({
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+  }, [searchDebounce]);
 
   React.useEffect(() => {
     router.push(
@@ -170,12 +167,9 @@ export function RequestTable<TData, TValue>({
         q: null,
       })}`,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
-  console.log(
-    table.getColumn(searchKey)?.getFilterValue(),
-    table.getColumn(searchKey),
-    columns,
-  );
+
   return (
     <>
       <Input
@@ -286,7 +280,7 @@ export function RequestTable<TData, TValue>({
             {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
-            {/* <Button
+            <Button
               aria-label="Go to first page"
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
@@ -321,7 +315,7 @@ export function RequestTable<TData, TValue>({
               disabled={!table.getCanNextPage()}
             >
               <DoubleArrowRightIcon className="h-4 w-4" aria-hidden="true" />
-            </Button> */}
+            </Button>
           </div>
         </div>
       </div>

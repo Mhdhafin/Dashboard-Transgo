@@ -7,13 +7,10 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { Metadata } from "next";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import { getFleets } from "@/client/fleetClient";
-import Fleet from "./fleet";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { FleetTable } from "@/components/tables/fleet-tables/fleet-table";
+import { columns } from "@/components/tables/fleet-tables/columns";
 
 const breadcrumbItems = [{ title: "Fleets", link: "/dashboard/fleets" }];
 type paramsProps = {
@@ -28,15 +25,22 @@ export const metadata: Metadata = {
 };
 
 const page = async ({ searchParams }: paramsProps) => {
-  // const session = await getServerSession(authOptions);
-  const queryClient = new QueryClient();
+  const session = await getServerSession(authOptions);
   const page = Number(searchParams.page) || 1;
+  const pageLimit = Number(searchParams.limit) || 10;
+  const q = searchParams.q || null;
 
-  await queryClient.prefetchQuery({
-    queryKey: ["fleets"],
-    queryFn: getFleets,
-  });
-
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/fleets?page=${page}&limit=${pageLimit}` +
+      (q ? `&q=${q}` : ""),
+    {
+      headers: {
+        Authorization: `Bearer ${session?.user.accessToken}`,
+      },
+    },
+  );
+  const fleetRes = await res.json();
+  console.log("q", q);
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
@@ -53,9 +57,14 @@ const page = async ({ searchParams }: paramsProps) => {
           </Link>
         </div>
         <Separator />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Fleet />
-        </HydrationBoundary>
+        <FleetTable
+          columns={columns}
+          data={fleetRes.items}
+          searchKey="name"
+          totalUsers={fleetRes.meta?.total_items}
+          pageCount={Math.ceil(fleetRes.meta?.total_items / pageLimit)}
+          pageNo={page}
+        />
       </div>
     </>
   );

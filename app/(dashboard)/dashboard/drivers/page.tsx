@@ -7,13 +7,10 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import type { Metadata } from "next";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import { getDrivers } from "@/client/driverClient";
-import Driver from "./driver";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { DriverTable } from "@/components/tables/driver-tables/driver-table";
+import { columns } from "@/components/tables/driver-tables/columns";
 
 const breadcrumbItems = [{ title: "Drivers", link: "/dashboard/drivers" }];
 type paramsProps = {
@@ -28,14 +25,21 @@ export const metadata: Metadata = {
 };
 
 const page = async ({ searchParams }: paramsProps) => {
-  // const session = await getServerSession(authOptions);
-  const queryClient = new QueryClient();
+  const session = await getServerSession(authOptions);
   const page = Number(searchParams.page) || 1;
+  const pageLimit = Number(searchParams.limit) || 10;
+  const q = searchParams.q || null;
 
-  await queryClient.prefetchQuery({
-    queryKey: ["drivers"],
-    queryFn: getDrivers,
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/drivers?page=${page}&limit=${pageLimit}` +
+      (q && q?.length > 0 ? `&q=${q}` : ""),
+    {
+      headers: {
+        Authorization: `Bearer ${session?.user.accessToken}`,
+      },
+    },
+  );
+  const driverRes = await res.json();
 
   return (
     <>
@@ -53,9 +57,14 @@ const page = async ({ searchParams }: paramsProps) => {
           </Link>
         </div>
         <Separator />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Driver />
-        </HydrationBoundary>
+        <DriverTable
+          columns={columns}
+          data={driverRes.items}
+          searchKey="name"
+          totalUsers={driverRes.meta?.total_items}
+          pageCount={Math.ceil(driverRes.meta?.total_items / pageLimit)}
+          pageNo={page}
+        />
       </div>
     </>
   );

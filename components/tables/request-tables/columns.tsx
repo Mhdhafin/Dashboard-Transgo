@@ -80,6 +80,7 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Customer",
+    cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
   {
     accessorKey: "type",
