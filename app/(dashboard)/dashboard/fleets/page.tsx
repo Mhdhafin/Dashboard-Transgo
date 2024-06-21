@@ -40,7 +40,6 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const fleetRes = await res.json();
-  console.log("q", q);
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">

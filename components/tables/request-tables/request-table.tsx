@@ -65,7 +65,6 @@ export function RequestTable<TData, TValue>({
   const page = searchParams?.get("page") ?? "1";
   const q = searchParams?.get("q");
   const status = searchParams?.get("status") ?? "pending";
-  console.log("sta", status);
   const pageAsNumber = Number(page);
   const fallbackPage =
     isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
@@ -81,7 +80,6 @@ export function RequestTable<TData, TValue>({
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null | undefined>) => {
       const newSearchParams = new URLSearchParams();
-      console.log("new", params);
       for (const [key, value] of Object.entries(params)) {
         if (value === null || value === undefined) {
           newSearchParams.delete(key);
