@@ -14,9 +14,9 @@ type paramsProps = {
 const Driver = () => {
   const searchParams = useSearchParams();
 
-  const page = Number(searchParams.get('page')) || 1;
-  const pageLimit = Number(searchParams.get('limit')) || 10;
-  const q = searchParams.get('q') || '';
+  const page = Number(searchParams.get("page")) || 1;
+  const pageLimit = Number(searchParams.get("limit")) || 10;
+  const q = searchParams.get("q") || "";
 
   const { data, isFetching } = useGetDrivers({
     limit: pageLimit,

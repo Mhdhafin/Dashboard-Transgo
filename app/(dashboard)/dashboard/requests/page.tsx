@@ -6,20 +6,23 @@ import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { RequestTable } from "@/components/tables/request-tables/request-table";
 import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
-import { getRequests } from "@/client/requestClient";
-import Request from "./request";
+  completedColumns,
+  pendingColumns,
+} from "@/components/tables/request-tables/columns";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import TabLists from "@/components/TabLists";
+import type { Metadata } from "next";
+
 const breadcrumbItems = [
   { title: "Requests Tasks", link: "/dashboard/requests" },
 ];
 type paramsProps = {
   searchParams: {
-    [key: string]: string | string[] | undefined;
+    [key: string]: string | undefined;
   };
 };
 
@@ -28,9 +31,23 @@ export const metadata: Metadata = {
   description: "Requests page",
 };
 
-const page = async () => {
-  // const session = await getServerSession(authOptions);
-  const queryClient = new QueryClient();
+const page = async ({ searchParams }: paramsProps) => {
+  const session = await getServerSession(authOptions);
+  const page = Number(searchParams.page) || 1;
+  const pageLimit = Number(searchParams.limit) || 10;
+  const q = searchParams.q || null;
+  const status = searchParams.status ?? "pending";
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_HOST}/requests?status=${status}&page=${page}&limit=${pageLimit}` +
+      (q ? `&q=${q}` : ""),
+    {
+      headers: {
+        Authorization: `Bearer ${session?.user.accessToken}`,
+      },
+    },
+  );
+  const requestRes = await res.json();
 
   return (
     <>
@@ -48,9 +65,39 @@ const page = async () => {
           </Link>
         </div>
         <Separator />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Request />
-        </HydrationBoundary>
+        <Tabs defaultValue={status} className="space-y-4">
+          <TabLists />
+          <TabsContent value="pending" className="space-y-4">
+            <RequestTable
+              columns={pendingColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+          <TabsContent value="on_progress" className="space-y-4">
+            <RequestTable
+              columns={completedColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+          <TabsContent value="done" className="space-y-4">
+            <RequestTable
+              columns={completedColumns}
+              data={requestRes.items}
+              searchKey="name"
+              totalUsers={requestRes.meta?.total_items}
+              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              pageNo={page}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

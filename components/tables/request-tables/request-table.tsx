@@ -63,20 +63,27 @@ export function RequestTable<TData, TValue>({
   const searchParams = useSearchParams();
   // Search params
   const page = searchParams?.get("page") ?? "1";
+  const q = searchParams?.get("q");
+  const status = searchParams?.get("status") ?? "pending";
+  console.log("sta", status);
   const pageAsNumber = Number(page);
   const fallbackPage =
     isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
   const per_page = searchParams?.get("limit") ?? "10";
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
+  const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
+    q ?? "",
+  );
+  const [searchDebounce] = useDebounce(searchQuery, 500);
 
   // Create query string
   const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString());
-
+    (params: Record<string, string | number | null | undefined>) => {
+      const newSearchParams = new URLSearchParams();
+      console.log("new", params);
       for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
+        if (value === null || value === undefined) {
           newSearchParams.delete(key);
         } else {
           newSearchParams.set(key, String(value));
@@ -85,7 +92,7 @@ export function RequestTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [],
   );
 
   // Handle server-side pagination
@@ -94,6 +101,21 @@ export function RequestTable<TData, TValue>({
       pageIndex: fallbackPage - 1,
       pageSize: fallbackPerPage,
     });
+
+  React.useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        status: status,
+        page: pageIndex + 1,
+        limit: pageSize,
+        q: searchDebounce || undefined,
+      })}`,
+      {
+        scroll: false,
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageIndex, pageSize, searchDebounce]);
 
   const table = useReactTable({
     data,
@@ -110,45 +132,71 @@ export function RequestTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  const [searchValue, setSearchValue] = React.useState<string | null>(
-    searchParams?.get("q") ?? null,
-  );
-  const [searchDebounce] = useDebounce(searchValue, 500);
+  // Handle search input change
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+  };
 
   React.useEffect(() => {
-    const query = createQueryString({
-      page: pageIndex + 1,
-      limit: pageSize,
-      q: searchDebounce,
-    });
-    router.push(`${pathname}?${query}`, {
-      scroll: false,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, searchDebounce]);
-
-  React.useEffect(() => {
-    if (!searchDebounce) {
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    if (searchDebounce !== undefined) {
       router.push(
         `${pathname}?${createQueryString({
-          page: 1,
-          limit: pageSize,
+          status: status,
+          page: null,
+          limit: null,
+          q: searchDebounce,
         })}`,
         {
           scroll: false,
         },
       );
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    } else {
+      // Handle case when search is cleared or undefined
+      if (pageIndex !== 0) {
+        // Reset page to 0 only if pageIndex is not 0
+        router.push(
+          `${pathname}?${createQueryString({
+            status: status,
+            page: null,
+            limit: null,
+            q: null,
+          })}`,
+          {
+            scroll: false,
+          },
+        );
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDebounce]);
+
+  // Reset search query when URL q parameter is null or undefined
+  React.useEffect(() => {
+    if (!q) {
+      setSearchQuery("");
+    }
+  }, [q]);
+
+  React.useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        status: status,
+      })}`,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   return (
     <>
       <Input
         placeholder={`Cari request tasks...`}
-        value={searchValue as any}
-        onChange={(event) => setSearchValue(event.target.value)}
+        value={searchQuery}
+        onChange={handleSearchInputChange}
         className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-300px)]">
