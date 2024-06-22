@@ -33,6 +33,10 @@ import MulitpleImageUpload, {
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
 import { omitBy } from "lodash";
+import { useGetInfinityLocation } from "@/hooks/api/useLocation";
+import { useDebounce } from "use-debounce";
+import { Select as AntdSelect, Space } from "antd";
+
 const fileSchema = z.custom<any>(
   (val: any) => {
     // if (!(val instanceof FileList)) return false;
@@ -85,6 +89,10 @@ const formSchema = z.object({
   type: z.string({ required_error: "type is required" }).min(1, {
     message: "type is required",
   }),
+  price: z.string({ required_error: "price is required" }).min(1, {
+    message: "price is required",
+  }),
+  location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
 });
 
 const editFormSchema = z.object({
@@ -111,6 +119,10 @@ const editFormSchema = z.object({
   type: z.string({ required_error: "type is required" }).min(1, {
     message: "type is required",
   }),
+  price: z.string({ required_error: "price is required" }).min(1, {
+    message: "price is required",
+  }),
+  location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -153,14 +165,32 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const { mutate: createFleet } = usePostFleet();
   const { mutate: editFleet } = useEditFleet(fleetId as string);
   const axiosAuth = useAxiosAuth();
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchLocaionDebounce] = useDebounce(searchLocation, 500);
+  console.log("initialData", initialData);
+  const {
+    data: locations,
+    fetchNextPage: fetchNextLocations,
+    hasNextPage: hasNextLocations,
+    isFetchingNextPage: isFetchingNextLocations,
+  } = useGetInfinityLocation(searchLocaionDebounce);
 
   const defaultValues = initialData
-    ? initialData
+    ? {
+        name: initialData?.name,
+        type: initialData?.type,
+        plate_number: initialData?.plate_number,
+        photos: initialData?.photos,
+        price: initialData?.price,
+        location_id: initialData?.location?.id?.toString(),
+      }
     : {
         name: "",
         type: "car",
         plate_number: "",
         photos: [],
+        price: "",
+        location_id: "",
       };
 
   const form = useForm<CustomerFormValues>({
@@ -248,7 +278,12 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       );
 
       const newPayload = omitBy(
-        { ...data, photos: filteredURL },
+        {
+          ...data,
+          photos: filteredURL,
+          price: Number(data.price),
+          location_id: Number(data.location_id),
+        },
         (value) => value == "" || value == null,
       );
       createFleet(newPayload, {
@@ -275,6 +310,13 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     }
   };
 
+  const Option = AntdSelect;
+  const handleScrollLocation = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      fetchNextLocations();
+    }
+  };
   return (
     <>
       <div className="flex items-center justify-between">
@@ -389,6 +431,111 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Harga</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.color ?? "-"}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Harga
+                    </FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Input
+                        type="number"
+                        disabled={!isEdit || loading}
+                        placeholder="Harga"
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Lokasi</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.customer?.name}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                name="location_id"
+                control={form.control}
+                render={({ field }) => {
+                  console.log("filed", field);
+                  return (
+                    <Space size={12} direction="vertical">
+                      <FormLabel className="relative label-required">
+                        Lokasi
+                      </FormLabel>
+                      <FormControl>
+                        <AntdSelect
+                          showSearch
+                          value={field.value}
+                          placeholder="Pilih Lokasi"
+                          style={{ width: "100%" }}
+                          onSearch={setSearchLocation}
+                          onChange={field.onChange}
+                          onPopupScroll={handleScrollLocation}
+                          filterOption={false}
+                          notFoundContent={
+                            isFetchingNextLocations ? (
+                              <p className="px-3 text-sm">loading</p>
+                            ) : null
+                          }
+                        >
+                          {isEdit && (
+                            <Option
+                              value={initialData?.location?.id?.toString()}
+                            >
+                              {initialData?.location?.name}
+                            </Option>
+                          )}
+                          {locations?.pages.map((page: any, pageIndex: any) =>
+                            page.data.items.map((item: any, itemIndex: any) => {
+                              return (
+                                <Option
+                                  key={item.id}
+                                  value={item.id.toString()}
+                                >
+                                  {item.name}
+                                </Option>
+                              );
+                            }),
+                          )}
+
+                          {isFetchingNextLocations && (
+                            <Option disabled>
+                              <p className="px-3 text-sm">loading</p>
+                            </Option>
+                          )}
+                        </AntdSelect>
+                      </FormControl>
+                      <FormMessage />
+                    </Space>
+                  );
+                }}
               />
             )}
           </div>

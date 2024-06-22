@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/locations";
@@ -26,6 +31,32 @@ export const useGetDetailLocation = (id: string | number) => {
   return useQuery({
     queryKey: ["locations", id],
     queryFn: getDetailLocation,
+  });
+};
+
+export const useGetInfinityLocation = (query?: string) => {
+  const axiosAuth = useAxiosAuth();
+  const getLocation = ({
+    pageParam = 1,
+    query,
+  }: {
+    pageParam?: number;
+    query?: string;
+  }) => {
+    return axiosAuth.get(baseEndpoint, {
+      params: {
+        limit: 10,
+        page: pageParam,
+        q: query,
+      },
+    });
+  };
+
+  return useInfiniteQuery({
+    queryKey: ["locations", query],
+    queryFn: ({ pageParam }) => getLocation({ pageParam, query }),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
   });
 };
 
