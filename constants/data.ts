@@ -166,4 +166,10 @@ export const navItems: NavItem[] = [
     icon: "users",
     label: "customer",
   },
+  {
+    title: "Location",
+    href: "/dashboard/location",
+    icon: "maps",
+    label: "Location",
+  },
 ];

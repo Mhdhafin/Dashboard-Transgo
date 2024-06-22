@@ -32,6 +32,7 @@ import {
   ClipboardList,
   Car,
   Users,
+  MapPinned,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -66,6 +67,7 @@ export const Icons = {
   clipboardList: ClipboardList,
   car: Car,
   users: Users,
+  maps: MapPinned,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

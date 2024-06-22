@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
-import { useDeleteCustomer } from "@/hooks/api/useCustomer";
+import { useDeleteLocation } from "@/hooks/api/useLocation";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,14 +27,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteCustomer } = useDeleteCustomer(id);
+  const { mutateAsync: deleteLocation } = useDeleteLocation(id);
 
   const onConfirm = async () => {
-    deleteCustomer(id, {
+    deleteLocation(id, {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "Customer berhasil dihapus!",
+          title: "Location berhasil dihapus!",
         });
         router.refresh();
       },
@@ -44,10 +44,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           title: "Oops! Ada error.",
           description: `Something went wrong: ${error.message}`,
         });
-        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["locations"] });
       },
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["locations"] });
         setOpen(false);
       },
     });
@@ -74,7 +74,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/dashboard/customers/${data?.id}/edit`);
+              router.push(`/dashboard/location/${data?.id}/edit`);
             }}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
