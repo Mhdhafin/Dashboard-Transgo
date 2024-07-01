@@ -5,14 +5,14 @@ import dayjs from "dayjs";
 import "dayjs/locale/id";
 import { convertTime } from "@/lib/utils";
 
-var duration = require("dayjs/plugin/duration");
+const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
 export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Customer",
-    cell: ({ row }) => <span>{row.original.customer.name}</span>,
+    cell: ({ row }) => <span>{row.original.customer?.name}</span>,
   },
   {
     accessorKey: "type",

@@ -7,14 +7,25 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { NavItem } from "@/types";
 import { Dispatch, SetStateAction } from "react";
+import { useSidebar } from "@/hooks/useSidebar";
+import { ChevronFirst, ChevronLast } from "lucide-react";
+import { useOrdersStatusCount } from "@/hooks/api/useOrder";
 
 interface DashboardNavProps {
   items: NavItem[];
   setOpen?: Dispatch<SetStateAction<boolean>>;
+  isMobileNav?: boolean;
 }
 
-export function DashboardNav({ items, setOpen }: DashboardNavProps) {
+export function DashboardNav({
+  items,
+  setOpen,
+  isMobileNav = false,
+}: DashboardNavProps) {
   const path = usePathname();
+  const { isMinimized, toggle } = useSidebar();
+  const { data: statusCount, isFetching } = useOrdersStatusCount();
+  const count = statusCount?.data;
 
   if (!items?.length) {
     return null;
@@ -22,6 +33,25 @@ export function DashboardNav({ items, setOpen }: DashboardNavProps) {
 
   return (
     <nav className="grid items-start gap-2">
+      <span
+        className={cn(
+          "flex justify-between items-center rounded-md p-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+        )}
+        onClick={toggle}
+      >
+        {isMobileNav || (!isMinimized && !isMobileNav) ? (
+          <span className="mr-2 truncate font-semibold text-lg">Menu</span>
+        ) : (
+          ""
+        )}
+        <div className="border border-neutral-200 p-3 bg-neutral-50 rounded-md">
+          {isMinimized ? (
+            <ChevronLast className="h-4 w-4" />
+          ) : (
+            <ChevronFirst className="h-4 w-4" />
+          )}
+        </div>
+      </span>
       {items.map((item, index) => {
         const Icon = Icons[item.icon || "arrowRight"];
         return (
@@ -35,13 +65,24 @@ export function DashboardNav({ items, setOpen }: DashboardNavProps) {
             >
               <span
                 className={cn(
-                  "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                  "group flex items-center rounded-md p-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
                   path === item.href ? "bg-main text-white" : "transparent",
                   item.disabled && "cursor-not-allowed opacity-80",
                 )}
               >
-                <Icon className="mr-2 h-4 w-4" />
-                <span>{item.title}</span>
+                <Icon className="h-4 w-4" />
+                {isMobileNav || (!isMinimized && !isMobileNav) ? (
+                  <div className="flex justify-between w-full">
+                    <span className="ml-2 mr-2 truncate">{item.title}</span>
+                    {item.title === "Pesanan" && !isFetching && (
+                      <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
+                        <span>{count?.done ?? 0}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  ""
+                )}
               </span>
             </Link>
           )

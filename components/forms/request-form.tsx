@@ -41,7 +41,7 @@ import { Select as AntdSelect } from "antd";
 
 import { PreviewImage } from "../modal/preview-image";
 import { useDebounce } from "use-debounce";
-import { convertTime } from "@/lib/utils";
+import { convertTime, makeUrlsClickable } from "@/lib/utils";
 import CustomImage from "../custom-image";
 dayjs.locale("id");
 
@@ -254,14 +254,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
-  function makeUrlsClickable(str: string) {
-    const urlRegex = /(\bhttps?:\/\/[^\s]+(\.[^\s]+)*(\/[^\s]*)?\b)/g;
-    return str.replace(
-      urlRegex,
-      (url: any) =>
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">${url}</a>`,
-    );
-  }
 
   const Option = AntdSelect;
   const handleScrollCustomers = (event: React.UIEvent<HTMLDivElement>) => {

@@ -46,7 +46,7 @@ export const useGetInfinityFleets = (query?: string) => {
   });
 };
 
-export const useGetDetailFleet = (id: number) => {
+export const useGetDetailFleet = (id: number | string) => {
   const axiosAuth = useAxiosAuth();
 
   const getDetailFleet = () => {

@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import "dayjs/locale/id";
 import { useEditLocation, usePostLocation } from "@/hooks/api/useLocation";
+import { makeUrlsClickable } from "@/lib/utils";
 dayjs.locale("id");
 
 // perlu dipisah
@@ -71,7 +72,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     ? initialData
     : {
         name: "",
-        description: null,
+        description: "",
       };
 
   const form = useForm<LocationFormValues>({
@@ -110,7 +111,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
         },
       });
     } else {
-      createLocation(data, {
+      createLocation(payload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["location"] });
           toast({
@@ -136,14 +137,6 @@ export const LocationForm: React.FC<LocationFormProps> = ({
   };
 
   // const triggerImgUrlValidation = () => form.trigger("imgUrl");
-  function makeUrlsClickable(str: string) {
-    const urlRegex = /(\bhttps?:\/\/[^\s]+(\.[^\s]+)*(\/[^\s]*)?\b)/g;
-    return str.replace(
-      urlRegex,
-      (url: any) =>
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">${url}</a>`,
-    );
-  }
 
   return (
     <>
@@ -206,9 +199,8 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
-                        value={field.value}
+                        value={field.value || ""}
                         onChange={field.onChange}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage />

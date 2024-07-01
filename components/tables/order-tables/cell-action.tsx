@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
-import { useDeleteFleet } from "@/hooks/api/useFleet";
+import { useDeleteRequest } from "@/hooks/api/useRequest";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,14 +27,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteFleet } = useDeleteFleet(id);
+  const { mutateAsync: deleteRequest } = useDeleteRequest(id);
 
   const onConfirm = async () => {
-    deleteFleet(id, {
+    deleteRequest(id, {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "Fleet berhasil dihapus!",
+          title: "Request Task berhasil dihapus!",
         });
         router.refresh();
       },
@@ -44,10 +44,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           title: "Oops! Ada error.",
           description: `Something went wrong: ${error.message}`,
         });
-        queryClient.invalidateQueries({ queryKey: ["fleets"] });
+        queryClient.invalidateQueries({ queryKey: ["requests"] });
       },
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["fleets"] });
+        queryClient.invalidateQueries({ queryKey: ["requests"] });
         setOpen(false);
       },
     });
@@ -62,7 +62,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         loading={loading}
       />
       <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+        <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />
@@ -74,10 +74,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/dashboard/fleets/${data?.id}/edit`);
+              router.push(`/dashboard/requests/${data?.id}/edit`);
             }}
           >
-            <Edit className="mr-2 h-4 w-4" /> Update
+            <Edit className="mr-2 h-4 w-4" /> Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-red-500"
@@ -86,7 +86,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
               setOpen(true);
             }}
           >
-            <Trash className="mr-2 h-4 w-4" /> Delete
+            <Trash className="mr-2 h-4 w-4" /> Hapus
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

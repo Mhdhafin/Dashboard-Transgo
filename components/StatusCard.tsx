@@ -3,11 +3,11 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Spinner from "./spinner";
 import { Activity, Clock3 } from "lucide-react";
-import { useStatusCount } from "@/hooks/api/useStatusCount";
+import { useRequestsStatusCount } from "@/hooks/api/useRequest";
 import Link from "next/link";
 
 const StatusCard = () => {
-  const { data: statusCount, isFetching } = useStatusCount();
+  const { data: statusCount, isFetching } = useRequestsStatusCount();
 
   const count = statusCount?.data;
 

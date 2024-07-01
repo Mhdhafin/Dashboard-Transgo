@@ -70,3 +70,21 @@ export const convertTime = (time: number | null) => {
 
   return displayString;
 };
+
+export const formatRupiah = (number: number) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
+};
+
+export function makeUrlsClickable(str: string) {
+  const urlRegex = /(\bhttps?:\/\/[^\s]+(\.[^\s]+)*(\/[^\s]*)?\b)/g;
+  return str.replace(
+    urlRegex,
+    (url: any) =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">${url}</a>`,
+  );
+}

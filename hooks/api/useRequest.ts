@@ -88,3 +88,14 @@ export const useDeleteRequest = (id: string | number) => {
     },
   });
 };
+
+export const useRequestsStatusCount = () => {
+  const axiosAuth = useAxiosAuth();
+  const getStatusCountFn = () => {
+    return axiosAuth.get(`${baseEndpoint}/status/count`);
+  };
+  return useQuery({
+    queryKey: ["requests"],
+    queryFn: getStatusCountFn,
+  });
+};

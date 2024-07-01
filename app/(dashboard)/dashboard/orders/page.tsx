@@ -8,18 +8,17 @@ import Link from "next/link";
 import React from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { RequestTable } from "@/components/tables/request-tables/request-table";
 import {
   completedColumns,
+  onProgressColumns,
   pendingColumns,
-} from "@/components/tables/request-tables/columns";
+} from "@/components/tables/order-tables/columns";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import TabLists from "@/components/TabLists";
 import type { Metadata } from "next";
+import { OrderTable } from "@/components/tables/order-tables/order-table";
 
-const breadcrumbItems = [
-  { title: "Requests Tasks", link: "/dashboard/requests" },
-];
+const breadcrumbItems = [{ title: "Pesanan", link: "/dashboard/orders" }];
 type paramsProps = {
   searchParams: {
     [key: string]: string | undefined;
@@ -27,7 +26,7 @@ type paramsProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Requests | Transgo",
+  title: "Pesanan | Transgo",
   description: "Requests page",
 };
 
@@ -39,7 +38,7 @@ const page = async ({ searchParams }: paramsProps) => {
   const status = searchParams.status ?? "pending";
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/requests?status=${status}&page=${page}&limit=${pageLimit}` +
+    `${process.env.NEXT_PUBLIC_API_HOST}/orders?status=${status}&page=${page}&limit=${pageLimit}` +
       (q ? `&q=${q}` : ""),
     {
       headers: {
@@ -47,19 +46,19 @@ const page = async ({ searchParams }: paramsProps) => {
       },
     },
   );
-  const requestRes = await res.json();
+  const orderRes = await res.json();
 
   const lists = [
     {
-      name: "Pending",
+      name: "Menunggu",
       value: "pending",
     },
     {
-      name: "On Progress",
+      name: "Sedang Berjalan",
       value: "on_progress",
     },
     {
-      name: "Done",
+      name: "Sudah Bayar",
       value: "done",
     },
   ];
@@ -70,45 +69,45 @@ const page = async ({ searchParams }: paramsProps) => {
         <BreadCrumb items={breadcrumbItems} />
 
         <div className="flex items-start justify-between">
-          <Heading title="Requests Tasks" />
+          <Heading title="Pesanan" />
 
           <Link
-            href={"/dashboard/requests/create"}
+            href={"/dashboard/orders/create"}
             className={cn(buttonVariants({ variant: "main" }))}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add New
+            <Plus className="mr-2 h-4 w-4" /> Tambah Pesanan
           </Link>
         </div>
         <Separator />
         <Tabs defaultValue={status} className="space-y-4">
           <TabLists lists={lists} />
           <TabsContent value="pending" className="space-y-4">
-            <RequestTable
+            <OrderTable
               columns={pendingColumns}
-              data={requestRes.items}
+              data={orderRes.items}
               searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              totalUsers={orderRes.meta?.total_items}
+              pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
               pageNo={page}
             />
           </TabsContent>
           <TabsContent value="on_progress" className="space-y-4">
-            <RequestTable
-              columns={completedColumns}
-              data={requestRes.items}
+            <OrderTable
+              columns={onProgressColumns}
+              data={orderRes.items}
               searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              totalUsers={orderRes.meta?.total_items}
+              pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
               pageNo={page}
             />
           </TabsContent>
           <TabsContent value="done" className="space-y-4">
-            <RequestTable
-              columns={completedColumns}
-              data={requestRes.items}
+            <OrderTable
+              columns={pendingColumns}
+              data={orderRes.items}
               searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
+              totalUsers={orderRes.meta?.total_items}
+              pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
               pageNo={page}
             />
           </TabsContent>

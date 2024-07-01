@@ -33,6 +33,7 @@ import {
   Car,
   Users,
   MapPinned,
+  Ticket,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -68,6 +69,7 @@ export const Icons = {
   car: Car,
   users: Users,
   maps: MapPinned,
+  ticket: Ticket,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

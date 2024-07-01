@@ -3,7 +3,16 @@ import React from "react";
 import { TabsList, TabsTrigger } from "./ui/tabs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const TabLists = () => {
+interface ListProps {
+  name: string;
+  value: string;
+}
+
+interface TabListsProps {
+  lists: ListProps[];
+}
+
+const TabLists: React.FC<TabListsProps> = ({ lists }) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -18,32 +27,19 @@ const TabLists = () => {
   );
   return (
     <TabsList>
-      <TabsTrigger
-        value="pending"
-        onClick={() => {
-          router.push(pathname + "?" + createQueryString("status", "pending"));
-        }}
-      >
-        Pending
-      </TabsTrigger>
-      <TabsTrigger
-        value="on_progress"
-        onClick={() => {
-          router.push(
-            pathname + "?" + createQueryString("status", "on_progress"),
-          );
-        }}
-      >
-        On Progress
-      </TabsTrigger>
-      <TabsTrigger
-        value="done"
-        onClick={() => {
-          router.push(pathname + "?" + createQueryString("status", "done"));
-        }}
-      >
-        Done
-      </TabsTrigger>
+      {lists.map((list, index) => (
+        <TabsTrigger
+          key={index}
+          value={list.value}
+          onClick={() => {
+            router.push(
+              pathname + "?" + createQueryString("status", list.value),
+            );
+          }}
+        >
+          {list.name}
+        </TabsTrigger>
+      ))}
     </TabsList>
   );
 };
