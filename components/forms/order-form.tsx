@@ -1172,7 +1172,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
             {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
               <PriceDetail
-                isEdit={isEdit}
+                isEdit={isEdit ?? false}
                 disabledButton={loading || !allFieldsFilled}
                 showServicePrice={showServicePrice}
                 form={form}
