@@ -37,7 +37,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   console.log("detai price", detail);
   return (
     <div
-      className="w-[400px] h-[936px] p-5 sticky top-[-100]"
+      className="min-[1920px]:w-[640px] w-[400px] h-[936px] p-5 sticky top-[-100]"
       id="detail-sidebar"
     >
       <h4 className="text-center font-semibold text-xl mb-4">
