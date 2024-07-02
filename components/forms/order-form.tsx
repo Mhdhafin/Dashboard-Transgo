@@ -24,15 +24,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
-import { cn, convertEmptyStringsToNull, makeUrlsClickable } from "@/lib/utils";
+import { cn, makeUrlsClickable } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useEditFleet,
   useGetDetailFleet,
   useGetInfinityFleets,
 } from "@/hooks/api/useFleet";
-import useAxiosAuth from "@/hooks/axios/use-axios-auth";
-import { initial, isEmpty } from "lodash";
+import { isEmpty, isString } from "lodash";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -51,7 +50,11 @@ import locale from "antd/locale/id_ID";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
 import { useGetInsurances } from "@/hooks/api/useInsurance";
-import { useOrderCalculate, usePostOrder } from "@/hooks/api/useOrder";
+import {
+  useEditOrder,
+  useOrderCalculate,
+  usePostOrder,
+} from "@/hooks/api/useOrder";
 import { ApprovalModal } from "../modal/approval-modal";
 import { NumericFormat } from "react-number-format";
 import "dayjs/locale/id";
@@ -60,7 +63,6 @@ import CustomerDetail from "./section/customer-detail";
 import DriverDetail from "./section/driver-detail";
 import PriceDetail from "./section/price-detail";
 import Spinner from "../spinner";
-import { Badge } from "../ui/badge";
 
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
@@ -86,10 +88,17 @@ const formSchema = z.object({
   duration: z.string().min(1, { message: "tolong masukkan durasi" }),
   discount: z.string().min(1, { message: "tolong masukkan diskon" }),
   insurance_id: z.string().min(1, { message: "tolong pilih asuransi" }),
-  service_price: z
-    .string()
-    .min(1, { message: "tolong masukkan harga layanan" }),
 });
+
+const generateSchema = (watchServicePrice: boolean) => {
+  return watchServicePrice
+    ? formSchema.extend({
+        service_price: z
+          .string()
+          .min(1, { message: "tolong masukkan harga layanan" }),
+      })
+    : formSchema;
+};
 
 const editFormSchema = z.object({
   name: z
@@ -121,7 +130,7 @@ const editFormSchema = z.object({
 });
 
 type OrderFormValues = z.infer<typeof formSchema> & {
-  // photos: MulitpleImageUploadResponse;
+  service_price?: string;
 };
 
 interface FleetFormProps {
@@ -171,7 +180,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   initialData,
   isEdit,
 }) => {
-  const { fleetId } = useParams();
+  const { orderId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -192,7 +201,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
   const { mutate: createOrder } = usePostOrder();
-  const { mutate: editFleet } = useEditFleet(fleetId as string);
+  const { mutate: editOrder } = useEditOrder(orderId as string);
   const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
   const [searchFleetTerm, setSearchFleetTerm] = useState("");
   const [searchCustomerDebounce] = useDebounce(searchCustomerTerm, 500);
@@ -205,6 +214,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const [openDriverDetail, setOpenDriverDetail] = useState<boolean>(false);
   const [showServicePrice, setShowServicePrice] = useState<boolean>(true);
   const [type, setType] = useState<string>("");
+  const [schema, setSchema] = useState(() => generateSchema(showServicePrice));
   const {
     data: customers,
     fetchNextPage: fetchNextCustomers,
@@ -244,10 +254,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         is_with_driver: initialData?.is_with_driver,
         is_out_of_town: initialData?.is_out_of_town,
         date: initialData?.start_date,
-        duration: initialData?.duration,
-        discount: initialData?.discount,
+        duration: initialData?.duration?.toString(),
+        discount: initialData?.discount?.toString(),
         insurance_id: initialData?.insurance?.id.toString(),
-        service_price: initialData?.service_price,
+        service_price: initialData?.service_price.toString(),
       }
     : {
         start_request: {
@@ -268,14 +278,14 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         is_with_driver: false,
         is_out_of_town: false,
         date: "",
-        duration: 1,
+        duration: "1",
         discount: "0",
         insurance_id: "",
         service_price: "",
       };
 
   const form = useForm<OrderFormValues>({
-    resolver: zodResolver(!initialData ? formSchema : editFormSchema),
+    resolver: zodResolver(schema),
     defaultValues,
   });
   const { data: customer, isFetching: isFetchingCustomer } =
@@ -283,7 +293,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const { data: fleet, isFetching: isFetchingFleet } = useGetDetailFleet(
     form.getValues("fleet"),
   );
-  console.log("defa", customer);
 
   const { data: driver, isFetching: isFetchingDriver } = useGetDetailDriver(
     type == "start"
@@ -306,34 +315,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     console.log("submit", data);
 
     if (initialData) {
-      let filteredURL: string[] = [];
-      const newPayload = convertEmptyStringsToNull({
-        ...data,
-        photos: filteredURL,
-      });
-
-      editFleet(newPayload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["fleets"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.refresh();
-          router.push(`/dashboard/fleets`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
-          });
-        },
-      });
-    } else {
+      console.log("masuk sini");
       const payload = {
         start_request: {
           is_self_pickup: data.start_request.is_self_pickup,
@@ -356,9 +338,65 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         duration: +data.duration,
         discount: +data.discount,
         insurance_id: +data.insurance_id,
-        service_price: +data.service_price.replace(/,/g, ""),
+        ...(showServicePrice &&
+          data?.service_price && {
+            service_price: +data.service_price.replace(/,/g, ""),
+          }),
       };
-      console.log("submit", data, payload);
+
+      setLoading(false);
+
+      editOrder(payload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+          toast({
+            variant: "success",
+            title: toastMessage,
+          });
+          router.refresh();
+          router.push(`/dashboard/orders`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
+          });
+        },
+      });
+    } else {
+      console.log("sini", data);
+      const payload = {
+        start_request: {
+          is_self_pickup: data.start_request.is_self_pickup,
+          address: data.start_request.address,
+          distance: +data.start_request.distance,
+          driver_id: +data.start_request.driver_id,
+        },
+        end_request: {
+          is_self_pickup: data.end_request.is_self_pickup,
+          address: data.end_request.address,
+          distance: +data.end_request.distance,
+          driver_id: +data.end_request.driver_id,
+        },
+        customer_id: +data.customer,
+        fleet_id: +data.fleet,
+        description: "",
+        is_with_driver: data.is_with_driver,
+        is_out_of_town: data.is_out_of_town,
+        date: data.date.toISOString(),
+        duration: +data.duration,
+        discount: +data.discount,
+        insurance_id: +data.insurance_id,
+        ...(showServicePrice &&
+          data?.service_price && {
+            service_price: +data.service_price.replace(/,/g, ""),
+          }),
+      };
       setLoading(false);
 
       createOrder(payload, {
@@ -378,7 +416,8 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            //@ts-ignore
+            description: `error: ${error?.response?.message}`,
           });
         },
       });
@@ -443,16 +482,18 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     "end_request.distance",
     "end_request.address",
     "discount",
-    "description", // description is optional
+    "description", // description is optional,
   ]);
   const watchServicePrice = !(watchedFields[7] && watchedFields[11]);
-  const servicePrice = +form.watch("service_price");
+  const servicePrice = +(form.watch("service_price") ?? 0);
 
   console.log("service", servicePrice);
   useEffect(() => {
     if (watchedFields[7] && watchedFields[11]) {
+      setSchema(generateSchema(false));
       setShowServicePrice(false);
     } else {
+      setSchema(generateSchema(true));
       setShowServicePrice(true);
     }
   }, [watchedFields[7], watchedFields[11]]);
@@ -461,14 +502,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     if (typeof field === "boolean") {
       return true; // Booleans are always considered filled
     }
-    if (typeof field === "number") {
-      return field !== 0; // Numbers should not be zero
-    }
+    // if (typeof field === "number") {
+    //   return field !== 0; // Numbers should not be zero
+    // }
     return field !== undefined && field !== null && field !== ""; // For strings and other types
   });
 
   useEffect(() => {
     console.log("service payload", servicePrice);
+    console.log("allFieldsFilled", watchedFields);
 
     const payload = {
       customer_id: +(watchedFields[0] ?? 0),
@@ -494,39 +536,39 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       discount: +(watchedFields[15] ?? 0),
       ...(watchServicePrice && {
         service_price: isEdit
-          ? +form.watch("service_price").replace(/,/g, "")
-          : +servicePrice,
+          ? isString(form.watch("service_price"))
+            ? parseInt((form.watch("service_price") ?? "0").replace(/,/g, ""))
+            : servicePrice
+          : servicePrice,
       }),
     };
-    console.log("hello");
 
-    console.log(payload);
-
+    console.log("pay", payload);
     if (allFieldsFilled || !isEdit) {
-      const payload = {
-        customer_id: +(watchedFields[0] ?? 0),
-        fleet_id: +(watchedFields[1] ?? 0),
-        date: watchedFields[2],
-        duration: +(watchedFields[3] ?? 1),
-        is_out_of_town: watchedFields[4],
-        is_with_driver: watchedFields[5],
-        insurance_id: +(watchedFields[6] ?? 1),
-        start_request: {
-          is_self_pickup: watchedFields[7],
-          driver_id: +(watchedFields[8] ?? 0),
-          distance: +(watchedFields[9] ?? 0),
-          address: watchedFields[10],
-        },
-        end_request: {
-          is_self_pickup: watchedFields[11],
-          driver_id: +(watchedFields[12] ?? 0),
-          distance: +(watchedFields[13] ?? 0),
-          address: watchedFields[14],
-        },
-        description: watchedFields[16],
-        discount: +(watchedFields[15] ?? 0),
-        ...(watchServicePrice && { service_price: +servicePrice }),
-      };
+      // const payload = {
+      //   customer_id: +(watchedFields[0] ?? 0),
+      //   fleet_id: +(watchedFields[1] ?? 0),
+      //   date: watchedFields[2],
+      //   duration: +(watchedFields[3] ?? 1),
+      //   is_out_of_town: watchedFields[4],
+      //   is_with_driver: watchedFields[5],
+      //   insurance_id: +(watchedFields[6] ?? 1),
+      //   start_request: {
+      //     is_self_pickup: watchedFields[7],
+      //     driver_id: +(watchedFields[8] ?? 0),
+      //     distance: +(watchedFields[9] ?? 0),
+      //     address: watchedFields[10],
+      //   },
+      //   end_request: {
+      //     is_self_pickup: watchedFields[11],
+      //     driver_id: +(watchedFields[12] ?? 0),
+      //     distance: +(watchedFields[13] ?? 0),
+      //     address: watchedFields[14],
+      //   },
+      //   description: watchedFields[16],
+      //   discount: +(watchedFields[15] ?? 0),
+      //   ...(watchServicePrice && { service_price: +servicePrice }),
+      // };
 
       calculatePrice(payload, {
         onSuccess: (data) => {
@@ -539,12 +581,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const disabledDate = (current: Dayjs | null): boolean => {
     return current ? current < dayjs().startOf("day") : false;
   };
-
-  console.log(
-    "ssss",
-    !form.getFieldState("customer").isDirty ||
-      !isEmpty(form.getValues("customer")),
-  );
 
   return (
     <>
@@ -564,7 +600,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         id="header"
       >
         <Heading title={title} description={description} />
-        {initialData?.request_status === "pending" && (
+        {initialData?.request_status === "pending" && !isEdit && (
           <div className="flex gap-2">
             <Button
               className={cn(
@@ -586,13 +622,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <div className="flex relative" id="parent">
+          <div className="flex " id="parent">
             <div className={cn("space-y-8 pr-5 border-r border-neutral-400")}>
               <Tabs
                 defaultValue={
                   defaultValues.is_with_driver ? "dengan_supir" : "lepas_kunci"
                 }
-                className="w-[400px]"
+                className="w-[235px]"
               >
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger
@@ -614,10 +650,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               <div
                 className={cn(
                   "grid grid-cols-2 gap-[10px]",
-                  isMinimized ? "w-[936px]" : "w-[700px]",
+                  isMinimized
+                    ? "min-[1920px]:w-[1176px] w-[936px]"
+                    : "min-[1920px]:w-[940px] w-[700px]",
                 )}
               >
-                <div className="flex  items-end ">
+                <div className="flex  items-end w-[940]">
                   {isEdit ? (
                     <FormField
                       name="customer"
@@ -890,7 +928,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                       <Select
                         disabled={!isEdit || loading}
                         onValueChange={field.onChange}
-                        defaultValue={defaultValues.duration.toString()}
+                        defaultValue={defaultValues.duration}
                       >
                         <FormControl
                           className={cn(
@@ -1252,7 +1290,6 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       form.setValue("end_request.distance", watchedFields[2]);
       form.setValue("end_request.address", watchedFields[3]);
     }
-    console.log("active", watchedFields);
   }, [...watchedFields, switchValue]);
 
   return (
@@ -1285,11 +1322,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Tabs
-                      defaultValue={field.value == false ? "diantar" : "ambil"}
+                      defaultValue={
+                        field.value == false ? "diantar" : "sendiri"
+                      }
                     >
                       <TabsList className="grid w-full grid-cols-2">
                         {lists.map((list, index) => {
-                          console.log("list", field.value, type, list.value);
                           return (
                             <TabsTrigger
                               disabled={!isEdit || loading}
