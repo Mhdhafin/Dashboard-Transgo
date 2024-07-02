@@ -32,6 +32,22 @@ export const usePostOrder = () => {
   });
 };
 
+export const useEditOrder = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const editOrder = (body: any) => {
+    return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
+  };
+
+  return useMutation({
+    mutationFn: editOrder,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
 export const useOrderCalculate = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
@@ -56,5 +72,22 @@ export const useOrdersStatusCount = () => {
   return useQuery({
     queryKey: ["orders"],
     queryFn: getStatusCountFn,
+  });
+};
+
+export const useDeleteOrder = (id: number) => {
+  const axiosAuth = useAxiosAuth();
+
+  const queryClient = useQueryClient();
+
+  const deleteOrder = (id: number) => {
+    return axiosAuth.delete(`${baseEndpoint}/${id}`);
+  };
+
+  return useMutation({
+    mutationFn: deleteOrder,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+    },
   });
 };
