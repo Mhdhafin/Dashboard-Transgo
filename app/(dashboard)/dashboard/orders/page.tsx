@@ -103,7 +103,7 @@ const page = async ({ searchParams }: paramsProps) => {
           </TabsContent>
           <TabsContent value="done" className="space-y-4">
             <OrderTable
-              columns={pendingColumns}
+              columns={completedColumns}
               data={orderRes.items}
               searchKey="name"
               totalUsers={orderRes.meta?.total_items}
