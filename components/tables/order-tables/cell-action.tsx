@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
-import { useDeleteRequest } from "@/hooks/api/useRequest";
+import { useDeleteOrder } from "@/hooks/api/useOrder";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,14 +27,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteRequest } = useDeleteRequest(id);
+  const { mutateAsync: deleteOrder } = useDeleteOrder(id);
 
   const onConfirm = async () => {
-    deleteRequest(id, {
+    setLoading(true);
+    deleteOrder(id, {
       onSuccess: () => {
         toast({
           variant: "success",
-          title: "Request Task berhasil dihapus!",
+          title: "Order berhasil dihapus!",
         });
         router.refresh();
       },
@@ -48,6 +49,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       },
       onSettled: () => {
         queryClient.invalidateQueries({ queryKey: ["requests"] });
+        setLoading(false);
         setOpen(false);
       },
     });
@@ -74,7 +76,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/dashboard/requests/${data?.id}/edit`);
+              router.push(`/dashboard/orders/${data?.id}/edit`);
             }}
           >
             <Edit className="mr-2 h-4 w-4" /> Edit
