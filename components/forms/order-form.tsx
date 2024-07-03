@@ -1134,7 +1134,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               <div
                 className={cn(
                   "space-y-8",
-                  isMinimized ? "w-[936px]" : "w-[700px]",
+                  isMinimized
+                    ? "min-[1920px]:w-[1176px] w-[936px]"
+                    : "min-[1920px]:w-[940px] w-[700px]",
                 )}
               >
                 {showServicePrice && (
@@ -1550,7 +1552,13 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             />
           </div>
         </div>
-        <div className={cn(isMinimized ? "w-[936px]" : "w-[700px]")}>
+        <div
+          className={cn(
+            isMinimized
+              ? "min-[1920px]:w-[1176px] w-[936px]"
+              : "min-[1920px]:w-[940px] w-[700px]",
+          )}
+        >
           {!isEdit ? (
             <FormItem>
               <FormLabel>Alamat</FormLabel>
@@ -1605,7 +1613,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
         </div>
       </div>
       <Separator
-        className={cn("mt-1", isMinimized ? "w-[936px]" : "w-[700px]")}
+        className={cn(
+          "mt-1",
+          isMinimized
+            ? "min-[1920px]:w-[1176px] w-[936px]"
+            : "min-[1920px]:w-[940px] w-[700px]",
+        )}
       />
     </>
   );
