@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
+dayjs.locale("id");
 
 export const pendingColumns: ColumnDef<any>[] = [
   {
@@ -45,9 +46,11 @@ export const pendingColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+            </p>
           </div>
           <Separator className="my-4" />
           <div className="flex items-center">
@@ -58,9 +61,11 @@ export const pendingColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+            </p>
           </div>
         </HoverCardContent>
       </HoverCard>
@@ -112,9 +117,11 @@ export const onProgressColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+            </p>
           </div>
           <Separator className="my-4" />
           <div className="flex items-center">
@@ -125,9 +132,11 @@ export const onProgressColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+            </p>
           </div>
         </HoverCardContent>
       </HoverCard>
@@ -177,9 +186,11 @@ export const completedColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+            </p>
           </div>
           <Separator className="my-4" />
           <div className="flex items-center">
@@ -190,9 +201,11 @@ export const completedColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              senin, 24 juni 2024
+              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
             </p>
-            <p className="text-[14px] font-normal leading-5">Jam 17:00</p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+            </p>
           </div>
         </HoverCardContent>
       </HoverCard>
