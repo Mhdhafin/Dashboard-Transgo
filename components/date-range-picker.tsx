@@ -1,4 +1,11 @@
 "use client";
+
+import * as React from "react";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -6,29 +13,34 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { addDays, format } from "date-fns";
-import * as React from "react";
-import { DateRange } from "react-day-picker";
+interface CalendarDateRangePickerProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  onDateRangeChange: (range: DateRange | undefined) => void;
+  dateRange: DateRange | undefined;
+}
 
-export function CalendarDateRangePicker({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2023, 0, 20),
-    to: addDays(new Date(2023, 0, 20), 20),
-  });
+export const CalendarDateRangePicker: React.FC<
+  CalendarDateRangePickerProps
+> = ({ className, onDateRangeChange, dateRange }) => {
+  const [date, setDate] = React.useState<DateRange | undefined>(dateRange);
 
+  React.useEffect(() => {
+    setDate(dateRange);
+  }, [dateRange]);
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    setDate(range);
+    onDateRangeChange(range);
+  };
   return (
-    <div className={cn("", className)}>
+    <div className={cn("grid gap-2", className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[260px] justify-start text-left font-normal",
+              "w-[300px] justify-start text-left font-normal",
               !date && "text-muted-foreground",
             )}
           >
@@ -47,20 +59,17 @@ export function CalendarDateRangePicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="">
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            // initialFocus
-            // mode="range"
-            // defaultMonth={date?.from}
-            // selected={date}
-            onSelect={setDate}
-            // numberOfMonths={2}
-            captionLayout="dropdown"
-            fromYear={1900}
-            toYear={2025}
+            initialFocus
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={handleDateChange}
+            numberOfMonths={2}
           />
         </PopoverContent>
       </Popover>
     </div>
   );
-}
+};

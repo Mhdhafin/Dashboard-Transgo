@@ -44,6 +44,8 @@ interface DataTableProps<TData, TValue> {
   totalUsers: number;
   pageSizeOptions?: number[];
   pageCount: number;
+  startDate?: Date | null;
+  endDate?: Date | null;
   searchParams?: {
     [key: string]: string | string[] | undefined;
   };
@@ -57,7 +59,10 @@ export function OrderTable<TData, TValue>({
   totalUsers,
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
-}: DataTableProps<TData, TValue>) {
+  searchQuery,
+  startDate,
+  endDate,
+}: DataTableProps<TData, TValue> & { searchQuery: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -71,9 +76,7 @@ export function OrderTable<TData, TValue>({
   const per_page = searchParams?.get("limit") ?? "10";
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
-  const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
-    q ?? "",
-  );
+
   const [searchDebounce] = useDebounce(searchQuery, 500);
 
   // Create query string
@@ -107,13 +110,15 @@ export function OrderTable<TData, TValue>({
         page: pageIndex + 1,
         limit: pageSize,
         q: searchDebounce || undefined,
+        startDate: startDate?.toISOString() ?? undefined,
+        endDate: endDate?.toISOString() ?? undefined,
       })}`,
       {
         scroll: false,
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, searchDebounce]);
+  }, [pageIndex, pageSize, searchDebounce, startDate, endDate]);
 
   const table = useReactTable({
     data,
@@ -130,14 +135,6 @@ export function OrderTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  // Handle search input change
-  const handleSearchInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-  };
-
   React.useEffect(() => {
     if (searchDebounce !== undefined) {
       router.push(
@@ -146,6 +143,8 @@ export function OrderTable<TData, TValue>({
           page: null,
           limit: null,
           q: searchDebounce,
+          startDate: startDate?.toISOString() ?? undefined,
+          endDate: endDate?.toISOString() ?? undefined,
         })}`,
         {
           scroll: false,
@@ -162,6 +161,8 @@ export function OrderTable<TData, TValue>({
             page: null,
             limit: null,
             q: null,
+            startDate: startDate?.toISOString() ?? undefined,
+            endDate: endDate?.toISOString() ?? undefined,
           })}`,
           {
             scroll: false,
@@ -171,12 +172,12 @@ export function OrderTable<TData, TValue>({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce]);
+  }, [searchDebounce, startDate, endDate]);
 
   // Reset search query when URL q parameter is null or undefined
   React.useEffect(() => {
     if (!q) {
-      setSearchQuery("");
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }
   }, [q]);
 
@@ -191,12 +192,6 @@ export function OrderTable<TData, TValue>({
 
   return (
     <>
-      <Input
-        placeholder={`Cari Pesanan...`}
-        value={searchQuery}
-        onChange={handleSearchInputChange}
-        className="w-full md:max-w-sm mb-5"
-      />
       <ScrollArea className="rounded-md border h-[calc(80vh-300px)]">
         <Table className="relative">
           <TableHeader>
