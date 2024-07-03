@@ -647,6 +647,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
+              {/* 
+              perhitungan lebar content
+              di figma dengan lebar 1440px:  
+                lebar 936px ====> ketika sidebar menu minimize
+                lebar 700px ====> ketika sidebar menu tidak minimize
+
+              di ukuran laya 1920px, kita perlu expand lebar si content sebesar 240px
+              apabila 1 baris form terdapat 2 input field, maka kita perlu expand sebanya 120px disetiap field
+              */}
               <div
                 className={cn(
                   "grid grid-cols-2 gap-[10px]",
