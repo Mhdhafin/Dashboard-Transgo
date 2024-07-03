@@ -22,8 +22,13 @@ export default async function AuthenticationPage() {
     <div className="relative h-screen flex-col items-center justify-center">
       <div className="p-4 h-full flex items-center">
         <div className="mx-auto flex w-full flex-col justify-center sm:w-[350px]">
-          <div className=" border-white">
-            <Logo className="fill-main dark:fill-main w-full h-[120px] " />
+          <div className="flex items-center justify-center">
+            <img
+              alt="logo"
+              src="/image 3.svg"
+              style={{ scale: "1.8", marginBottom: "10px" }}
+            />
+            {/* <Logo className="fill-main  w-full h-[120px] border-black border" /> */}
           </div>
           <div className="flex flex-col text-center">
             <h1 className="text-2xl md:text-2xl font-semibold tracking-tight">

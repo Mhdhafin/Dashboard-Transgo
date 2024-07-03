@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "Transgo",
   description: "Manage rent car",
   icons: {
-    icon: "/logo.png",
+    icon: "/logov2.png",
   },
 };
 

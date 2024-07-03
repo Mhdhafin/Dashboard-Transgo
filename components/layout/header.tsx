@@ -12,7 +12,12 @@ export default function Header() {
       <nav className="h-14 flex items-center justify-between px-4">
         <div className="hidden lg:block">
           <Link href="/dashboard">
-            <Logo />
+            {/* <Logo /> */}
+            <img
+              alt="logo"
+              src="/image 3.svg"
+              style={{ marginBottom: "10px" }}
+            />
           </Link>
         </div>
         <div className={cn("block lg:!hidden")}>
