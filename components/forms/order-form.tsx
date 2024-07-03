@@ -622,8 +622,8 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          <div className="flex " id="parent">
-            <div className={cn("space-y-8 pr-5 border-r border-neutral-400")}>
+          <div className="flex relative" id="parent">
+            <div className={cn("space-y-8 pr-5")}>
               <Tabs
                 defaultValue={
                   defaultValues.is_with_driver ? "dengan_supir" : "lepas_kunci"
@@ -667,11 +667,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           </FormLabel>
                           <FormControl>
                             <AntdSelect
+                              className={cn(
+                                isMinimized
+                                  ? "min-[1920px]:w-[505px] w-[385px]"
+                                  : "min-[1920px]:w-[387px] w-[267px]",
+                              )}
                               showSearch
                               value={field.value}
                               placeholder="Pilih Customer"
                               style={{
-                                width: `${isMinimized ? "385px" : "267px"}`,
                                 height: "40px",
                                 marginRight: "8px",
                               }}
@@ -724,8 +728,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                       <FormLabel>Pelanggan</FormLabel>
                       <FormControl className="disabled:opacity-100">
                         <Input
+                          className={cn(
+                            isMinimized
+                              ? "min-[1920px]:w-[505px] w-[385px]"
+                              : "min-[1920px]:w-[387px] w-[267px]",
+                          )}
                           style={{
-                            width: `${isMinimized ? "385px" : "267px"}`,
                             height: "40px",
                           }}
                           disabled={!isEdit || loading}
@@ -769,8 +777,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                               showSearch
                               value={field.value}
                               placeholder="Pilih Armada"
+                              className={cn(
+                                isMinimized
+                                  ? "min-[1920px]:w-[505px] w-[385px]"
+                                  : "min-[1920px]:w-[387px] w-[267px]",
+                              )}
                               style={{
-                                width: `${isMinimized ? "385px" : "267px"}`,
                                 height: "40px",
                                 marginRight: "8px",
                               }}
@@ -822,8 +834,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                       <FormLabel>Armada</FormLabel>
                       <FormControl className="disabled:opacity-100">
                         <Input
+                          className={cn(
+                            isMinimized
+                              ? "min-[1920px]:w-[505px] w-[385px]"
+                              : "min-[1920px]:w-[387px] w-[267px]",
+                          )}
                           style={{
-                            width: `${isMinimized ? "385px" : "267px"}`,
                             height: "40px",
                           }}
                           disabled={!isEdit || loading}
@@ -857,8 +873,8 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 className={cn(
                   "gap-5",
                   isMinimized
-                    ? "w-[936px] grid grid-cols-3"
-                    : "w-[700px] flex flex-wrap",
+                    ? "min-[1920px]:w-[1176px] w-[936px] grid grid-cols-3"
+                    : "min-[1920px]:w-[940px] w-[700px] flex flex-wrap",
                 )}
               >
                 {isEdit ? (
@@ -875,12 +891,19 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             <DatePicker
                               disabledDate={disabledDate}
                               disabled={loading}
-                              style={{
-                                width: `${!isMinimized ? "340px" : "100%"}`,
-                              }}
+                              className={cn(
+                                isMinimized
+                                  ? "w-full"
+                                  : "min-[1920px]:w-[460px] w-[340px]",
+                                "p",
+                              )}
+                              style={
+                                {
+                                  // width: `${!isMinimized ? "340px" : "100%"}`,
+                                }
+                              }
                               height={40}
                               id="testing"
-                              className="p"
                               onChange={field.onChange} // send value to hook form
                               onBlur={field.onBlur} // notify when input is touched/blur
                               value={
@@ -902,8 +925,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     <FormLabel>Tanggal Sewa</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Input
+                        className={cn(
+                          isMinimized
+                            ? "w-full"
+                            : "min-[1920px]:w-[460px] w-[340px]",
+                        )}
                         style={{
-                          width: `${!isMinimized ? "340px" : "100%"}`,
                           height: "40px",
                         }}
                         disabled={!isEdit || loading}
@@ -933,10 +960,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         <FormControl
                           className={cn(
                             "disabled:opacity-100",
-                            !isMinimized ? "w-[340px]" : "w-full",
+                            isMinimized
+                              ? "w-full"
+                              : "min-[1920px]:w-[460px] w-[340px]",
                           )}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="">
                             <SelectValue placeholder="asdf" />
                           </SelectTrigger>
                         </FormControl>
@@ -961,7 +990,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   <FormLabel>Selesai sewa (otomatis)</FormLabel>
                   <FormControl>
                     <Input
-                      className={cn(!isMinimized ? "w-[700px]" : "w-full")}
+                      className={cn(
+                        // !isMinimized ? "w-[700px]" : "w-full"
+                        isMinimized
+                          ? "w-full"
+                          : "min-[1920px]:w-[940px] w-[700px]",
+                      )}
                       placeholder="Tanggal dan waktu selesai"
                       value={end == "Invalid Date" ? "" : end}
                       readOnly
@@ -973,7 +1007,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               <div
                 className={cn(
                   "grid grid-cols-2 gap-5",
-                  isMinimized ? "w-[936px]" : "w-[700px]",
+                  isMinimized
+                    ? "min-[1920px]:w-[1176px] w-[936px]"
+                    : "min-[1920px]:w-[940px] w-[700px]",
+                  // isMinimized ? "w-[936px]" : "w-[700px]",
                 )}
               >
                 <FormField
@@ -1055,7 +1092,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 />
               </div>
               <Separator
-                className={cn("mt-1", isMinimized ? "w-[936px]" : "w-[700px]")}
+                className={cn(
+                  "mt-1",
+                  isMinimized
+                    ? "min-[1920px]:w-[1176px] w-[936px]"
+                    : "min-[1920px]:w-[940px] w-[700px]",
+                )}
               />
               <DetailSection
                 title="Detail Pengambilan"
@@ -1310,7 +1352,14 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             </div>
           )}
         </div>
-        <div className={cn("gap-5", isMinimized ? "w-[936px]" : "w-[700px]")}>
+        <div
+          className={cn(
+            "gap-5",
+            isMinimized
+              ? "min-[1920px]:w-[1176px] w-[936px]"
+              : "min-[1920px]:w-[940px] w-[700px]",
+          )}
+        >
           <FormField
             control={form.control}
             name={`${type}_request.is_self_pickup`}
@@ -1354,7 +1403,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
           />
         </div>
         <div
-          className={cn("flex gap-5", isMinimized ? "w-[936px]" : "w-[700px]")}
+          className={cn(
+            "flex gap-5",
+            isMinimized
+              ? "min-[1920px]:w-[1176px] w-[936px]"
+              : "min-[1920px]:w-[940px] w-[700px]",
+          )}
         >
           <div className="flex gap-2 items-end">
             {isEdit ? (
@@ -1371,8 +1425,13 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                         showSearch
                         value={field.value}
                         placeholder="Pilih Penanggung Jawab"
+                        className={cn(
+                          isMinimized
+                            ? "min-[1920px]:w-[505px] w-[385px]"
+                            : "min-[1920px]:w-[387px] w-[267px]",
+                        )}
                         style={{
-                          width: `${isMinimized ? "385px" : "267px"}`,
+                          // width: `${isMinimized ? "385px" : "267px"}`,
                           height: "40px",
                         }}
                         onSearch={setSearchDriverTerm}
@@ -1424,8 +1483,13 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                 <FormLabel>Penanggung Jawab</FormLabel>
                 <FormControl className="disabled:opacity-100">
                   <Input
+                    className={cn(
+                      isMinimized
+                        ? "min-[1920px]:w-[505px] w-[385px]"
+                        : "min-[1920px]:w-[387px] w-[267px]",
+                    )}
                     style={{
-                      width: `${isMinimized ? "385px" : "267px"}`,
+                      // width: `${isMinimized ? "385px" : "267px"}`,
                       height: "40px",
                     }}
                     disabled={!isEdit || loading}
@@ -1468,9 +1532,13 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       disabled={!isEdit || loading}
                       type="number"
                       placeholder="Tanggal dan waktu selesai"
-                      className={`h-[40px] ${
-                        isMinimized ? "w-[458px]" : "w-[340px]"
-                      } `}
+                      className={cn(
+                        "h-[40px]",
+                        // isMinimized ? "w-[458px]" : "w-[340px]",
+                        isMinimized
+                          ? "min-[1920px]:w-[578px] w-[458px]"
+                          : "min-[1920px]:w-[460px] w-[340px]",
+                      )}
                       value={field.value}
                       onChange={field.onChange}
                       onBlur={field.onBlur}

@@ -36,7 +36,10 @@ interface FleetDetailProps {
 
 const FleetDetail: React.FC<FleetDetailProps> = ({ onClose, data }) => {
   return (
-    <div className="w-[400px] h-[936px] p-5 " id="detail-sidebar">
+    <div
+      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 absolute  mt-[-140px] right-0 border-l border-neutral-400"
+      id="detail-sidebar"
+    >
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-center font-semibold text-xl">Armada Detail</h4>
         <Button
