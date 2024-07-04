@@ -15,26 +15,30 @@ import { Separator } from "@/components/ui/separator";
 import { formatRupiah } from "@/lib/utils";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import dayjs from "dayjs";
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown, EyeIcon, FileText, Info } from "lucide-react";
 
 interface PriceDetailProps {
   form: any;
   detail: any;
   handleOpenApprovalModal: () => void;
+  handleOpenRejectModal: () => void;
   showServicePrice: boolean;
   disabledButton?: boolean;
   isEdit: boolean;
+  initialData: any;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
   form,
   detail,
   handleOpenApprovalModal,
+  handleOpenRejectModal,
   showServicePrice,
   disabledButton,
   isEdit,
+  initialData,
 }) => {
-  console.log("detai price", detail);
+  console.log("detai price", initialData);
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 absolute  mt-[-140px] right-0 border-l border-neutral-400"
@@ -243,7 +247,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           </div>
         )}
 
-        {isEdit && (
+        {!initialData && (
           <div className="flex flex-col gap-5">
             <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
               <Info className="h-10 w-10" />
@@ -260,6 +264,60 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             >
               Konfirmasi Pesanan
             </Button>
+          </div>
+        )}
+        {initialData?.status === "pending" && (
+          <div className="flex flex-col gap-5">
+            <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
+              <Info className="h-10 w-10" />
+              <p>
+                Invoice akan tersedia saat pesanan telah dikonfirmasi. Pastikan
+                semua data benar.
+              </p>
+            </div>
+            <Button
+              disabled={disabledButton}
+              onClick={handleOpenApprovalModal}
+              className="w-full  bg-main hover:bg-main/90"
+              type="button"
+            >
+              Konfirmasi Pesanan
+            </Button>
+            <Button
+              disabled={disabledButton}
+              onClick={handleOpenApprovalModal}
+              className="w-full  bg-main hover:bg-main/90"
+              type="button"
+            >
+              Konfirmasi Pesanan
+            </Button>
+          </div>
+        )}
+
+        {initialData?.payment_pdf_url && (
+          <div className="flex items-center justify-between max-w-[360px] border border-neutral-200 rounded-lg p-1">
+            <div className="flex gap-4">
+              <div className="p-2 border border-neutral-400 rounded-lg">
+                <FileText />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-neutral-700">
+                  {initialData?.invoice_number}
+                </span>
+                <span className="text-sm font-medium text-neutral-700">
+                  PDF
+                </span>
+              </div>
+            </div>
+            <div className="p-2 border border-neutral-400 rounded-lg">
+              <a
+                href={initialData?.payment_pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <EyeIcon />
+              </a>
+            </div>
           </div>
         )}
       </div>
