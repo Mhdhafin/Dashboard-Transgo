@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { orderId: number } }) {
 
   const breadcrumbItems = [
     { title: "Pesanan", link: "/dashboard/orders" },
-    { title: "Edit Pesanan", link: "/dashboard/orders/edit" },
+    { title: "Tinjau Pesanan", link: "/dashboard/orders/tinjau" },
   ];
 
   const { data, isFetching } = useGetDetailOrder(params.orderId);

@@ -5,15 +5,14 @@ import Spinner from "@/components/spinner";
 import { useGetDetailOrder } from "@/hooks/api/useOrder";
 import { useSidebar } from "@/hooks/useSidebar";
 import { cn } from "@/lib/utils";
-import React, { useEffect } from "react";
+import React from "react";
 
 export default function Page({ params }: { params: { orderId: number } }) {
-  useEffect(() => {});
   const { isMinimized } = useSidebar();
 
   const breadcrumbItems = [
     { title: "Pesanan", link: "/dashboard/orders" },
-    { title: "Tinjau Pesanan", link: "/dashboard/orders/detail" },
+    { title: "Detail Pesanan", link: "/dashboard/orders/detail" },
   ];
 
   const { data, isFetching } = useGetDetailOrder(params.orderId);
