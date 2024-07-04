@@ -3,7 +3,7 @@ import * as z from "zod";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -26,11 +26,7 @@ import {
 import { useToast } from "../ui/use-toast";
 import { cn, makeUrlsClickable } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  useEditFleet,
-  useGetDetailFleet,
-  useGetInfinityFleets,
-} from "@/hooks/api/useFleet";
+import { useGetDetailFleet, useGetInfinityFleets } from "@/hooks/api/useFleet";
 import { isEmpty, isString } from "lodash";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
@@ -51,9 +47,11 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
 import { useGetInsurances } from "@/hooks/api/useInsurance";
 import {
+  useAcceptOrder,
   useEditOrder,
   useOrderCalculate,
   usePostOrder,
+  useRejectOrder,
 } from "@/hooks/api/useOrder";
 import { ApprovalModal } from "../modal/approval-modal";
 import { NumericFormat } from "react-number-format";
@@ -63,6 +61,7 @@ import CustomerDetail from "./section/customer-detail";
 import DriverDetail from "./section/driver-detail";
 import PriceDetail from "./section/price-detail";
 import Spinner from "../spinner";
+import { RejectModal } from "../modal/reject-modal";
 
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
@@ -184,17 +183,22 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const splitPath = pathname.split("/");
+  const lastPath = splitPath[splitPath.length - 1];
 
-  const title = !isEdit
-    ? "Tinjau Pesanan"
-    : initialData
-    ? "Edit Pesanan"
-    : "Tambah Pesanan";
-  const description = !isEdit
-    ? ""
-    : initialData
-    ? "Edit Pesanan"
-    : "Tambah permintaan baru untuk pengemudi";
+  const title =
+    lastPath === "tinjau"
+      ? "Tinjau Pesanan"
+      : lastPath === "edit"
+      ? "Edit Pesanan"
+      : "Tambah Pesanan";
+  const description =
+    lastPath === "tinjau"
+      ? "Tinjau permintaan baru untuk pengemudi"
+      : lastPath === "edit"
+      ? "Edit permintaan baru untuk pengemudi"
+      : "Tambah permintaan baru untuk pengemudi";
   const toastMessage = initialData
     ? "Pesanan berhasil diubah!"
     : "Pesanan berhasil dibuat";
@@ -202,6 +206,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const queryClient = useQueryClient();
   const { mutate: createOrder } = usePostOrder();
   const { mutate: editOrder } = useEditOrder(orderId as string);
+  const { mutate: acceptOrder } = useAcceptOrder(orderId as string);
+
+  const { mutate: rejectOrder } = useRejectOrder();
   const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
   const [searchFleetTerm, setSearchFleetTerm] = useState("");
   const [searchCustomerDebounce] = useDebounce(searchCustomerTerm, 500);
@@ -209,6 +216,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const days: number[] = Array.from({ length: 30 });
   const [detail, setDetail] = useState<DetailPrice | null>(null);
   const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
+  const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
   const [openCustomerDetail, setOpenCustomerDetail] = useState<boolean>(false);
   const [openFleetDetail, setOpenFleetDetail] = useState<boolean>(false);
   const [openDriverDetail, setOpenDriverDetail] = useState<boolean>(false);
@@ -352,6 +360,59 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           toast({
             variant: "success",
             title: toastMessage,
+          });
+          router.refresh();
+          router.push(`/dashboard/orders`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
+          });
+        },
+      });
+    } else if (lastPath === "tinjau") {
+      const payload = {
+        start_request: {
+          is_self_pickup: data.start_request.is_self_pickup,
+          address: data.start_request.address,
+          distance: +data.start_request.distance,
+          driver_id: +data.start_request.driver_id,
+        },
+        end_request: {
+          is_self_pickup: data.end_request.is_self_pickup,
+          address: data.end_request.address,
+          distance: +data.end_request.distance,
+          driver_id: +data.end_request.driver_id,
+        },
+        customer_id: +data.customer,
+        fleet_id: +data.fleet,
+        description: "",
+        is_with_driver: data.is_with_driver,
+        is_out_of_town: data.is_out_of_town,
+        date: data.date.toISOString(),
+        duration: +data.duration,
+        discount: +data.discount,
+        insurance_id: +data.insurance_id,
+        ...(showServicePrice &&
+          data?.service_price && {
+            service_price: +data.service_price.replace(/,/g, ""),
+          }),
+      };
+
+      setLoading(false);
+
+      acceptOrder(payload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+          toast({
+            variant: "success",
+            title: "Pesanan berhasil dikonfirmasi",
           });
           router.refresh();
           router.push(`/dashboard/orders`);
@@ -582,6 +643,36 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     return current ? current < dayjs().startOf("day") : false;
   };
 
+  const handleRejectOrder = (reason: string) => {
+    setLoading(true);
+    rejectOrder(
+      { orderId, reason },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+          toast({
+            variant: "success",
+            title: "berhasil ditolak",
+          });
+          setOpenRejectModal(false);
+          router.refresh();
+          router.push(`/dashboard/orders`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.message}`,
+          });
+        },
+      },
+    );
+  };
+
   return (
     <>
       {openApprovalModal && (
@@ -592,10 +683,20 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           loading={loading}
         />
       )}
+      {openRejectModal && (
+        <RejectModal
+          isOpen={openRejectModal}
+          onClose={() => setOpenRejectModal(false)}
+          onConfirm={handleRejectOrder}
+          loading={loading}
+        />
+      )}
       <div
         className={cn(
           "flex items-center justify-between space-y-8",
-          isMinimized ? "w-[936px]" : "w-[700px]",
+          isMinimized
+            ? "min-[1920px]:w-[1176px] w-[936px]"
+            : "min-[1920px]:w-[940px] w-[700px]",
         )}
         id="header"
       >
@@ -612,9 +713,34 @@ export const OrderForm: React.FC<FleetFormProps> = ({
             </Button>
 
             <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
-              belum kembali
+              Belum kembali
             </div>
           </div>
+        )}
+
+        {initialData?.request_status === "done" && !isEdit && (
+          <div className="flex gap-2">
+            <Button
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "text-black",
+              )}
+            >
+              Edit Pesanan
+            </Button>
+
+            <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+              Selesai
+            </div>
+          </div>
+        )}
+
+        {initialData?.status === "pending" && (
+          <Button
+            className={cn(buttonVariants({ variant: "outline" }), "text-black")}
+          >
+            Reset berdasarkan data pengguna
+          </Button>
         )}
       </div>
       <Form {...form}>
@@ -1263,12 +1389,14 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
             {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
               <PriceDetail
+                initialData={initialData}
                 isEdit={isEdit ?? false}
                 disabledButton={loading || !allFieldsFilled}
                 showServicePrice={showServicePrice}
                 form={form}
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
+                handleOpenRejectModal={() => setOpenRejectModal(true)}
               />
             )}
           </div>
