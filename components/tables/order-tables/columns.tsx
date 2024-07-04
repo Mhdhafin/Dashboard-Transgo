@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/id";
 import { cn, convertTime, formatRupiah } from "@/lib/utils";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -80,8 +80,9 @@ export const pendingColumns: ColumnDef<any>[] = [
     id: "actions",
     cell: ({ row }) => (
       <Link
-        href={"/dashboard/orders/create"}
+        href={`/dashboard/orders/${row.original.id}/tinjau`}
         className={cn(buttonVariants({ variant: "main" }))}
+        onClick={(e) => e.stopPropagation()}
       >
         Tinjau
       </Link>
@@ -152,6 +153,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
     header: "Total Harga",
     cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
   },
+
   {
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,

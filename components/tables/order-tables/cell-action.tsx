@@ -45,10 +45,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           title: "Oops! Ada error.",
           description: `Something went wrong: ${error.message}`,
         });
-        queryClient.invalidateQueries({ queryKey: ["requests"] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
       },
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["requests"] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
         setLoading(false);
         setOpen(false);
       },

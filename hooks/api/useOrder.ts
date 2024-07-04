@@ -91,3 +91,35 @@ export const useDeleteOrder = (id: number) => {
     },
   });
 };
+
+export const useAcceptOrder = (id: string | number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const acceptOrder = (body: any) => {
+    return axiosAuth.patch(`${baseEndpoint}/${id}/accept`, body);
+  };
+
+  return useMutation({
+    mutationFn: acceptOrder,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+    },
+  });
+};
+
+export const useRejectOrder = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const rejectOrder = ({ orderId, reason }: any) => {
+    return axiosAuth.post(`${baseEndpoint}/${orderId}/reject`, { reason });
+  };
+
+  return useMutation({
+    mutationFn: rejectOrder,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+    },
+  });
+};
