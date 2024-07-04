@@ -9,7 +9,6 @@ import React from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { Tabs } from "@/components/ui/tabs";
-import TabLists from "@/components/TabLists";
 import type { Metadata } from "next";
 import OrderTableWrapper from "./order-table-wrapper";
 
@@ -31,10 +30,14 @@ const page = async ({ searchParams }: paramsProps) => {
   const pageLimit = Number(searchParams.limit) || 10;
   const q = searchParams.q || null;
   const status = searchParams.status ?? "pending";
+  const startDate = searchParams.start_date || "";
+  const endDate = searchParams.end_date || "";
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/orders?status=${status}&page=${page}&limit=${pageLimit}` +
-      (q ? `&q=${q}` : ""),
+      (q ? `&q=${q}` : "") +
+      (startDate ? `&start_date=${startDate}` : "") +
+      (endDate ? `&end_date=${endDate}` : ""),
     {
       headers: {
         Authorization: `Bearer ${session?.user.accessToken}`,
@@ -42,6 +45,7 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const orderRes = await res.json();
+  console.log("res", orderRes);
 
   return (
     <>

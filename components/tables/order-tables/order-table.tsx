@@ -44,8 +44,6 @@ interface DataTableProps<TData, TValue> {
   totalUsers: number;
   pageSizeOptions?: number[];
   pageCount: number;
-  startDate?: Date | null;
-  endDate?: Date | null;
   searchParams?: {
     [key: string]: string | string[] | undefined;
   };
@@ -60,8 +58,6 @@ export function OrderTable<TData, TValue>({
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
   searchQuery,
-  startDate,
-  endDate,
 }: DataTableProps<TData, TValue> & { searchQuery: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -110,15 +106,13 @@ export function OrderTable<TData, TValue>({
         page: pageIndex + 1,
         limit: pageSize,
         q: searchDebounce || undefined,
-        startDate: startDate?.toISOString() ?? undefined,
-        endDate: endDate?.toISOString() ?? undefined,
       })}`,
       {
         scroll: false,
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, searchDebounce, startDate, endDate]);
+  }, [pageIndex, pageSize, searchDebounce]);
 
   const table = useReactTable({
     data,
@@ -143,8 +137,6 @@ export function OrderTable<TData, TValue>({
           page: null,
           limit: null,
           q: searchDebounce,
-          startDate: startDate?.toISOString() ?? undefined,
-          endDate: endDate?.toISOString() ?? undefined,
         })}`,
         {
           scroll: false,
@@ -161,8 +153,6 @@ export function OrderTable<TData, TValue>({
             page: null,
             limit: null,
             q: null,
-            startDate: startDate?.toISOString() ?? undefined,
-            endDate: endDate?.toISOString() ?? undefined,
           })}`,
           {
             scroll: false,
@@ -172,7 +162,7 @@ export function OrderTable<TData, TValue>({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce, startDate, endDate]);
+  }, [searchDebounce]);
 
   // Reset search query when URL q parameter is null or undefined
   React.useEffect(() => {

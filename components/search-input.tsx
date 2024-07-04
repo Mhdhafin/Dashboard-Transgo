@@ -17,11 +17,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <div className="my-4">
+    <div className="">
       <Input
         type="text"
         placeholder="Cari pesanan..."
-        className="w-full"
+        className="w-[390px]"
         value={searchQuery}
         onChange={handleInputChange}
       />

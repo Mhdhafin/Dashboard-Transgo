@@ -1,7 +1,5 @@
 import StatusCard from "@/components/StatusCard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import Welcome from "@/components/welcome-text";
 
 export default function page() {

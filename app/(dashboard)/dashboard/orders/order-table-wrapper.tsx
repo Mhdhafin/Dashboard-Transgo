@@ -9,9 +9,10 @@ import {
 } from "@/components/tables/order-tables/columns";
 import { OrderTable } from "@/components/tables/order-tables/order-table";
 import { TabsContent } from "@/components/ui/tabs";
+import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { DateRange } from "react-day-picker";
 import React from "react";
+import { DateRange } from "react-day-picker";
 
 interface OrderTableWrapperProps {
   orderRes: any;
@@ -28,11 +29,9 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
 }) => {
   // THIS MORNING I WOULD LIKE TO FIX THIS !!!!!!
   const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [dateRange, setDateRange] = React.useState<
-    DateRange | undefined | null
-  >({
-    from: null,
-    to: null,
+  const [dateRange, setDateRange] = React.useState<DateRange>({
+    from: undefined,
+    to: undefined,
   });
   const router = useRouter();
   const pathname = usePathname();
@@ -41,12 +40,12 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
   React.useEffect(() => {
     const q = searchParams.get("q") || "";
     setSearchQuery(q);
-    const start = searchParams.get("startDate");
-    const end = searchParams.get("endDate");
-    setDateRange({
-      from: start ? new Date(start) : null,
-      to: end ? new Date(end) : null,
-    });
+    // const start = searchParams.get("start_date");
+    // const end = searchParams.get("end_date");
+    // setDateRange({
+    //   from: start ? new Date(start) : null,
+    //   to: end ? new Date(end) : null,
+    // });
   }, [searchParams]);
 
   const handleSearchChange = (query: string) => {
@@ -54,13 +53,17 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
     router.push(`${pathname}?status=${status}&q=${query}`);
   };
 
-  const handleDateRangeChange = (range: DateRange | undefined) => {
+  const handleDateRangeChange = (range: DateRange) => {
     setDateRange(range);
-    router.push(
-      `${pathname}?status=${status}&q=${searchQuery}&startDate=${
-        range?.from?.toISOString() ?? ""
-      }&endDate=${range?.to?.toISOString() ?? ""}`,
-    );
+    if (range && range.from && range.to) {
+      router.push(
+        `${pathname}?status=${status}&q=${searchQuery}&start_date=${dayjs(
+          range?.from,
+        ).format("YYYY-MM-DD")}&end_date=${dayjs(range?.to).format(
+          "YYYY-MM-DD",
+        )}`,
+      );
+    }
   };
 
   const lists = [
@@ -82,14 +85,16 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
     <>
       <div className="flex items-center justify-between">
         <TabLists lists={lists} />
-        <CalendarDateRangePicker
-          onDateRangeChange={handleDateRangeChange}
-          dateRange={dateRange}
-        />
-        <SearchInput
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-        />
+        <div className="flex items-center justify-between gap-4">
+          <CalendarDateRangePicker
+            onDateRangeChange={handleDateRangeChange}
+            dateRange={dateRange}
+          />
+          <SearchInput
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+          />
+        </div>
       </div>
       <TabsContent value="pending" className="space-y-4">
         <OrderTable
@@ -100,8 +105,6 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
           pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
           pageNo={page}
           searchQuery={searchQuery}
-          startDate={dateRange?.from}
-          endDate={dateRange?.to}
         />
       </TabsContent>
       <TabsContent value="on_progress" className="space-y-4">
@@ -113,8 +116,6 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
           pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
           pageNo={page}
           searchQuery={searchQuery}
-          startDate={dateRange?.from}
-          endDate={dateRange?.to}
         />
       </TabsContent>
       <TabsContent value="done" className="space-y-4">
@@ -126,8 +127,6 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
           pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
           pageNo={page}
           searchQuery={searchQuery}
-          startDate={dateRange?.from}
-          endDate={dateRange?.to}
         />
       </TabsContent>
     </>

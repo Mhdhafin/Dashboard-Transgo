@@ -3,7 +3,6 @@
 import * as React from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,25 +12,29 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { DateRange } from "react-day-picker";
 interface CalendarDateRangePickerProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  onDateRangeChange: (range: DateRange | undefined) => void;
-  dateRange: DateRange | undefined;
+  onDateRangeChange: (range: any) => void;
+  dateRange: any;
 }
 
 export const CalendarDateRangePicker: React.FC<
   CalendarDateRangePickerProps
 > = ({ className, onDateRangeChange, dateRange }) => {
-  const [date, setDate] = React.useState<DateRange | undefined>(dateRange);
+  const [date, setDate] = React.useState<DateRange>(dateRange);
 
   React.useEffect(() => {
+    console.log("init", dateRange);
     setDate(dateRange);
   }, [dateRange]);
 
-  const handleDateChange = (range: DateRange | undefined) => {
+  const handleDateChange = (range: any) => {
+    console.log("raange", range);
     setDate(range);
     onDateRangeChange(range);
   };
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -40,11 +43,10 @@ export const CalendarDateRangePicker: React.FC<
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-[260px] justify-start text-left font-normal relative",
               !date && "text-muted-foreground",
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
               date.to ? (
                 <>
@@ -55,8 +57,11 @@ export const CalendarDateRangePicker: React.FC<
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Pilih Tanggal</span>
             )}
+            <div className="absolute right-0 ">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+            </div>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
