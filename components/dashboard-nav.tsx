@@ -35,16 +35,18 @@ export function DashboardNav({
     <nav className="grid items-start gap-2">
       <span
         className={cn(
-          "flex justify-between items-center rounded-md p-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+          "flex justify-between items-center rounded-md  text-sm font-medium",
         )}
-        onClick={toggle}
       >
         {isMobileNav || (!isMinimized && !isMobileNav) ? (
-          <span className="mr-2 truncate font-semibold text-lg">Menu</span>
+          <span className="mr-2 truncate font-semibold text-lg pl-3">Menu</span>
         ) : (
           ""
         )}
-        <div className="border border-neutral-200 p-3 bg-neutral-50 rounded-md">
+        <div
+          className="border border-neutral-200 p-3 bg-neutral-50 rounded-md"
+          onClick={toggle}
+        >
           {isMinimized ? (
             <ChevronLast className="h-4 w-4" />
           ) : (
