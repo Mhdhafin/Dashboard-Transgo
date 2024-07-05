@@ -1,3 +1,4 @@
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuContent,
@@ -297,8 +298,8 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
         {initialData?.payment_pdf_url && (
           <div className="flex items-center justify-between max-w-[360px] border border-neutral-200 rounded-lg p-1">
             <div className="flex gap-4">
-              <div className="p-2 border border-neutral-400 rounded-lg">
-                <FileText />
+              <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
+                <Icons.pdf />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-neutral-700">
@@ -309,9 +310,9 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 </span>
               </div>
             </div>
-            <div className="p-2 border border-neutral-400 rounded-lg">
+            <div className="p-2 border border-slate-200 rounded-lg">
               <a
-                href={initialData?.payment_pdf_url}
+                href={`https://${initialData?.payment_pdf_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

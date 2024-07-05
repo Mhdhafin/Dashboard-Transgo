@@ -38,6 +38,32 @@ import {
 
 export type Icon = LucideIcon;
 
+const PDFIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} fill="none">
+    <path
+      stroke="#141B34"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.25}
+      d="M5.833 15v-2.083m0 0v-1.25c0-.393 0-.59.129-.712.128-.122.334-.122.747-.122h.583c.604 0 1.094.467 1.094 1.042s-.49 1.042-1.094 1.042H5.834ZM17.5 10.833h-1.094c-.687 0-1.03 0-1.244.204-.214.203-.214.53-.214 1.185v.695m0 2.083v-2.083m0 0h1.823m-3.646 0c0 1.15-.98 2.083-2.187 2.083-.273 0-.41 0-.51-.056-.244-.134-.22-.404-.22-.639v-2.777c0-.235-.024-.505.22-.639.1-.056.237-.056.51-.056 1.208 0 2.187.933 2.187 2.084Z"
+    />
+    <path
+      stroke="#141B34"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.25}
+      d="M12.5 18.333H8.94c-2.718 0-4.077 0-5.02-.665-.271-.19-.511-.416-.714-.67-.706-.889-.706-2.168-.706-4.725V10.15c0-2.469 0-3.704.39-4.69.629-1.585 1.957-2.835 3.642-3.427 1.048-.367 2.36-.367 4.983-.367 1.5 0 2.249 0 2.848.21.962.338 1.721 1.052 2.08 1.958.223.564.223 1.269.223 2.68v1.818"
+    />
+    <path
+      stroke="#141B34"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.25}
+      d="M2.5 10a2.778 2.778 0 0 1 2.778-2.778c.555 0 1.209.097 1.748-.047.48-.129.854-.503.982-.982.145-.54.048-1.194.048-1.749a2.778 2.778 0 0 1 2.778-2.777"
+    />
+  </svg>
+);
+
 export const Icons = {
   dashboard: LayoutDashboardIcon,
   logo: Command,
@@ -70,6 +96,7 @@ export const Icons = {
   users: Users,
   maps: MapPinned,
   ticket: Ticket,
+  pdf: PDFIcon,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
