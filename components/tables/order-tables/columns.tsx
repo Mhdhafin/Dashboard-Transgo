@@ -3,15 +3,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
-import { cn, convertTime, formatRupiah } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const duration = require("dayjs/plugin/duration");
@@ -21,17 +21,23 @@ dayjs.locale("id");
 export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
-    header: "Pelanggan",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+    ),
     cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
   {
     accessorKey: "fleet",
-    header: "Armada",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+    ),
     cell: ({ row }) => <span>{row.original.fleet.name}</span>,
   },
   {
     accessorKey: "duration",
-    header: "Waktu",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+    ),
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
@@ -73,7 +79,11 @@ export const pendingColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "total_price",
-    header: "Total Harga",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">
+        Total Harga
+      </span>
+    ),
     cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
   },
   {
@@ -93,17 +103,23 @@ export const pendingColumns: ColumnDef<any>[] = [
 export const onProgressColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
-    header: "Pelanggan",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+    ),
     cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
   {
     accessorKey: "fleet",
-    header: "Armada",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+    ),
     cell: ({ row }) => <span>{row.original.fleet.name}</span>,
   },
   {
     accessorKey: "duration",
-    header: "Waktu",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+    ),
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
@@ -145,12 +161,32 @@ export const onProgressColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "pic",
-    header: "Penanggung Jawab",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Penanggung Jawab
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Penanggung Jawab Pengembalian
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
     cell: ({ row }) => <span>{row.original.end_request.driver.name}</span>,
   },
   {
     accessorKey: "total_price",
-    header: "Total Harga",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">
+        Total Harga
+      </span>
+    ),
     cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
   },
 
@@ -163,17 +199,23 @@ export const onProgressColumns: ColumnDef<any>[] = [
 export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
-    header: "Pelanggan",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+    ),
     cell: ({ row }) => <span>{row.original.customer.name}</span>,
   },
   {
     accessorKey: "fleet",
-    header: "Armada",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+    ),
     cell: ({ row }) => <span>{row.original.fleet.name}</span>,
   },
   {
     accessorKey: "duration",
-    header: "Waktu",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+    ),
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
@@ -215,17 +257,39 @@ export const completedColumns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "pic",
-    header: "Penanggung Jawab",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Penanggung Jawab
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Penanggung Jawab Pengembalian
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
     cell: ({ row }) => <span>{row.original.end_request.driver.name}</span>,
   },
   {
     accessorKey: "total_price",
-    header: "Total Harga",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">
+        Total Harga
+      </span>
+    ),
     cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Status</span>
+    ),
     cell: ({ row }) => (
       <>
         {row.original.request_status === "pending" ? (
