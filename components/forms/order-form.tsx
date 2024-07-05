@@ -1351,7 +1351,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
             {/* sidebar */}
 
             {openCustomerDetail && isFetchingCustomer && (
-              <div className="flex justify-center items-center h-[100px] w-[400px]">
+              <div className="flex justify-center items-center h-[100px] w-full">
                 <Spinner />
               </div>
             )}
@@ -1362,7 +1362,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               />
             )}
             {openFleetDetail && isFetchingFleet && (
-              <div className="flex justify-center items-center h-[100px] w-[400px]">
+              <div className="flex justify-center items-center h-[100px] w-full">
                 <Spinner />
               </div>
             )}
@@ -1375,7 +1375,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
             )}
 
             {openDriverDetail && isFetchingDriver && (
-              <div className="flex justify-center items-center h-[100px] w-[400px]">
+              <div className="flex justify-center items-center h-[100px] w-full">
                 <Spinner />
               </div>
             )}

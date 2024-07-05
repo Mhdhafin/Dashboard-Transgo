@@ -40,7 +40,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
       <div className="flex flex-col justify-between ">
         <div className="mb-[300px]">
           <div className="mb-5 gap-2 grid">
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <User />
               </div>
@@ -53,7 +53,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                 </span>
               </div>
             </div>
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <Mail />
               </div>
@@ -66,7 +66,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                 </span>
               </div>
             </div>
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <Phone />
               </div>
@@ -79,7 +79,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                 </span>
               </div>
             </div>
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <PhoneCall />
               </div>
@@ -92,7 +92,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                 </span>
               </div>
             </div>
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <PersonStanding />
               </div>
@@ -105,7 +105,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                 </span>
               </div>
             </div>
-            <div className="p-1 flex items-center  rounded-full w-[360px] bg-neutral-50">
+            <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
               <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100 ">
                 <Cake />
               </div>
