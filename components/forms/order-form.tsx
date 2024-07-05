@@ -322,7 +322,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     setLoading(true);
     console.log("submit", data);
 
-    if (initialData) {
+    if (lastPath === "edit") {
       console.log("masuk sini");
       const payload = {
         start_request: {
