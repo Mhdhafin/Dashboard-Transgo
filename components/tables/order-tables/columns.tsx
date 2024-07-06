@@ -171,7 +171,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
             <Info />
           </HoverCardTrigger>
         </div>
-        <HoverCardContent className="w-full" align="start">
+        <HoverCardContent className="w-full p-2" align="start">
           <span className="font-semibold text-xs">
             Ini adalah Penanggung Jawab Pengembalian
           </span>
@@ -267,7 +267,7 @@ export const completedColumns: ColumnDef<any>[] = [
             <Info />
           </HoverCardTrigger>
         </div>
-        <HoverCardContent className="w-full" align="start">
+        <HoverCardContent className="w-full p-2" align="start">
           <span className="font-semibold text-xs">
             Ini adalah Penanggung Jawab Pengembalian
           </span>
