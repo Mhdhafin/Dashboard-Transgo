@@ -62,6 +62,7 @@ import DriverDetail from "./section/driver-detail";
 import PriceDetail from "./section/price-detail";
 import Spinner from "../spinner";
 import { RejectModal } from "../modal/reject-modal";
+import Link from "next/link";
 
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
@@ -703,14 +704,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         <Heading title={title} description={description} />
         {initialData?.request_status === "pending" && !isEdit && (
           <div className="flex gap-2">
-            <Button
+            <Link
+              href={`/dashboard/orders/${orderId}/edit`}
               className={cn(
                 buttonVariants({ variant: "outline" }),
                 "text-black",
               )}
             >
               Edit Pesanan
-            </Button>
+            </Link>
 
             <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
               Belum kembali
@@ -735,7 +737,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           </div>
         )}
 
-        {initialData?.status === "pending" && (
+        {initialData?.status === "pending" && lastPath === "tinjau" && (
           <Button
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
@@ -1391,7 +1393,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               <PriceDetail
                 initialData={initialData}
                 isEdit={isEdit ?? false}
-                disabledButton={loading || !allFieldsFilled}
                 showServicePrice={showServicePrice}
                 form={form}
                 detail={detail}

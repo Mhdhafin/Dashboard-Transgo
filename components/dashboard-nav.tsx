@@ -78,7 +78,7 @@ export function DashboardNav({
                     <span className="ml-2 mr-2 truncate">{item.title}</span>
                     {item.title === "Pesanan" && !isFetching && (
                       <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
-                        <span>{count?.done ?? 0}</span>
+                        <span>{count?.pending ?? 0}</span>
                       </div>
                     )}
                   </div>
