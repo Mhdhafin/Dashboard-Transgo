@@ -178,7 +178,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
-    cell: ({ row }) => <span>{row.original.end_request.driver.name}</span>,
+    cell: ({ row }) => <span>{row.original.end_request.driver?.name}</span>,
   },
   {
     accessorKey: "total_price",
@@ -274,7 +274,9 @@ export const completedColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
-    cell: ({ row }) => <span>{row.original.end_request.driver.name}</span>,
+    cell: ({ row }) => (
+      <span>{row.original.end_request.driver.name ?? "-"}</span>
+    ),
   },
   {
     accessorKey: "total_price",

@@ -48,8 +48,8 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           Rincian Harga{" "}
           {form.getValues("is_with_driver") ? "Lepas Kunci" : "Dengan Supir"}
         </h4>
-        <div className="flex flex-col justify-between">
-          <div className="mb-[90px]">
+        <div className="flex flex-col justify-between h-[800px]">
+          <div>
             <div className="border border-neutral-200 rounded-md p-[10px] mb-4">
               {form.getValues("is_with_driver") && (
                 <>
@@ -250,7 +250,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
 
           {!initialData && (
             <div className="flex flex-col gap-5">
-              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
+              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
                 <p>
                   Invoice akan tersedia saat pesanan telah dikonfirmasi.
@@ -268,7 +268,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           )}
           {initialData?.status !== "pending" &&
             initialData?.payment_pdf_url && (
-              <div className="flex items-center justify-between max-w-[360px] border border-neutral-200 rounded-lg p-1">
+              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1">
                 <div className="flex gap-4">
                   <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
                     <Icons.pdf />
