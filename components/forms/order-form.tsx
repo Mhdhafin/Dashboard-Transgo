@@ -193,12 +193,16 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       ? "Tinjau Pesanan"
       : lastPath === "edit"
       ? "Edit Pesanan"
+      : lastPath === "detail"
+      ? "Detail Pesanan"
       : "Tambah Pesanan";
   const description =
     lastPath === "tinjau"
       ? "Tinjau permintaan baru untuk pengemudi"
       : lastPath === "edit"
       ? "Edit permintaan baru untuk pengemudi"
+      : lastPath === "detail"
+      ? ""
       : "Tambah permintaan baru untuk pengemudi";
   const toastMessage = initialData
     ? "Pesanan berhasil diubah!"
@@ -242,7 +246,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const { data: insurances } = useGetInsurances();
 
   const { isMinimized } = useSidebar();
-
+  console.log("showServicePrice", showServicePrice);
   const defaultValues = initialData
     ? {
         start_request: {
@@ -319,6 +323,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     setEnd(end);
   }, [now, form.getValues("duration")]);
 
+  console.log(
+    form.getValues("start_request.driver_id"),
+    form.getValues("end_request.driver_id"),
+  );
   const onSubmit = async (data: OrderFormValues) => {
     setLoading(true);
     console.log("submit", data);
@@ -527,118 +535,125 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
   const { mutate: calculatePrice } = useOrderCalculate();
 
-  const watchedFields = form.watch([
-    "customer",
-    "fleet",
-    "date",
-    "duration",
-    "is_out_of_town",
-    "is_with_driver",
-    "insurance_id",
-    "start_request.is_self_pickup",
-    "start_request.driver_id",
-    "start_request.distance",
-    "start_request.address",
-    "end_request.is_self_pickup",
-    "end_request.driver_id",
-    "end_request.distance",
-    "end_request.address",
-    "discount",
-    "description", // description is optional,
-  ]);
-  const watchServicePrice = !(watchedFields[7] && watchedFields[11]);
-  const servicePrice = +(form.watch("service_price") ?? 0);
+  const isFieldFilled = (field: any) => {
+    return field !== undefined && field !== null && field !== "";
+  };
 
-  console.log("service", servicePrice);
+  const customerField = form.watch("customer");
+  const fleetField = form.watch("fleet");
+  const dateField = form.watch("date");
+  const durationField = form.watch("duration");
+  const isOutOfTownField = form.watch("is_out_of_town");
+  const isWithDriverField = form.watch("is_with_driver");
+  const insuranceField = form.watch("insurance_id");
+  const startSelfPickUpField = form.watch("start_request.is_self_pickup");
+  const startDriverField = form.watch("start_request.driver_id");
+  const startDistanceField = form.watch("start_request.distance");
+  const startAddressField = form.watch("start_request.address");
+  const endSelfPickUpField = form.watch("end_request.is_self_pickup");
+  const endDriverField = form.watch("end_request.driver_id");
+  const endDistanceField = form.watch("end_request.distance");
+  const endAddressField = form.watch("end_request.address");
+  const discountField = form.watch("discount");
+  const descriptionField = form.watch("description");
+  const serviceField = form.watch("service_price");
+
+  const watchServicePrice = !(startSelfPickUpField && endSelfPickUpField);
+  const servicePrice = serviceField ?? 0;
+
+  const allFieldsFilled =
+    isFieldFilled(customerField) &&
+    isFieldFilled(fleetField) &&
+    isFieldFilled(dateField) &&
+    isFieldFilled(durationField) &&
+    isFieldFilled(isOutOfTownField) &&
+    isFieldFilled(isWithDriverField) &&
+    isFieldFilled(insuranceField) &&
+    isFieldFilled(startSelfPickUpField) &&
+    isFieldFilled(startDriverField) &&
+    isFieldFilled(startDistanceField) &&
+    isFieldFilled(startAddressField) &&
+    isFieldFilled(endSelfPickUpField) &&
+    isFieldFilled(endDriverField) &&
+    isFieldFilled(endDistanceField) &&
+    isFieldFilled(endAddressField) &&
+    isFieldFilled(discountField) &&
+    ((startSelfPickUpField && endSelfPickUpField) ||
+      isFieldFilled(serviceField));
+
   useEffect(() => {
-    if (watchedFields[7] && watchedFields[11]) {
+    if (startSelfPickUpField && endSelfPickUpField) {
       setSchema(generateSchema(false));
       setShowServicePrice(false);
     } else {
       setSchema(generateSchema(true));
       setShowServicePrice(true);
     }
-  }, [watchedFields[7], watchedFields[11]]);
-
-  const allFieldsFilled = watchedFields.slice(0, 15).every((field) => {
-    if (typeof field === "boolean") {
-      return true; // Booleans are always considered filled
-    }
-    // if (typeof field === "number") {
-    //   return field !== 0; // Numbers should not be zero
-    // }
-    return field !== undefined && field !== null && field !== ""; // For strings and other types
-  });
+  }, [startSelfPickUpField, endSelfPickUpField]);
 
   useEffect(() => {
     console.log("service payload", servicePrice);
-    console.log("allFieldsFilled", watchedFields);
 
     const payload = {
-      customer_id: +(watchedFields[0] ?? 0),
-      fleet_id: +(watchedFields[1] ?? 0),
-      date: watchedFields[2],
-      duration: +(watchedFields[3] ?? 1),
-      is_out_of_town: watchedFields[4],
-      is_with_driver: watchedFields[5],
-      insurance_id: +(watchedFields[6] ?? 1),
+      customer_id: +(customerField ?? 0),
+      fleet_id: +(fleetField ?? 0),
+      is_out_of_town: isOutOfTownField,
+      is_with_driver: isWithDriverField,
+      insurance_id: +(insuranceField ?? 0),
       start_request: {
-        is_self_pickup: watchedFields[7],
-        driver_id: +(watchedFields[8] ?? 0),
-        distance: +(watchedFields[9] ?? 0),
-        address: watchedFields[10],
+        is_self_pickup: startSelfPickUpField,
+        driver_id: +(startDriverField ?? 0),
+        distance: +(startDistanceField ?? 0),
+        address: startAddressField,
       },
       end_request: {
-        is_self_pickup: watchedFields[11],
-        driver_id: +(watchedFields[12] ?? 0),
-        distance: +(watchedFields[13] ?? 0),
-        address: watchedFields[14],
+        is_self_pickup: endSelfPickUpField,
+        driver_id: +(endDriverField ?? 0),
+        distance: +(endDistanceField ?? 0),
+        address: endAddressField,
       },
-      description: watchedFields[16],
-      discount: +(watchedFields[15] ?? 0),
+      description: descriptionField,
+      ...(!isEmpty(dateField) && {
+        date: dateField,
+        duration: +(durationField ?? 1),
+      }),
+      discount: +(discountField ?? 0),
       ...(watchServicePrice && {
-        service_price: isEdit
-          ? isString(form.watch("service_price"))
-            ? parseInt((form.watch("service_price") ?? "0").replace(/,/g, ""))
-            : servicePrice
-          : servicePrice,
+        service_price: isString(serviceField)
+          ? +serviceField.replace(/,/g, "")
+          : serviceField,
       }),
     };
 
     console.log("pay", payload);
-    if (allFieldsFilled || !isEdit) {
-      // const payload = {
-      //   customer_id: +(watchedFields[0] ?? 0),
-      //   fleet_id: +(watchedFields[1] ?? 0),
-      //   date: watchedFields[2],
-      //   duration: +(watchedFields[3] ?? 1),
-      //   is_out_of_town: watchedFields[4],
-      //   is_with_driver: watchedFields[5],
-      //   insurance_id: +(watchedFields[6] ?? 1),
-      //   start_request: {
-      //     is_self_pickup: watchedFields[7],
-      //     driver_id: +(watchedFields[8] ?? 0),
-      //     distance: +(watchedFields[9] ?? 0),
-      //     address: watchedFields[10],
-      //   },
-      //   end_request: {
-      //     is_self_pickup: watchedFields[11],
-      //     driver_id: +(watchedFields[12] ?? 0),
-      //     distance: +(watchedFields[13] ?? 0),
-      //     address: watchedFields[14],
-      //   },
-      //   description: watchedFields[16],
-      //   discount: +(watchedFields[15] ?? 0),
-      //   ...(watchServicePrice && { service_price: +servicePrice }),
-      // };
-
+    if (fleetField) {
       calculatePrice(payload, {
         onSuccess: (data) => {
           setDetail(data.data);
         },
       });
     }
-  }, [...watchedFields, showServicePrice, servicePrice]);
+  }, [
+    customerField,
+    fleetField,
+    dateField,
+    durationField,
+    isOutOfTownField,
+    isWithDriverField,
+    insuranceField,
+    startSelfPickUpField,
+    startDriverField,
+    startDistanceField,
+    startAddressField,
+    endSelfPickUpField,
+    endDriverField,
+    endDistanceField,
+    endAddressField,
+    discountField,
+    descriptionField,
+    showServicePrice,
+    servicePrice,
+  ]);
 
   const disabledDate = (current: Dayjs | null): boolean => {
     return current ? current < dayjs().startOf("day") : false;
@@ -702,23 +717,25 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         id="header"
       >
         <Heading title={title} description={description} />
-        {initialData?.request_status === "pending" && !isEdit && (
-          <div className="flex gap-2">
-            <Link
-              href={`/dashboard/orders/${orderId}/edit`}
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "text-black",
-              )}
-            >
-              Edit Pesanan
-            </Link>
+        {initialData?.status !== "pending" &&
+          initialData?.request_status === "pending" &&
+          !isEdit && (
+            <div className="flex gap-2">
+              <Link
+                href={`/dashboard/orders/${orderId}/edit`}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "text-black",
+                )}
+              >
+                Edit Pesanan
+              </Link>
 
-            <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
-              Belum kembali
+              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+                Belum kembali
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {initialData?.request_status === "done" && !isEdit && (
           <div className="flex gap-2">
@@ -1398,6 +1415,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
                 handleOpenRejectModal={() => setOpenRejectModal(true)}
+                disabledButton={!allFieldsFilled}
               />
             )}
           </div>

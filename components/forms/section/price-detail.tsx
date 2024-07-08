@@ -26,6 +26,7 @@ interface PriceDetailProps {
   showServicePrice: boolean;
   isEdit: boolean;
   initialData: any;
+  disabledButton: boolean;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -36,6 +37,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   showServicePrice,
   isEdit,
   initialData,
+  disabledButton,
 }) => {
   console.log("detail", initialData, detail);
   return (
@@ -78,7 +80,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                     : "Armada"}
                 </p>
                 <p className="font-semibold text-base">
-                  {formatRupiah(detail?.fleet.price ?? 0)}
+                  {formatRupiah(detail?.fleet?.price ?? 0)}
                 </p>
               </div>
               {detail?.fleet && (
@@ -107,9 +109,9 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                       {formatRupiah(detail?.service_price ?? 0)}
                     </p>
                   </div>
+                  <Separator className="mb-1" />
                 </>
               )}
-              <Separator className="mb-1" />
               <p className="font-medium text-sm text-neutral-700 mb-1">
                 Biaya Asuransi
               </p>
@@ -118,7 +120,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   {detail?.insurance?.name ?? "Tidak ada"}
                 </p>
                 <p className="font-semibold text-base">
-                  {formatRupiah(detail?.insurance.price ?? 0)}
+                  {formatRupiah(detail?.insurance?.price ?? 0)}
                 </p>
               </div>
               {detail?.weekend_days?.length >= 1 && (
@@ -261,6 +263,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 onClick={handleOpenApprovalModal}
                 className="w-full  bg-main hover:bg-main/90"
                 type="button"
+                disabled={disabledButton}
               >
                 Konfirmasi Pesanan
               </Button>
