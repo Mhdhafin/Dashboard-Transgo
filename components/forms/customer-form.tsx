@@ -26,7 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
-import { usePostCustomer, usePatchCustomer } from "@/hooks/api/useCustomer";
+import {
+  usePostCustomer,
+  usePatchCustomer,
+  useApproveCustomer,
+  useRejectCustomer,
+} from "@/hooks/api/useCustomer";
 import { useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
@@ -36,6 +41,8 @@ import MulitpleImageUpload, {
 } from "../multiple-image-upload";
 import { omitBy } from "lodash";
 import { convertEmptyStringsToNull } from "@/lib/utils";
+import { ConfirmModal } from "../modal/confirm-modal";
+import { RejectCustomerModal } from "../modal/reject-customer-modal";
 const fileSchema = z.custom<any>(
   (val: any) => {
     // if (!(val instanceof FileList)) return false;
@@ -165,9 +172,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
   const router = useRouter();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
   const title = !isEdit
     ? "Detail Customer"
     : initialData
@@ -183,9 +188,13 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     : "Customer created successfully!";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
+  const [openApprovalModal, setOpenApprovalModal] = useState(false);
+  const [openRejectModal, setOpenRejectModal] = useState(false);
 
+  const { mutate: approveCustomer } = useApproveCustomer();
+  const { mutate: rejectCustomer } = useRejectCustomer();
   const { mutate: createCustomer } = usePostCustomer();
-  const { mutate: updateCustomer } = usePatchCustomer(customerId as string);
+  const { mutate: updateCustomer } = usePatchCustomer();
   const axiosAuth = useAxiosAuth();
 
   const defaultValues = initialData
@@ -271,28 +280,31 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         id_cards: filteredURL,
       });
 
-      updateCustomer(newPayload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["customers"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.refresh();
-          router.push(`/dashboard/customers`);
+      updateCustomer(
+        { id: customerId as string, body: newPayload },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["customers"] });
+            toast({
+              variant: "success",
+              title: toastMessage,
+            });
+            router.refresh();
+            router.push(`/dashboard/customers`);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
+          onError: (error) => {
+            toast({
+              variant: "destructive",
+              title: "Uh oh! ada sesuatu yang error",
+              //@ts-ignore
+              description: `error: ${error?.response?.data?.message}`,
+            });
+          },
         },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            //@ts-ignore
-            description: `error: ${error?.response?.data?.message}`,
-          });
-        },
-      });
+      );
     } else {
       const uploadImageRes = await uploadImage(data?.id_cards);
       const filteredURL = uploadImageRes.map(
@@ -336,8 +348,81 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     }
   };
 
+  const handleApproveCustomer = () => {
+    approveCustomer(customerId as string, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        toast({
+          variant: "success",
+          title: "Customer berhasil disetujui",
+        });
+        router.refresh();
+        router.push(`/dashboard/customers`);
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! ada sesuatu yang error",
+          //@ts-ignore
+          description: `error: ${error?.response?.message}`,
+        });
+      },
+    });
+  };
+
+  const handleRejectCustomer = (reason: string) => {
+    rejectCustomer(
+      {
+        id: customerId as string,
+        reason,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["customers"] });
+          toast({
+            variant: "success",
+            title: "Customer berhasil ditolak",
+          });
+          router.refresh();
+          router.push(`/dashboard/customers`);
+        },
+        onSettled: () => {
+          setLoading(false);
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            //@ts-ignore
+            description: `error: ${error?.response?.message}`,
+          });
+        },
+      },
+    );
+  };
+
   return (
     <>
+      {openApprovalModal && (
+        <ConfirmModal
+          isOpen={openApprovalModal}
+          onClose={() => setOpenApprovalModal(false)}
+          onConfirm={handleApproveCustomer}
+          loading={loading}
+        />
+      )}
+
+      {openRejectModal && (
+        <RejectCustomerModal
+          isOpen={openRejectModal}
+          onClose={() => setOpenRejectModal(false)}
+          onConfirm={handleRejectCustomer}
+          loading={loading}
+        />
+      )}
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
       </div>
@@ -594,6 +679,26 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           )}
         </form>
       </Form>
+      {!isEdit && initialData?.status === "pending" && (
+        <div className="flex justify-start gap-4">
+          <Button
+            disabled={loading}
+            className=" bg-red-500 hover:bg-red-500/90"
+            type="button"
+            onClick={() => setOpenRejectModal(true)}
+          >
+            Tolak
+          </Button>
+          <Button
+            disabled={loading}
+            className=" bg-main hover:bg-main/90"
+            type="button"
+            onClick={() => setOpenApprovalModal(true)}
+          >
+            Setuju
+          </Button>
+        </div>
+      )}
     </>
   );
 };

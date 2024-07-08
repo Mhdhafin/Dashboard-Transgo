@@ -30,7 +30,6 @@ export default async function page({ searchParams }: paramsProps) {
   const pageLimit = Number(searchParams.limit) || 10;
   const q = searchParams.q || null;
 
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_HOST}/customers?page=${page}&limit=${pageLimit}` +
       (q ? `&q=${q}` : ""),
