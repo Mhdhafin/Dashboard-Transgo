@@ -74,10 +74,10 @@ export const usePostCustomer = () => {
   });
 };
 
-export const usePatchCustomer = (id: string | number) => {
+export const usePatchCustomer = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
-  const patchCustomer = (body: any) => {
+  const patchCustomer = ({ id, body }: { body: any; id: string | number }) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
@@ -99,6 +99,36 @@ export const useDeleteCustomer = (id: number) => {
 
   return useMutation({
     mutationFn: deleteCustomer,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["customers"] });
+    },
+  });
+};
+
+export const useApproveCustomer = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const putCustomer = (id: number | string) => {
+    return axiosAuth.put(`${baseEndpoint}/${id}/verify`);
+  };
+
+  return useMutation({
+    mutationFn: putCustomer,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["customers"] });
+    },
+  });
+};
+
+export const useRejectCustomer = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+  const putCustomer = ({ id, reason }: { id: string; reason: string }) => {
+    return axiosAuth.put(`${baseEndpoint}/${id}/reject`, { reason });
+  };
+
+  return useMutation({
+    mutationFn: putCustomer,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["customers"] });
     },
