@@ -42,11 +42,11 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   console.log("detail", initialData, detail);
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5  mt-[-140px] fixed right-0 border-l border-neutral-400"
+      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l border-neutral-400"
       id="detail-sidebar"
     >
       <div className="">
-        <h4 className="text-center font-semibold text-xl mb-4 ">
+        <h4 className="text-center font-semibold text-xl mb-4 mt-4">
           Rincian Harga{" "}
           {form.getValues("is_with_driver") ? "Lepas Kunci" : "Dengan Supir"}
         </h4>
