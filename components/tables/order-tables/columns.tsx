@@ -24,14 +24,14 @@ export const pendingColumns: ColumnDef<any>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
-    cell: ({ row }) => <span>{row.original.customer.name}</span>,
+    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
   },
   {
     accessorKey: "fleet",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
-    cell: ({ row }) => <span>{row.original.fleet.name}</span>,
+    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
   },
   {
     accessorKey: "duration",
@@ -41,7 +41,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original.duration} hari
+          {row.original?.duration} hari
         </HoverCardTrigger>
         <HoverCardContent>
           <div className="flex items-center">
@@ -52,7 +52,7 @@ export const pendingColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
               Jam {dayjs(row.original.start_date).format("H:mm")} WIB
@@ -67,10 +67,10 @@ export const pendingColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
             </p>
           </div>
         </HoverCardContent>
@@ -84,13 +84,13 @@ export const pendingColumns: ColumnDef<any>[] = [
         Total Harga
       </span>
     ),
-    cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
+    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
   },
   {
     id: "actions",
     cell: ({ row }) => (
       <Link
-        href={`/dashboard/orders/${row.original.id}/tinjau`}
+        href={`/dashboard/orders/${row.original?.id}/tinjau`}
         className={cn(buttonVariants({ variant: "main" }))}
         onClick={(e) => e.stopPropagation()}
       >
@@ -106,14 +106,14 @@ export const onProgressColumns: ColumnDef<any>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
-    cell: ({ row }) => <span>{row.original.customer.name}</span>,
+    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
   },
   {
     accessorKey: "fleet",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
-    cell: ({ row }) => <span>{row.original.fleet.name}</span>,
+    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
   },
   {
     accessorKey: "duration",
@@ -123,7 +123,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original.duration} hari
+          {row.original?.duration} hari
         </HoverCardTrigger>
         <HoverCardContent>
           <div className="flex items-center">
@@ -134,10 +134,10 @@ export const onProgressColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
             </p>
           </div>
           <Separator className="my-4" />
@@ -149,10 +149,10 @@ export const onProgressColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
             </p>
           </div>
         </HoverCardContent>
@@ -187,7 +187,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
         Total Harga
       </span>
     ),
-    cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
+    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
   },
 
   {
@@ -202,14 +202,14 @@ export const completedColumns: ColumnDef<any>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
-    cell: ({ row }) => <span>{row.original.customer.name}</span>,
+    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
   },
   {
     accessorKey: "fleet",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
-    cell: ({ row }) => <span>{row.original.fleet.name}</span>,
+    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
   },
   {
     accessorKey: "duration",
@@ -219,7 +219,7 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original.duration} hari
+          {row.original?.duration} hari
         </HoverCardTrigger>
         <HoverCardContent>
           <div className="flex items-center">
@@ -230,10 +230,10 @@ export const completedColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.start_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
             </p>
           </div>
           <Separator className="my-4" />
@@ -245,10 +245,10 @@ export const completedColumns: ColumnDef<any>[] = [
           </div>
           <div className="pt-1">
             <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original.end_date).format("dddd, DD MMMM YYYY")}
+              {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.end_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
             </p>
           </div>
         </HoverCardContent>
@@ -269,13 +269,13 @@ export const completedColumns: ColumnDef<any>[] = [
         </div>
         <HoverCardContent className="w-full p-2" align="start">
           <span className="font-semibold text-xs">
-            Ini adalah Penanggung Jawab Pengembalian
+            Ini adalah Penanggung Jawab Pengembelian
           </span>
         </HoverCardContent>
       </HoverCard>
     ),
     cell: ({ row }) => (
-      <span>{row.original.end_request.driver.name ?? "-"}</span>
+      <span>{row.original.end_request?.driver?.name ?? "-"}</span>
     ),
   },
   {
@@ -285,7 +285,7 @@ export const completedColumns: ColumnDef<any>[] = [
         Total Harga
       </span>
     ),
-    cell: ({ row }) => <span>{formatRupiah(row.original.total_price)}</span>,
+    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
   },
   {
     accessorKey: "status",
