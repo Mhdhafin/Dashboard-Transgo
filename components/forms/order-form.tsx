@@ -1801,7 +1801,7 @@ export const Carousel = ({ images }: any) => {
         className="absolute top-0 left-0 w-full h-full flex transition-transform duration-300"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {images.length === 0 && <p>Driver Tidak memilik foto</p>}
+        {!images && <p>Driver Tidak memilik foto</p>}
         {images.map((image: any, index: any) => (
           <div key={index} className="w-full h-[300px] flex-shrink-0">
             <img
@@ -1821,13 +1821,15 @@ export const Carousel = ({ images }: any) => {
           >
             {"<"}
           </Button>
-          <Button
-            onClick={nextSlide}
-            className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
-            type="button"
-          >
-            {">"}
-          </Button>
+          {images.length > 1 && currentIndex < images.length - 1 && (
+            <Button
+              onClick={nextSlide}
+              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
+              type="button"
+            >
+              {">"}
+            </Button>
+          )}
         </>
       )}
     </div>
