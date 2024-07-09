@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
         try {
           if (typeof credentials !== "undefined") {
             const res = await fetch(
-              `${process.env.NEXT_PUBLIC_API_HOST}/auth/login`,
+              `${process.env.NEXT_PUBLIC_API_HOST}/auth/login/admin`,
               {
                 method: "POST",
                 body: JSON.stringify(credentials),
