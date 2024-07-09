@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 interface SearchInputProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  placeholder?: string;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
   searchQuery,
   onSearchChange,
+  placeholder,
 }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
@@ -20,7 +22,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     <div className="">
       <Input
         type="text"
-        placeholder="Cari pesanan..."
+        placeholder={placeholder}
         className="w-[390px]"
         value={searchQuery}
         onChange={handleInputChange}

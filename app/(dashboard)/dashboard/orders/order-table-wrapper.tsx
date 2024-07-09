@@ -93,6 +93,7 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
           <SearchInput
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
+            placeholder="Cari pesanan berdasarkan Pelanggan"
           />
         </div>
       </div>
