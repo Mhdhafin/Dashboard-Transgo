@@ -56,6 +56,35 @@ export function DashboardNav({
       </span>
       {items.map((item, index) => {
         const Icon = Icons[item.icon || "arrowRight"];
+        const isActive = () => {
+          const basePaths = [
+            "/dashboard",
+            "/dashboard/orders",
+            "/dashboard/requests",
+            "/dashboard/fleets",
+            "/dashboard/customers",
+            "/dashboard/drivers",
+            "/dashboard/location",
+          ];
+
+          if (item.href === "/dashboard") {
+            return path === "/dashboard";
+          }
+
+          const isBasePathActive =
+            basePaths.includes(item.href as string) &&
+            path.startsWith(item.href as string);
+          const isDetailOrEditPathActive = path.match(
+            /^\/dashboard\/\d+\/(tinjau|edit|detail)$/,
+          );
+
+          return (
+            isBasePathActive ||
+            (item.href !== "/dashboard" && isDetailOrEditPathActive)
+          );
+        };
+
+        console.log("path", path, item.href);
         return (
           item.href && (
             <Link
@@ -68,7 +97,7 @@ export function DashboardNav({
               <span
                 className={cn(
                   "group flex items-center rounded-md p-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                  path === item.href ? "bg-main text-white" : "transparent",
+                  isActive() ? "bg-[#EDEFF3] text-main" : "transparent",
                   item.disabled && "cursor-not-allowed opacity-80",
                 )}
               >
