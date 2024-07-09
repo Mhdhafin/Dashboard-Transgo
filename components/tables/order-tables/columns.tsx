@@ -43,7 +43,11 @@ export const pendingColumns: ColumnDef<any>[] = [
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
           {row.original?.duration} hari
         </HoverCardTrigger>
-        <HoverCardContent>
+        <HoverCardContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
@@ -125,7 +129,11 @@ export const onProgressColumns: ColumnDef<any>[] = [
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
           {row.original?.duration} hari
         </HoverCardTrigger>
-        <HoverCardContent>
+        <HoverCardContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
@@ -221,7 +229,11 @@ export const completedColumns: ColumnDef<any>[] = [
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
           {row.original?.duration} hari
         </HoverCardTrigger>
-        <HoverCardContent>
+        <HoverCardContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
