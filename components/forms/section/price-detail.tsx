@@ -42,17 +42,17 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   console.log("detail", initialData, detail);
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 absolute  mt-[-140px] right-0 border-l border-neutral-400"
+      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5  mt-[-140px] fixed right-0 border-l border-neutral-400"
       id="detail-sidebar"
     >
-      <div className="sticky top-0">
-        <h4 className="text-center font-semibold text-xl mb-4">
+      <div className="">
+        <h4 className="text-center font-semibold text-xl mb-4 ">
           Rincian Harga{" "}
           {form.getValues("is_with_driver") ? "Lepas Kunci" : "Dengan Supir"}
         </h4>
-        <div className="flex flex-col justify-between h-[800px]">
-          <div>
-            <div className="border border-neutral-200 rounded-md p-[10px] mb-4">
+        <div className="flex flex-col justify-between h-screen">
+          <div className="min-h-[400px] overflow-auto mb-[200px]">
+            <div className="border border-neutral-200 rounded-md p-[10px] mb-4 ">
               {form.getValues("is_with_driver") && (
                 <>
                   <p className="font-medium text-sm text-neutral-700">
@@ -160,7 +160,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 </p>
               </div>
             </div>
-            <div className="border border-neutral-200 rounded-md p-[10px]">
+            <div className="border border-neutral-200 rounded-md p-[10px] ">
               <p className="text-base font-semibold mb-3 text-neutral-700 ">
                 Diskon
               </p>
@@ -225,7 +225,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             </div>
           </div>
           {initialData?.status === "pending" && (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 sticky bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
                 <Info className="h-10 w-10" />
                 <p>
@@ -251,7 +251,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           )}
 
           {!initialData && (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 sticky bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
                 <p>
@@ -271,7 +271,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           )}
           {initialData?.status !== "pending" &&
             initialData?.payment_pdf_url && (
-              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1">
+              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1 sticky bottom-1">
                 <div className="flex gap-4">
                   <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
                     <Icons.pdf />
