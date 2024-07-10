@@ -655,10 +655,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     servicePrice,
   ]);
 
+  // disable date for past dates
   const disabledDate = (current: Dayjs | null): boolean => {
     return current ? current < dayjs().startOf("day") : false;
   };
 
+  // function for handle reject
   const handleRejectOrder = (reason: string) => {
     setLoading(true);
     rejectOrder(
@@ -688,6 +690,18 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       },
     );
   };
+
+  const errors = form.formState.errors;
+  useEffect(() => {
+    if (!isEmpty(errors)) {
+      toast({
+        variant: "destructive",
+        title: "Tolong isi dulu",
+      });
+
+      setOpenApprovalModal(false);
+    }
+  }, [errors]);
 
   return (
     <>
@@ -1697,7 +1711,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           ? "min-[1920px]:w-[578px] w-[458px]"
                           : "min-[1920px]:w-[460px] w-[340px]",
                       )}
-                      value={field.value}
+                      value={field.value ?? 0}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                     />
