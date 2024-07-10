@@ -94,7 +94,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     id: "actions",
     cell: ({ row }) => (
       <Link
-        href={`/dashboard/orders/${row.original?.id}/tinjau`}
+        href={`/dashboard/orders/${row.original?.id}/preview`}
         className={cn(buttonVariants({ variant: "main" }))}
         onClick={(e) => e.stopPropagation()}
       >

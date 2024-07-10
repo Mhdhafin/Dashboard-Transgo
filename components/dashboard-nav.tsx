@@ -75,7 +75,7 @@ export function DashboardNav({
             basePaths.includes(item.href as string) &&
             path.startsWith(item.href as string);
           const isDetailOrEditPathActive = path.match(
-            /^\/dashboard\/\d+\/(tinjau|edit|detail)$/,
+            /^\/dashboard\/\d+\/(preview|edit|detail)$/,
           );
 
           return (

@@ -189,7 +189,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const lastPath = splitPath[splitPath.length - 1];
 
   const title =
-    lastPath === "tinjau"
+    lastPath === "preview"
       ? "Tinjau Pesanan"
       : lastPath === "edit"
       ? "Edit Pesanan"
@@ -197,7 +197,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       ? "Detail Pesanan"
       : "Tambah Pesanan";
   const description =
-    lastPath === "tinjau"
+    lastPath === "preview"
       ? "Tinjau permintaan baru untuk pengemudi"
       : lastPath === "edit"
       ? "Edit permintaan baru untuk pengemudi"
@@ -385,7 +385,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           });
         },
       });
-    } else if (lastPath === "tinjau") {
+    } else if (lastPath === "preview") {
       const payload = {
         start_request: {
           is_self_pickup: data.start_request.is_self_pickup,
@@ -754,7 +754,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           </div>
         )}
 
-        {initialData?.status === "pending" && lastPath === "tinjau" && (
+        {initialData?.status === "pending" && lastPath === "preview" && (
           <Button
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
