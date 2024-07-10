@@ -36,6 +36,7 @@ import { omitBy } from "lodash";
 import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
+import { NumericFormat } from "react-number-format";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -247,6 +248,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       const newPayload = convertEmptyStringsToNull({
         ...data,
         photos: filteredURL,
+        price: Number(data.price.replace(/,/g, "")),
+        location_id: Number(data?.location_id),
       });
 
       editFleet(newPayload, {
@@ -436,11 +439,21 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Harga</FormLabel>
-                <FormControl className="disabled:opacity-100">
-                  <Input
-                    disabled={!isEdit || loading}
-                    value={initialData?.color ?? "-"}
-                  />
+                <FormControl>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                      Rp.
+                    </span>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      className="pl-9 disabled:opacity-90"
+                      allowLeadingZeros
+                      thousandSeparator=","
+                      value={initialData?.price}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -453,14 +466,23 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     <FormLabel className="relative label-required">
                       Harga
                     </FormLabel>
-                    <FormControl className="disabled:opacity-100">
-                      <Input
-                        type="number"
-                        disabled={!isEdit || loading}
-                        placeholder="Harga"
-                        value={field.value ?? ""}
-                        onChange={field.onChange}
-                      />
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                          Rp.
+                        </span>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          className="pl-9 disabled:opacity-90"
+                          allowLeadingZeros
+                          thousandSeparator=","
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -473,7 +495,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
-                    value={initialData?.customer?.name}
+                    value={initialData?.location?.name}
                   />
                 </FormControl>
                 <FormMessage />
