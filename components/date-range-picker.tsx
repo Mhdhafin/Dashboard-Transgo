@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,13 @@ import { DateRange } from "react-day-picker";
 interface CalendarDateRangePickerProps
   extends React.HTMLAttributes<HTMLDivElement> {
   onDateRangeChange: (range: any) => void;
+  onClearDate: () => void;
   dateRange: any;
 }
 
 export const CalendarDateRangePicker: React.FC<
   CalendarDateRangePickerProps
-> = ({ className, onDateRangeChange, dateRange }) => {
+> = ({ className, onDateRangeChange, dateRange, onClearDate }) => {
   const [date, setDate] = React.useState<DateRange>(dateRange);
 
   React.useEffect(() => {
@@ -60,7 +61,17 @@ export const CalendarDateRangePicker: React.FC<
               <span>Pilih Tanggal</span>
             )}
             <div className="absolute right-0 ">
-              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date?.from && date?.to ? (
+                <X
+                  className="mr-2 h-4 w-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClearDate();
+                  }}
+                />
+              ) : (
+                <CalendarIcon className="mr-2 h-4 w-4" />
+              )}
             </div>
           </Button>
         </PopoverTrigger>

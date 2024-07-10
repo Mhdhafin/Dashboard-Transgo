@@ -37,6 +37,21 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null | undefined>) => {
+      const newSearchParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null || value === undefined) {
+          newSearchParams.delete(key);
+        } else {
+          newSearchParams.set(key, String(value));
+        }
+      }
+
+      return newSearchParams.toString();
+    },
+    [],
+  );
   React.useEffect(() => {
     const q = searchParams.get("q") || "";
     setSearchQuery(q);
@@ -50,20 +65,36 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
-    router.push(`${pathname}?status=${status}&q=${query}`);
+    router.push(
+      `${pathname}?${createQueryString({
+        status: status,
+        q: query,
+      })}`,
+    );
   };
 
   const handleDateRangeChange = (range: DateRange) => {
     setDateRange(range);
     if (range && range.from && range.to) {
       router.push(
-        `${pathname}?status=${status}&q=${searchQuery}&start_date=${dayjs(
-          range?.from,
-        ).format("YYYY-MM-DD")}&end_date=${dayjs(range?.to).format(
-          "YYYY-MM-DD",
-        )}`,
+        `${pathname}?${createQueryString({
+          status: status,
+          start_date: dayjs(range?.from).format("YYYY-MM-DD"),
+          end_date: dayjs(range?.to).format("YYYY-MM-DD"),
+        })}`,
       );
     }
+  };
+
+  const handleClearDate = () => {
+    setDateRange({ from: undefined, to: undefined });
+    router.push(
+      `${pathname}?${createQueryString({
+        status: status,
+        start_date: null,
+        end_date: null,
+      })}`,
+    );
   };
 
   const lists = [
@@ -88,6 +119,7 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
         <div className="flex items-center justify-between gap-4">
           <CalendarDateRangePicker
             onDateRangeChange={handleDateRangeChange}
+            onClearDate={handleClearDate}
             dateRange={dateRange}
           />
           <SearchInput
