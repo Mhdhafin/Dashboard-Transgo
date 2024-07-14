@@ -696,7 +696,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     if (!isEmpty(errors)) {
       toast({
         variant: "destructive",
-        title: "Tolong isi dulu",
+        title: "Harap isi semua field yang wajib diisi sebelum konfirmasi",
       });
 
       setOpenApprovalModal(false);
