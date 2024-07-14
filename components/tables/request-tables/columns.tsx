@@ -12,7 +12,11 @@ export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Customer",
-    cell: ({ row }) => <span>{row.original.customer?.name}</span>,
+    cell: ({ row }) => (
+      <span>
+        {row.original.customer?.name ? row.original.customer?.name : "-"}
+      </span>
+    ),
   },
   {
     accessorKey: "type",
@@ -68,7 +72,9 @@ export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "driver.name",
     header: "PIC",
-    cell: ({ row }) => <span>{row.original.driver.name}</span>,
+    cell: ({ row }) => (
+      <span>{row.original.driver.name ? row.original.driver.name : "-"}</span>
+    ),
   },
   {
     id: "actions",
@@ -80,7 +86,11 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: "Customer",
-    cell: ({ row }) => <span>{row.original.customer.name}</span>,
+    cell: ({ row }) => (
+      <span>
+        {row.original.customer.name ? row.original.customer.name : "-"}
+      </span>
+    ),
   },
   {
     accessorKey: "type",
@@ -127,23 +137,33 @@ export const completedColumns: ColumnDef<any>[] = [
     header: "Waktu",
     cell: ({ row }) => (
       <span>
-        {dayjs(row.original.start_date)
-          .locale("id")
-          .format("dddd, D MMMM YYYY - HH:mm:ss")}
+        {row.original.start_date
+          ? dayjs(row.original.start_date)
+              .locale("id")
+              .format("dddd, D MMMM YYYY - HH:mm:ss")
+          : "-"}
       </span>
     ),
   },
   {
     accessorKey: "driver.name",
     header: "PIC",
-    cell: ({ row }) => <span>{row.original.driver.name}</span>,
+    cell: ({ row }) => (
+      <span>{row.original.driver.name ? row.original.driver.name : "-"}</span>
+    ),
   },
   {
     accessorKey: "driver.name",
     header: "Durasi",
     cell: ({ row }) => {
       return (
-        <span>{convertTime(row?.original?.progress_duration_second)}</span>
+        <span>
+          {convertTime(
+            row?.original?.progress_duration_second
+              ? row?.original?.progress_duration_second
+              : "-",
+          )}
+        </span>
       );
     },
   },
