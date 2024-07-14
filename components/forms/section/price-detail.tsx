@@ -263,7 +263,6 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 onClick={handleOpenApprovalModal}
                 className="w-full  bg-main hover:bg-main/90"
                 type="button"
-                disabled={disabledButton}
               >
                 Konfirmasi Pesanan
               </Button>
