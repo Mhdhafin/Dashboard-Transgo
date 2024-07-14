@@ -90,7 +90,7 @@ const formSchema = z.object({
   type: z.string({ required_error: "type is required" }).min(1, {
     message: "type is required",
   }),
-  price: z.string({ required_error: "price is required" }).min(1, {
+  price: z.coerce.string({ required_error: "price is required" }).min(1, {
     message: "price is required",
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
@@ -120,7 +120,7 @@ const editFormSchema = z.object({
   type: z.string({ required_error: "type is required" }).min(1, {
     message: "type is required",
   }),
-  price: z.string({ required_error: "price is required" }).min(1, {
+  price: z.coerce.string({ required_error: "price is required" }).min(1, {
     message: "price is required",
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
@@ -168,7 +168,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const axiosAuth = useAxiosAuth();
   const [searchLocation, setSearchLocation] = useState("");
   const [searchLocaionDebounce] = useDebounce(searchLocation, 500);
-  console.log("initialData", initialData);
   const {
     data: locations,
     fetchNextPage: fetchNextLocations,
@@ -284,7 +283,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         {
           ...data,
           photos: filteredURL,
-          price: Number(data.price),
+          price: Number(data.price.replace(/,/g, "")),
           location_id: Number(data.location_id),
         },
         (value) => value == "" || value == null,
@@ -505,7 +504,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 name="location_id"
                 control={form.control}
                 render={({ field }) => {
-                  console.log("filed", field);
                   return (
                     <Space size={12} direction="vertical">
                       <FormLabel className="relative label-required">
