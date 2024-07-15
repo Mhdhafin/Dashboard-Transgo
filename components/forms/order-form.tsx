@@ -512,25 +512,23 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
   const pengambilan = [
     {
-      name: "Diantar Penanggung Jawab",
-      value: "diantar",
-    },
-
-    {
       name: "Pelanggan Ambil Sendiri",
       value: "sendiri",
+    },
+    {
+      name: "Diantar Penanggung Jawab",
+      value: "diantar",
     },
   ];
 
   const pengembalian = [
     {
-      name: "Dijemput Penanggung Jawab",
-      value: "diantar",
-    },
-
-    {
       name: "Pelanggan Kembalikan Sendiri",
       value: "sendiri",
+    },
+    {
+      name: "Dijemput Penanggung Jawab",
+      value: "diantar",
     },
   ];
 
@@ -1602,7 +1600,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                   <FormControl>
                     <Tabs
                       defaultValue={
-                        field.value == false ? "diantar" : "sendiri"
+                        field.value == false ? "sendiri" : "diantar"
                       }
                     >
                       <TabsList className="grid w-full grid-cols-2">
