@@ -184,6 +184,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [rejectLoading, setRejectLoading] = useState(false);
   const pathname = usePathname();
   const splitPath = pathname.split("/");
   const lastPath = splitPath[splitPath.length - 1];
@@ -662,7 +663,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
   // function for handle reject
   const handleRejectOrder = (reason: string) => {
-    setLoading(true);
+    setRejectLoading(true);
     rejectOrder(
       { orderId, reason },
       {
@@ -718,7 +719,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           isOpen={openRejectModal}
           onClose={() => setOpenRejectModal(false)}
           onConfirm={handleRejectOrder}
-          loading={loading}
+          loading={rejectLoading}
         />
       )}
       <div
@@ -1486,7 +1487,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
                 handleOpenRejectModal={() => setOpenRejectModal(true)}
-                disabledButton={!allFieldsFilled}
+                confirmLoading={loading}
               />
             )}
           </div>

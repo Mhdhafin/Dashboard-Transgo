@@ -9,6 +9,7 @@ import {
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { useState } from "react";
+import Spinner from "../spinner";
 
 interface ModalProps {
   isOpen: boolean;
@@ -67,6 +68,7 @@ export const ApprovalModal: React.FC<ModalProps> = ({
             Kembali
           </Button>
           <Button
+            className="min-w-[164px]"
             disabled={loading || checked}
             variant="main"
             type="submit"
@@ -75,7 +77,7 @@ export const ApprovalModal: React.FC<ModalProps> = ({
               onConfirm();
             }}
           >
-            Konfirmasi Pesanan
+            {loading ? <Spinner className="h-5 w-5" /> : "Konfirmasi Pesanan"}
           </Button>
         </div>
       </DialogContent>

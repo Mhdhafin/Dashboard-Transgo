@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import Spinner from "../spinner";
 
 interface ModalProps {
   isOpen: boolean;
@@ -81,7 +82,7 @@ export const RejectModal: React.FC<ModalProps> = ({
               onConfirm(reason);
             }}
           >
-            Tolak Pesanan
+            {loading ? <Spinner className="h-5 w-5" /> : "Tolak Pesanan"}
           </Button>
         </div>
       </DialogContent>

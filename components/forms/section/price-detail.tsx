@@ -1,4 +1,5 @@
 import { Icons } from "@/components/icons";
+import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenuContent,
@@ -26,7 +27,7 @@ interface PriceDetailProps {
   showServicePrice: boolean;
   isEdit: boolean;
   initialData: any;
-  disabledButton: boolean;
+  confirmLoading: boolean;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -37,7 +38,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   showServicePrice,
   isEdit,
   initialData,
-  disabledButton,
+  confirmLoading,
 }) => {
   console.log("detail", initialData, detail);
   return (
@@ -207,7 +208,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               </div>
               <div className="flex justify-between mb-1">
                 <p className="font-medium text-sm text-neutral-700">
-                  Pajak (10%)
+                  Pajak (2,5%)
                 </p>
                 <p className="font-semibold text-base">
                   {formatRupiah(detail?.tax ?? 0)}
@@ -263,8 +264,13 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 onClick={handleOpenApprovalModal}
                 className="w-full  bg-main hover:bg-main/90"
                 type="button"
+                disabled={confirmLoading}
               >
-                Konfirmasi Pesanan
+                {confirmLoading ? (
+                  <Spinner className="h-5 w-5" />
+                ) : (
+                  "Konfirmasi Pesanan"
+                )}
               </Button>
             </div>
           )}
