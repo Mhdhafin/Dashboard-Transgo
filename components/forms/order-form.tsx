@@ -275,13 +275,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       }
     : {
         start_request: {
-          is_self_pickup: false,
+          is_self_pickup: true,
           address: "",
           distance: "",
           driver_id: "",
         },
         end_request: {
-          is_self_pickup: false,
+          is_self_pickup: true,
           address: "",
           distance: "",
           driver_id: "",
@@ -513,22 +513,22 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const pengambilan = [
     {
       name: "Pelanggan Ambil Sendiri",
-      value: "sendiri",
+      value: "1",
     },
     {
       name: "Diantar Penanggung Jawab",
-      value: "diantar",
+      value: "0",
     },
   ];
 
   const pengembalian = [
     {
       name: "Pelanggan Kembalikan Sendiri",
-      value: "sendiri",
+      value: "1",
     },
     {
       name: "Dijemput Penanggung Jawab",
-      value: "diantar",
+      value: "0",
     },
   ];
 
@@ -1599,22 +1599,18 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     Layanan
                   </FormLabel>
                   <FormControl>
-                    <Tabs
-                      defaultValue={
-                        field.value == false ? "sendiri" : "diantar"
-                      }
-                    >
+                    <Tabs defaultValue={field.value == true ? "1" : "0"}>
                       <TabsList className="grid w-full grid-cols-2">
                         {lists.map((list, index) => {
                           return (
                             <TabsTrigger
-                              disabled={!isEdit || loading}
+                              disabled={!isEdit || loading || switchValue}
                               key={index}
                               value={list.value}
                               onClick={() => {
                                 form.setValue(
                                   `${type}_request.is_self_pickup`,
-                                  list.value == "diantar" ? false : true,
+                                  list.value == "0" ? false : true,
                                 );
                               }}
                             >
@@ -1677,6 +1673,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           {...(!isEmpty(field.value) && {
                             value: field.value,
                           })}
+                          disabled={switchValue}
                         >
                           {isEdit && (
                             <Option
@@ -1787,7 +1784,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                   <FormControl>
                     <Input
                       min={0}
-                      disabled={!isEdit || loading}
+                      disabled={!isEdit || loading || switchValue}
                       type="number"
                       placeholder="Masukkan jarak (contoh 10 Km)"
                       className={cn(
@@ -1859,7 +1856,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       placeholder="Masukkan Alamat..."
                       className="col-span-3"
                       rows={3}
-                      disabled={!isEdit || loading}
+                      disabled={!isEdit || loading || switchValue}
                       value={field.value || ""}
                       onChange={field.onChange}
                     />
