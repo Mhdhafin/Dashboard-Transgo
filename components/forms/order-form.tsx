@@ -85,15 +85,15 @@ const formSchema = z.object({
   is_out_of_town: z.boolean(),
   // imgUrl: z.array(ImgSchema),
   date: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
-  duration: z.string().min(1, { message: "tolong masukkan durasi" }),
-  discount: z.string().min(1, { message: "tolong masukkan diskon" }),
+  duration: z.coerce.string().min(1, { message: "tolong masukkan durasi" }),
+  discount: z.coerce.string().min(1, { message: "tolong masukkan diskon" }),
   insurance_id: z.string().min(1, { message: "tolong pilih asuransi" }),
 });
 
 const generateSchema = (watchServicePrice: boolean) => {
   return watchServicePrice
     ? formSchema.extend({
-        service_price: z
+        service_price: z.coerce
           .string()
           .min(1, { message: "tolong masukkan harga layanan" }),
       })
@@ -276,13 +276,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         start_request: {
           is_self_pickup: false,
           address: "",
-          distance: 0,
+          distance: "",
           driver_id: "",
         },
         end_request: {
           is_self_pickup: false,
           address: "",
-          distance: 0,
+          distance: "",
           driver_id: "",
         },
         customer: "",
@@ -828,68 +828,73 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     <FormField
                       name="customer"
                       control={form.control}
-                      render={({ field }) => (
-                        <Space size={12} direction="vertical">
-                          <FormLabel className="relative label-required">
-                            Pelanggan
-                          </FormLabel>
-                          <FormControl>
-                            <AntdSelect
-                              className={cn(
-                                isMinimized
-                                  ? "min-[1920px]:w-[505px] w-[385px]"
-                                  : "min-[1920px]:w-[387px] w-[267px]",
-                              )}
-                              showSearch
-                              value={field.value}
-                              placeholder="Pilih Customer"
-                              style={{
-                                height: "40px",
-                                marginRight: "8px",
-                              }}
-                              onSearch={setSearchCustomerTerm}
-                              onChange={field.onChange}
-                              onPopupScroll={handleScrollCustomers}
-                              filterOption={false}
-                              notFoundContent={
-                                isFetchingNextCustomers ? (
-                                  <p className="px-3 text-sm">loading</p>
-                                ) : null
-                              }
-                            >
-                              {isEdit && (
-                                <Option
-                                  value={initialData?.customer?.id?.toString()}
-                                >
-                                  {initialData?.customer?.name}
-                                </Option>
-                              )}
-                              {customers?.pages.map(
-                                (page: any, pageIndex: any) =>
-                                  page.data.items.map(
-                                    (item: any, itemIndex: any) => {
-                                      return (
-                                        <Option
-                                          key={item.id}
-                                          value={item.id.toString()}
-                                        >
-                                          {item.name}
-                                        </Option>
-                                      );
-                                    },
-                                  ),
-                              )}
+                      render={({ field }) => {
+                        return (
+                          <Space size={12} direction="vertical">
+                            <FormLabel className="relative label-required">
+                              Pelanggan
+                            </FormLabel>
+                            <FormControl>
+                              <AntdSelect
+                                className={cn(
+                                  isMinimized
+                                    ? "min-[1920px]:w-[505px] w-[385px]"
+                                    : "min-[1920px]:w-[387px] w-[267px]",
+                                )}
+                                showSearch
+                                placeholder="Pilih Customer"
+                                style={{
+                                  height: "40px",
+                                  marginRight: "8px",
+                                }}
+                                onSearch={setSearchCustomerTerm}
+                                onChange={field.onChange}
+                                onPopupScroll={handleScrollCustomers}
+                                filterOption={false}
+                                notFoundContent={
+                                  isFetchingNextCustomers ? (
+                                    <p className="px-3 text-sm">loading</p>
+                                  ) : null
+                                }
+                                // append value attribute when field is not  empty
+                                {...(!isEmpty(field.value) && {
+                                  value: field.value,
+                                })}
+                              >
+                                {isEdit && (
+                                  <Option
+                                    value={initialData?.customer?.id?.toString()}
+                                  >
+                                    {initialData?.customer?.name}
+                                  </Option>
+                                )}
+                                {customers?.pages.map(
+                                  (page: any, pageIndex: any) =>
+                                    page.data.items.map(
+                                      (item: any, itemIndex: any) => {
+                                        return (
+                                          <Option
+                                            key={item.id}
+                                            value={item.id.toString()}
+                                          >
+                                            {item.name}
+                                          </Option>
+                                        );
+                                      },
+                                    ),
+                                )}
 
-                              {isFetchingNextCustomers && (
-                                <Option disabled>
-                                  <p className="px-3 text-sm">loading</p>
-                                </Option>
-                              )}
-                            </AntdSelect>
-                          </FormControl>
-                          <FormMessage />
-                        </Space>
-                      )}
+                                {isFetchingNextCustomers && (
+                                  <Option disabled>
+                                    <p className="px-3 text-sm">loading</p>
+                                  </Option>
+                                )}
+                              </AntdSelect>
+                            </FormControl>
+                            <FormMessage />
+                          </Space>
+                        );
+                      }}
                     />
                   ) : (
                     <FormItem className="mr-2">
@@ -943,7 +948,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           <FormControl>
                             <AntdSelect
                               showSearch
-                              value={field.value}
                               placeholder="Pilih Armada"
                               className={cn(
                                 isMinimized
@@ -963,6 +967,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   <p className="px-3 text-sm">loading</p>
                                 ) : null
                               }
+                              // append value attribute when field is not  empty
+                              {...(!isEmpty(field.value) && {
+                                value: field.value,
+                              })}
                             >
                               {isEdit && (
                                 <Option
@@ -1081,6 +1089,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                               }
                               format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
                               showTime
+                              placeholder="Pilih tanggal dan waktu mulai"
                             />
                           </FormControl>
                           <FormMessage />
@@ -1226,37 +1235,40 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 <FormField
                   control={form.control}
                   name="insurance_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Asuransi
-                      </FormLabel>
-                      <Select
-                        disabled={!isEdit || loading}
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        defaultValue={field.value}
-                      >
-                        <FormControl className="disabled:opacity-100">
-                          <SelectTrigger>
-                            <SelectValue defaultValue="1" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {/* @ts-ignore  */}
-                          {insurances?.data?.items.map((insurance) => (
-                            <SelectItem
-                              key={insurance.id}
-                              value={insurance.id.toString()}
-                            >
-                              {insurance.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel className="relative label-required">
+                          Asuransi
+                        </FormLabel>
+                        <Select
+                          disabled={!isEdit || loading}
+                          {...(!isEmpty(field.value) && {
+                            onValueChange: field.onChange,
+                            value: field.value,
+                          })}
+                        >
+                          <FormControl className="disabled:opacity-100">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Tidak menggunakan" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {/* @ts-ignore  */}
+                            {insurances?.data?.items.map((insurance) => (
+                              <SelectItem
+                                key={insurance.id}
+                                value={insurance.id.toString()}
+                              >
+                                {insurance.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
               <Separator
@@ -1595,7 +1607,6 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     <FormControl>
                       <AntdSelect
                         showSearch
-                        value={field.value}
                         placeholder="Pilih Penanggung Jawab"
                         className={cn(
                           isMinimized
@@ -1615,6 +1626,10 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                             <p className="px-3 text-sm">loading</p>
                           ) : null
                         }
+                        // append value attribute when field is not  empty
+                        {...(!isEmpty(field.value) && {
+                          value: field.value,
+                        })}
                       >
                         {isEdit && (
                           <Option
@@ -1701,9 +1716,10 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      min={0}
                       disabled={!isEdit || loading}
                       type="number"
-                      placeholder="Tanggal dan waktu selesai"
+                      placeholder="Masukkan jarak (contoh 10 Km)"
                       className={cn(
                         "h-[40px]",
                         // isMinimized ? "w-[458px]" : "w-[340px]",
@@ -1711,9 +1727,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           ? "min-[1920px]:w-[578px] w-[458px]"
                           : "min-[1920px]:w-[460px] w-[340px]",
                       )}
-                      value={field.value ?? 0}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
+                      // append value attribute when this field is not empty
+                      {...(!isEmpty(field.value) && {
+                        value: field.value,
+                      })}
                     />
                   </FormControl>
                   <FormMessage />
