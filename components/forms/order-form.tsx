@@ -1220,6 +1220,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                       placeholder="Tanggal dan waktu selesai"
                       value={end == "Invalid Date" ? "" : end}
                       readOnly
+                      disabled
                     />
                   </FormControl>
                   <FormMessage />
