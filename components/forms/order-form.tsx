@@ -817,13 +817,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               */}
               <div
                 className={cn(
-                  "grid grid-cols-2 gap-[10px]",
+                  "grid grid-cols-2 gap-[10px] items-start",
                   isMinimized
                     ? "min-[1920px]:w-[1176px] w-[936px]"
                     : "min-[1920px]:w-[940px] w-[700px]",
                 )}
               >
-                <div className="flex  items-end w-[940]">
+                <div className="flex items-end">
                   {isEdit ? (
                     <FormField
                       name="customer"
@@ -834,25 +834,159 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             <FormLabel className="relative label-required">
                               Pelanggan
                             </FormLabel>
+                            <div className="flex">
+                              <FormControl>
+                                <AntdSelect
+                                  className={cn(
+                                    isMinimized
+                                      ? "min-[1920px]:w-[505px] w-[385px]"
+                                      : "min-[1920px]:w-[387px] w-[267px]",
+                                    "mr-2",
+                                  )}
+                                  showSearch
+                                  placeholder="Pilih Customer"
+                                  style={{
+                                    height: "40px",
+                                  }}
+                                  onSearch={setSearchCustomerTerm}
+                                  onChange={field.onChange}
+                                  onPopupScroll={handleScrollCustomers}
+                                  filterOption={false}
+                                  notFoundContent={
+                                    isFetchingNextCustomers ? (
+                                      <p className="px-3 text-sm">loading</p>
+                                    ) : null
+                                  }
+                                  // append value attribute when field is not  empty
+                                  {...(!isEmpty(field.value) && {
+                                    value: field.value,
+                                  })}
+                                >
+                                  {isEdit && (
+                                    <Option
+                                      value={initialData?.customer?.id?.toString()}
+                                    >
+                                      {initialData?.customer?.name}
+                                    </Option>
+                                  )}
+                                  {customers?.pages.map(
+                                    (page: any, pageIndex: any) =>
+                                      page.data.items.map(
+                                        (item: any, itemIndex: any) => {
+                                          return (
+                                            <Option
+                                              key={item.id}
+                                              value={item.id.toString()}
+                                            >
+                                              {item.name}
+                                            </Option>
+                                          );
+                                        },
+                                      ),
+                                  )}
+
+                                  {isFetchingNextCustomers && (
+                                    <Option disabled>
+                                      <p className="px-3 text-sm">loading</p>
+                                    </Option>
+                                  )}
+                                </AntdSelect>
+                              </FormControl>
+                              <Button
+                                className={cn(
+                                  buttonVariants({ variant: "main" }),
+                                  "w-[65px] h-[40px]",
+                                )}
+                                disabled={
+                                  !form.getFieldState("customer").isDirty &&
+                                  isEmpty(form.getValues("customer"))
+                                }
+                                type="button"
+                                onClick={() => {
+                                  setOpenCustomerDetail(true);
+                                  setOpenFleetDetail(false);
+                                  setOpenDriverDetail(false);
+                                }}
+                              >
+                                Lihat
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </Space>
+                        );
+                      }}
+                    />
+                  ) : (
+                    <FormItem>
+                      <FormLabel>Pelanggan</FormLabel>
+                      <div className="flex">
+                        <FormControl className="disabled:opacity-100">
+                          <Input
+                            className={cn(
+                              isMinimized
+                                ? "min-[1920px]:w-[505px] w-[385px]"
+                                : "min-[1920px]:w-[387px] w-[267px]",
+                              "mr-2",
+                            )}
+                            style={{
+                              height: "40px",
+                            }}
+                            disabled={!isEdit || loading}
+                            value={initialData?.customer?.name ?? "-"}
+                          />
+                        </FormControl>
+                        <Button
+                          className={cn(
+                            buttonVariants({ variant: "main" }),
+                            "w-[65px] h-[40px]",
+                          )}
+                          disabled={
+                            !form.getFieldState("customer").isDirty &&
+                            isEmpty(form.getValues("customer"))
+                          }
+                          type="button"
+                          onClick={() => {
+                            setOpenCustomerDetail(true);
+                            setOpenFleetDetail(false);
+                            setOpenDriverDetail(false);
+                          }}
+                        >
+                          Lihat
+                        </Button>
+                      </div>
+                    </FormItem>
+                  )}
+                </div>
+                <div className="flex items-end">
+                  {isEdit ? (
+                    <FormField
+                      name="fleet"
+                      control={form.control}
+                      render={({ field }) => (
+                        <Space size={12} direction="vertical">
+                          <FormLabel className="relative label-required">
+                            Armada
+                          </FormLabel>
+                          <div className="flex">
                             <FormControl>
                               <AntdSelect
+                                showSearch
+                                placeholder="Pilih Armada"
                                 className={cn(
                                   isMinimized
                                     ? "min-[1920px]:w-[505px] w-[385px]"
                                     : "min-[1920px]:w-[387px] w-[267px]",
+                                  "mr-2",
                                 )}
-                                showSearch
-                                placeholder="Pilih Customer"
                                 style={{
                                   height: "40px",
-                                  marginRight: "8px",
                                 }}
-                                onSearch={setSearchCustomerTerm}
+                                onSearch={setSearchFleetTerm}
                                 onChange={field.onChange}
-                                onPopupScroll={handleScrollCustomers}
+                                onPopupScroll={handleScrollFleets}
                                 filterOption={false}
                                 notFoundContent={
-                                  isFetchingNextCustomers ? (
+                                  isFetchingNextFleets ? (
                                     <p className="px-3 text-sm">loading</p>
                                   ) : null
                                 }
@@ -863,12 +997,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                               >
                                 {isEdit && (
                                   <Option
-                                    value={initialData?.customer?.id?.toString()}
+                                    value={initialData?.fleet?.id?.toString()}
                                   >
-                                    {initialData?.customer?.name}
+                                    {initialData?.fleet?.name}
                                   </Option>
                                 )}
-                                {customers?.pages.map(
+                                {fleets?.pages.map(
                                   (page: any, pageIndex: any) =>
                                     page.data.items.map(
                                       (item: any, itemIndex: any) => {
@@ -884,165 +1018,76 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                     ),
                                 )}
 
-                                {isFetchingNextCustomers && (
+                                {isFetchingNextFleets && (
                                   <Option disabled>
                                     <p className="px-3 text-sm">loading</p>
                                   </Option>
                                 )}
                               </AntdSelect>
                             </FormControl>
-                            <FormMessage />
-                          </Space>
-                        );
-                      }}
-                    />
-                  ) : (
-                    <FormItem className="mr-2">
-                      <FormLabel>Pelanggan</FormLabel>
-                      <FormControl className="disabled:opacity-100">
-                        <Input
-                          className={cn(
-                            isMinimized
-                              ? "min-[1920px]:w-[505px] w-[385px]"
-                              : "min-[1920px]:w-[387px] w-[267px]",
-                          )}
-                          style={{
-                            height: "40px",
-                          }}
-                          disabled={!isEdit || loading}
-                          value={initialData?.customer?.name ?? "-"}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                  <Button
-                    className={cn(
-                      buttonVariants({ variant: "main" }),
-                      "w-[65px] h-[40px]",
-                    )}
-                    disabled={
-                      !form.getFieldState("customer").isDirty &&
-                      isEmpty(form.getValues("customer"))
-                    }
-                    type="button"
-                    onClick={() => {
-                      setOpenCustomerDetail(true);
-                      setOpenFleetDetail(false);
-                      setOpenDriverDetail(false);
-                    }}
-                  >
-                    Lihat
-                  </Button>
-                </div>
-                <div className="flex items-end">
-                  {isEdit ? (
-                    <FormField
-                      name="fleet"
-                      control={form.control}
-                      render={({ field }) => (
-                        <Space size={12} direction="vertical">
-                          <FormLabel className="relative label-required">
-                            Armada
-                          </FormLabel>
-                          <FormControl>
-                            <AntdSelect
-                              showSearch
-                              placeholder="Pilih Armada"
+                            <Button
                               className={cn(
-                                isMinimized
-                                  ? "min-[1920px]:w-[505px] w-[385px]"
-                                  : "min-[1920px]:w-[387px] w-[267px]",
+                                buttonVariants({ variant: "main" }),
+                                "w-[65px] h-[40px]",
                               )}
-                              style={{
-                                height: "40px",
-                                marginRight: "8px",
-                              }}
-                              onSearch={setSearchFleetTerm}
-                              onChange={field.onChange}
-                              onPopupScroll={handleScrollFleets}
-                              filterOption={false}
-                              notFoundContent={
-                                isFetchingNextFleets ? (
-                                  <p className="px-3 text-sm">loading</p>
-                                ) : null
+                              disabled={
+                                !form.getFieldState("fleet").isDirty &&
+                                isEmpty(form.getValues("fleet"))
                               }
-                              // append value attribute when field is not  empty
-                              {...(!isEmpty(field.value) && {
-                                value: field.value,
-                              })}
+                              type="button"
+                              onClick={() => {
+                                setOpenFleetDetail(true);
+                                setOpenCustomerDetail(false);
+                                setOpenDriverDetail(false);
+                              }}
                             >
-                              {isEdit && (
-                                <Option
-                                  value={initialData?.fleet?.id?.toString()}
-                                >
-                                  {initialData?.fleet?.name}
-                                </Option>
-                              )}
-                              {fleets?.pages.map((page: any, pageIndex: any) =>
-                                page.data.items.map(
-                                  (item: any, itemIndex: any) => {
-                                    return (
-                                      <Option
-                                        key={item.id}
-                                        value={item.id.toString()}
-                                      >
-                                        {item.name}
-                                      </Option>
-                                    );
-                                  },
-                                ),
-                              )}
-
-                              {isFetchingNextFleets && (
-                                <Option disabled>
-                                  <p className="px-3 text-sm">loading</p>
-                                </Option>
-                              )}
-                            </AntdSelect>
-                          </FormControl>
+                              Lihat
+                            </Button>
+                          </div>
                           <FormMessage />
                         </Space>
                       )}
                     />
                   ) : (
-                    <FormItem className="mr-2">
+                    <FormItem>
                       <FormLabel>Armada</FormLabel>
-                      <FormControl className="disabled:opacity-100">
-                        <Input
+                      <div className="flex">
+                        <FormControl className="disabled:opacity-100">
+                          <Input
+                            className={cn(
+                              isMinimized
+                                ? "min-[1920px]:w-[505px] w-[385px]"
+                                : "min-[1920px]:w-[387px] w-[267px]",
+                              "mr-2",
+                            )}
+                            style={{
+                              height: "40px",
+                            }}
+                            disabled={!isEdit}
+                            value={initialData?.fleet?.name ?? "-"}
+                          />
+                        </FormControl>
+                        <Button
                           className={cn(
-                            isMinimized
-                              ? "min-[1920px]:w-[505px] w-[385px]"
-                              : "min-[1920px]:w-[387px] w-[267px]",
+                            buttonVariants({ variant: "main" }),
+                            "w-[65px] h-[40px]",
                           )}
-                          style={{
-                            height: "40px",
+                          disabled={
+                            !form.getFieldState("fleet").isDirty &&
+                            isEmpty(form.getValues("fleet"))
+                          }
+                          type="button"
+                          onClick={() => {
+                            setOpenFleetDetail(true);
+                            setOpenCustomerDetail(false);
+                            setOpenDriverDetail(false);
                           }}
-                          disabled={!isEdit || loading}
-                          value={initialData?.fleet?.name ?? "-"}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                        >
+                          Lihat
+                        </Button>
+                      </div>
                     </FormItem>
                   )}
-                  <Button
-                    className={cn(
-                      buttonVariants({ variant: "main" }),
-                      "w-[65px] h-[40px]",
-                    )}
-                    disabled={
-                      !form.getFieldState("fleet").isDirty &&
-                      isEmpty(form.getValues("fleet"))
-                    }
-                    type="button"
-                    onClick={() => {
-                      setOpenFleetDetail(true);
-                      setOpenCustomerDetail(false);
-                      setOpenDriverDetail(false);
-                    }}
-                  >
-                    Lihat
-                  </Button>
                 </div>
               </div>
               <div
@@ -1195,7 +1240,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   name="is_out_of_town"
                   render={({ field }) => {
                     return (
-                      <FormItem className="flex flex-col justify-between">
+                      <FormItem>
                         <FormLabel className="relative label-required">
                           Pemakaian
                         </FormLabel>
@@ -1588,7 +1633,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
         </div>
         <div
           className={cn(
-            "flex gap-5",
+            "flex gap-5 items-start",
             isMinimized
               ? "min-[1920px]:w-[1176px] w-[936px]"
               : "min-[1920px]:w-[940px] w-[700px]",
@@ -1604,106 +1649,131 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     <FormLabel className="relative label-required">
                       Penanggung Jawab
                     </FormLabel>
-                    <FormControl>
-                      <AntdSelect
-                        showSearch
-                        placeholder="Pilih Penanggung Jawab"
-                        className={cn(
-                          isMinimized
-                            ? "min-[1920px]:w-[505px] w-[385px]"
-                            : "min-[1920px]:w-[387px] w-[267px]",
-                        )}
-                        style={{
-                          // width: `${isMinimized ? "385px" : "267px"}`,
-                          height: "40px",
-                        }}
-                        onSearch={setSearchDriverTerm}
-                        onChange={field.onChange}
-                        onPopupScroll={handleScrollDrivers}
-                        filterOption={false}
-                        notFoundContent={
-                          isFetchingNextDrivers ? (
-                            <p className="px-3 text-sm">loading</p>
-                          ) : null
-                        }
-                        // append value attribute when field is not  empty
-                        {...(!isEmpty(field.value) && {
-                          value: field.value,
-                        })}
-                      >
-                        {isEdit && (
-                          <Option
-                            value={
-                              type === "start"
-                                ? initialData?.start_request?.driver?.id?.toString()
-                                : initialData?.end_request?.driver?.id?.toString()
-                            }
-                          >
-                            {type === "start"
-                              ? initialData?.start_request?.driver?.name
-                              : initialData?.end_request?.driver?.name}
-                          </Option>
-                        )}
-                        {drivers?.pages.map((page: any, pageIndex: any) =>
-                          page.data.items.map((item: any, itemIndex: any) => {
-                            return (
-                              <Option key={item.id} value={item.id.toString()}>
-                                {item.name}
-                              </Option>
-                            );
-                          }),
-                        )}
+                    <div className="flex">
+                      <FormControl>
+                        <AntdSelect
+                          showSearch
+                          placeholder="Pilih Penanggung Jawab"
+                          className={cn(
+                            isMinimized
+                              ? "min-[1920px]:w-[505px] w-[385px]"
+                              : "min-[1920px]:w-[387px] w-[267px]",
+                            "mr-2",
+                          )}
+                          style={{
+                            // width: `${isMinimized ? "385px" : "267px"}`,
+                            height: "40px",
+                          }}
+                          onSearch={setSearchDriverTerm}
+                          onChange={field.onChange}
+                          onPopupScroll={handleScrollDrivers}
+                          filterOption={false}
+                          notFoundContent={
+                            isFetchingNextDrivers ? (
+                              <p className="px-3 text-sm">loading</p>
+                            ) : null
+                          }
+                          // append value attribute when field is not  empty
+                          {...(!isEmpty(field.value) && {
+                            value: field.value,
+                          })}
+                        >
+                          {isEdit && (
+                            <Option
+                              value={
+                                type === "start"
+                                  ? initialData?.start_request?.driver?.id?.toString()
+                                  : initialData?.end_request?.driver?.id?.toString()
+                              }
+                            >
+                              {type === "start"
+                                ? initialData?.start_request?.driver?.name
+                                : initialData?.end_request?.driver?.name}
+                            </Option>
+                          )}
+                          {drivers?.pages.map((page: any, pageIndex: any) =>
+                            page.data.items.map((item: any, itemIndex: any) => {
+                              return (
+                                <Option
+                                  key={item.id}
+                                  value={item.id.toString()}
+                                >
+                                  {item.name}
+                                </Option>
+                              );
+                            }),
+                          )}
 
-                        {isFetchingNextDrivers && (
-                          <Option disabled>
-                            <p className="px-3 text-sm">loading</p>
-                          </Option>
+                          {isFetchingNextDrivers && (
+                            <Option disabled>
+                              <p className="px-3 text-sm">loading</p>
+                            </Option>
+                          )}
+                        </AntdSelect>
+                      </FormControl>
+                      <Button
+                        className={cn(
+                          buttonVariants({ variant: "main" }),
+                          "max-w-[65px] h-[40px]",
                         )}
-                      </AntdSelect>
-                    </FormControl>
+                        disabled={
+                          !form.getFieldState(`${type}_request.driver_id`)
+                            .isDirty &&
+                          isEmpty(form.getValues(`${type}_request.driver_id`))
+                        }
+                        type="button"
+                        onClick={handleButton}
+                      >
+                        Lihat
+                      </Button>
+                    </div>
                     <FormMessage />
                   </Space>
                 )}
               />
             ) : (
-              <FormItem className="mr-2">
+              <FormItem>
                 <FormLabel>Penanggung Jawab</FormLabel>
-                <FormControl className="disabled:opacity-100">
-                  <Input
+                <div className="flex">
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      className={cn(
+                        isMinimized
+                          ? "min-[1920px]:w-[505px] w-[385px]"
+                          : "min-[1920px]:w-[387px] w-[267px]",
+                        "mr-2",
+                      )}
+                      style={{
+                        // width: `${isMinimized ? "385px" : "267px"}`,
+                        height: "40px",
+                      }}
+                      disabled={!isEdit || loading}
+                      value={
+                        type === "start"
+                          ? initialData?.start_request?.driver?.name
+                          : initialData?.end_request?.driver?.name
+                      }
+                    />
+                  </FormControl>
+                  <Button
                     className={cn(
-                      isMinimized
-                        ? "min-[1920px]:w-[505px] w-[385px]"
-                        : "min-[1920px]:w-[387px] w-[267px]",
+                      buttonVariants({ variant: "main" }),
+                      "max-w-[65px] h-[40px]",
                     )}
-                    style={{
-                      // width: `${isMinimized ? "385px" : "267px"}`,
-                      height: "40px",
-                    }}
-                    disabled={!isEdit || loading}
-                    value={
-                      type === "start"
-                        ? initialData?.start_request?.driver?.name
-                        : initialData?.end_request?.driver?.name
+                    disabled={
+                      !form.getFieldState(`${type}_request.driver_id`)
+                        .isDirty &&
+                      isEmpty(form.getValues(`${type}_request.driver_id`))
                     }
-                  />
-                </FormControl>
+                    type="button"
+                    onClick={handleButton}
+                  >
+                    Lihat
+                  </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
-            <Button
-              className={cn(
-                buttonVariants({ variant: "main" }),
-                "max-w-[65px] h-[40px]",
-              )}
-              disabled={
-                !form.getFieldState(`${type}_request.driver_id`).isDirty &&
-                isEmpty(form.getValues(`${type}_request.driver_id`))
-              }
-              type="button"
-              onClick={handleButton}
-            >
-              Lihat
-            </Button>
           </div>
           <div className={cn("flex gap-2 items-end")}>
             <FormField
