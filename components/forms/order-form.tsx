@@ -836,6 +836,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
+                                  defaultValue={initialData?.customer?.name}
                                   className={cn(
                                     isMinimized
                                       ? "min-[1920px]:w-[505px] w-[385px]"
@@ -861,13 +862,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                     value: field.value,
                                   })}
                                 >
-                                  {isEdit && (
-                                    <Option
-                                      value={initialData?.customer?.id?.toString()}
-                                    >
-                                      {initialData?.customer?.name}
-                                    </Option>
-                                  )}
                                   {customers?.pages.map(
                                     (page: any, pageIndex: any) =>
                                       page.data.items.map(
@@ -969,6 +963,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           <div className="flex">
                             <FormControl>
                               <AntdSelect
+                                defaultValue={initialData?.fleet?.name}
                                 showSearch
                                 placeholder="Pilih Armada"
                                 className={cn(
@@ -994,13 +989,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   value: field.value,
                                 })}
                               >
-                                {isEdit && (
-                                  <Option
-                                    value={initialData?.fleet?.id?.toString()}
-                                  >
-                                    {initialData?.fleet?.name}
-                                  </Option>
-                                )}
                                 {fleets?.pages.map(
                                   (page: any, pageIndex: any) =>
                                     page.data.items.map(
@@ -1487,6 +1475,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
                 handleOpenRejectModal={() => setOpenRejectModal(true)}
                 confirmLoading={loading}
+                type={lastPath}
               />
             )}
           </div>
@@ -1595,7 +1584,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             render={({ field }) => {
               return (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="relative label-required">
+                  <FormLabel className="relative label-required w-[56px]">
                     Layanan
                   </FormLabel>
                   <FormControl>
@@ -1648,6 +1637,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     <div className="flex">
                       <FormControl>
                         <AntdSelect
+                          defaultValue={
+                            type === "start"
+                              ? initialData?.start_request?.driver?.name
+                              : initialData?.end_request?.driver?.name
+                          }
                           showSearch
                           placeholder="Pilih Penanggung Jawab"
                           className={cn(
@@ -1675,19 +1669,6 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           })}
                           disabled={switchValue}
                         >
-                          {isEdit && (
-                            <Option
-                              value={
-                                type === "start"
-                                  ? initialData?.start_request?.driver?.id?.toString()
-                                  : initialData?.end_request?.driver?.id?.toString()
-                              }
-                            >
-                              {type === "start"
-                                ? initialData?.start_request?.driver?.name
-                                : initialData?.end_request?.driver?.name}
-                            </Option>
-                          )}
                           {drivers?.pages.map((page: any, pageIndex: any) =>
                             page.data.items.map((item: any, itemIndex: any) => {
                               return (

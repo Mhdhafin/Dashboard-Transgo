@@ -85,11 +85,11 @@
     height: 100dvh;
   }
 
-  .label-required::before {
+  .label-required::after {
     content: "*";
     color: theme("colors.red.500");
     position: absolute;
-    left: -0.5rem; /* Adjust as needed */
+    right: -0.5rem; /* Adjust as needed */
   }
 }
 
@@ -106,4 +106,16 @@
 
 li.ant-picker-ok > button {
   background-color: #1677ff;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

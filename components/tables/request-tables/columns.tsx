@@ -13,9 +13,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     accessorKey: "name",
     header: "Customer",
     cell: ({ row }) => (
-      <span>
-        {row.original.customer?.name ? row.original.customer?.name : "-"}
-      </span>
+      <span>{row.original.customer ? row.original.customer?.name : "-"}</span>
     ),
   },
   {
@@ -73,7 +71,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     accessorKey: "driver.name",
     header: "PIC",
     cell: ({ row }) => (
-      <span>{row.original.driver.name ? row.original.driver.name : "-"}</span>
+      <span>{row.original.driver ? row.original.driver.name : "-"}</span>
     ),
   },
   {
@@ -87,9 +85,7 @@ export const completedColumns: ColumnDef<any>[] = [
     accessorKey: "name",
     header: "Customer",
     cell: ({ row }) => (
-      <span>
-        {row.original.customer.name ? row.original.customer.name : "-"}
-      </span>
+      <span>{row.original.customer ? row.original.customer.name : "-"}</span>
     ),
   },
   {
@@ -149,7 +145,7 @@ export const completedColumns: ColumnDef<any>[] = [
     accessorKey: "driver.name",
     header: "PIC",
     cell: ({ row }) => (
-      <span>{row.original.driver.name ? row.original.driver.name : "-"}</span>
+      <span>{row.original.driver ? row.original.driver.name : "-"}</span>
     ),
   },
   {

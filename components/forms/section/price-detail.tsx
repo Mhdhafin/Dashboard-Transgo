@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { formatRupiah } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import dayjs from "dayjs";
+import { isEmpty } from "lodash";
 import { ChevronDown, EyeIcon, Info } from "lucide-react";
 
 interface PriceDetailProps {
@@ -28,6 +29,7 @@ interface PriceDetailProps {
   isEdit: boolean;
   initialData: any;
   confirmLoading: boolean;
+  type?: string;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -39,8 +41,13 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   isEdit,
   initialData,
   confirmLoading,
+  type,
 }) => {
-  console.log("detail", initialData, detail);
+  console.log(
+    "de",
+    !form.getValues("is_with_driver"),
+    detail?.out_of_town_price,
+  );
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l border-neutral-400"
@@ -71,6 +78,20 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   </div>
                 </>
               )}
+              {!form.getValues("is_with_driver") &&
+                form.getValues("is_out_of_town") && (
+                  <div className={cn("flex justify-between")}>
+                    <p className="font-medium text-sm text-neutral-700">
+                      {form.getValues("is_out_of_town")
+                        ? "Luar Kota"
+                        : "Dalam Kota"}
+                    </p>
+                    <p className="font-semibold text-base">
+                      {formatRupiah(detail?.out_of_town_price ?? 0)}
+                    </p>
+                  </div>
+                )}
+
               <p className="font-medium text-sm text-neutral-700 mb-1">
                 Nama Armada
               </p>
@@ -84,6 +105,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   {formatRupiah(detail?.fleet?.price ?? 0)}
                 </p>
               </div>
+
               {detail?.fleet && (
                 <div className="flex justify-between mb-1">
                   <p className="font-medium text-sm text-neutral-700">
@@ -225,7 +247,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               </div>
             </div>
           </div>
-          {initialData?.status === "pending" && (
+          {type === "preview" && initialData?.status === "pending" && (
             <div className="flex flex-col gap-5 sticky bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
                 <Info className="h-10 w-10" />
@@ -251,7 +273,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             </div>
           )}
 
-          {!initialData && (
+          {(type === "create" || type === "edit") && (
             <div className="flex flex-col gap-5 sticky bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
@@ -274,7 +296,8 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               </Button>
             </div>
           )}
-          {initialData?.status !== "pending" &&
+          {type === "detail" &&
+            initialData?.status !== "pending" &&
             initialData?.payment_pdf_url && (
               <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1 sticky bottom-1">
                 <div className="flex gap-4">
