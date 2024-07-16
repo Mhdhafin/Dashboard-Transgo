@@ -843,7 +843,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 )}
               >
                 <div className="flex items-end">
-                  {isEdit ? (
+                  {lastPath !== "preview" && isEdit ? (
                     <FormField
                       name="customer"
                       control={form.control}
@@ -950,7 +950,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             style={{
                               height: "40px",
                             }}
-                            disabled={!isEdit || loading}
+                            disabled
                             value={initialData?.customer?.name ?? "-"}
                           />
                         </FormControl>
@@ -1084,7 +1084,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             style={{
                               height: "40px",
                             }}
-                            disabled={!isEdit}
+                            disabled
                             value={initialData?.fleet?.name ?? "-"}
                           />
                         </FormControl>
@@ -1176,7 +1176,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         style={{
                           height: "40px",
                         }}
-                        disabled={!isEdit || loading}
+                        disabled
                         value={
                           dayjs(initialData?.start_date)
                             .locale("id")
@@ -1451,7 +1451,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             placeholder="Masukkan Deskripsi pesanan anda di sini..."
                             className="col-span-3"
                             rows={3}
-                            disabled={!isEdit || loading}
+                            disabled
                             value={field.value || ""}
                             onChange={field.onChange}
                           />
