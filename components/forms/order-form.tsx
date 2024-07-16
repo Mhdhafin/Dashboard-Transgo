@@ -1596,7 +1596,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       <div className="space-y-8">
         <div className="flex justify-between">
           <h3 className="mb-4">{title}</h3>
-          {type === "end" && !initialData?.request_status && (
+          {type === "end" && lastPath !== "detail" && (
             <div className="flex gap-2">
               <Label htmlFor="same-field" className="font-normal text-sm">
                 Samakan data seperti pengambilan
