@@ -247,7 +247,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const { data: insurances } = useGetInsurances();
 
   const { isMinimized } = useSidebar();
-  console.log("showServicePrice", showServicePrice);
+  console.log(initialData);
   const defaultValues = initialData
     ? {
         start_request: {
@@ -263,7 +263,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           driver_id: initialData?.end_request?.driver?.id?.toString(),
         },
         customer: initialData?.customer?.id?.toString(),
-        fleet: initialData?.fleet.id?.toString(),
+        fleet: initialData?.fleet?.id?.toString(),
         description: initialData?.description,
         is_with_driver: initialData?.is_with_driver,
         is_out_of_town: initialData?.is_out_of_town,
@@ -294,7 +294,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         date: "",
         duration: "1",
         discount: "0",
-        insurance_id: "",
+        insurance_id: "0",
         service_price: "",
       };
 
@@ -302,9 +302,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     resolver: zodResolver(schema),
     defaultValues,
   });
-  const { data: customer, isFetching: isFetchingCustomer } =
+  const { data: customerData, isFetching: isFetchingCustomer } =
     useGetDetailCustomer(form.getValues("customer"));
-  const { data: fleet, isFetching: isFetchingFleet } = useGetDetailFleet(
+  const { data: fleetData, isFetching: isFetchingFleet } = useGetDetailFleet(
     form.getValues("fleet"),
   );
 
@@ -355,14 +355,14 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         date: data.date.toISOString(),
         duration: +data.duration,
         discount: +data.discount,
-        insurance_id: +data.insurance_id,
+        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
         ...(showServicePrice &&
           data?.service_price && {
             service_price: +data.service_price.replace(/,/g, ""),
           }),
       };
 
-      setLoading(false);
+      setLoading(true);
 
       editOrder(payload, {
         onSuccess: () => {
@@ -408,14 +408,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         date: data.date.toISOString(),
         duration: +data.duration,
         discount: +data.discount,
-        insurance_id: +data.insurance_id,
+        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
+
         ...(showServicePrice &&
           data?.service_price && {
             service_price: +data.service_price.replace(/,/g, ""),
           }),
       };
 
-      setLoading(false);
+      setLoading(true);
 
       acceptOrder(payload, {
         onSuccess: () => {
@@ -462,14 +463,14 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         date: data.date.toISOString(),
         duration: +data.duration,
         discount: +data.discount,
-        insurance_id: +data.insurance_id,
+        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
+
         ...(showServicePrice &&
           data?.service_price && {
             service_price: +data.service_price.replace(/,/g, ""),
           }),
       };
-      setLoading(false);
-
+      setLoading(true);
       createOrder(payload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -690,6 +691,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     );
   };
 
+  const handleReset = () => {
+    form.reset();
+  };
+
   const errors = form.formState.errors;
   useEffect(() => {
     if (!isEmpty(errors)) {
@@ -769,6 +774,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
         {initialData?.status === "pending" && lastPath === "preview" && (
           <Button
+            onClick={handleReset}
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
             Reset berdasarkan data pengguna
@@ -782,29 +788,43 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         >
           <div className="flex relative" id="parent">
             <div className={cn("space-y-8 pr-5")}>
-              <Tabs
-                defaultValue={
-                  defaultValues.is_with_driver ? "dengan_supir" : "lepas_kunci"
-                }
-                className="w-[235px]"
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger
-                    disabled={!isEdit || loading}
-                    value="lepas_kunci"
-                    onClick={() => form.setValue("is_with_driver", false)}
-                  >
-                    Lepas Kunci
-                  </TabsTrigger>
-                  <TabsTrigger
-                    disabled={!isEdit || loading}
-                    value="dengan_supir"
-                    onClick={() => form.setValue("is_with_driver", true)}
-                  >
-                    Dengan Supir
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <FormField
+                name="is_with_driver"
+                control={form.control}
+                render={({ field }) => {
+                  console.log("field", field.value, initialData?.customer);
+                  return (
+                    <Tabs
+                      defaultValue={
+                        defaultValues.is_with_driver
+                          ? "dengan_supir"
+                          : "lepas_kunci"
+                      }
+                      onValueChange={field.onChange}
+                      value={field.value ? "dengan_supir" : "lepas_kunci"}
+                      className="w-[235px]"
+                    >
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger
+                          disabled={!isEdit || loading}
+                          value="lepas_kunci"
+                          onClick={() => form.setValue("is_with_driver", false)}
+                        >
+                          Lepas Kunci
+                        </TabsTrigger>
+                        <TabsTrigger
+                          disabled={!isEdit || loading}
+                          value="dengan_supir"
+                          onClick={() => form.setValue("is_with_driver", true)}
+                        >
+                          Dengan Supir
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  );
+                }}
+              />
+
               {/* 
               perhitungan lebar content
               di figma dengan lebar 1440px:  
@@ -836,7 +856,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  defaultValue={initialData?.customer?.name}
                                   className={cn(
                                     isMinimized
                                       ? "min-[1920px]:w-[505px] w-[385px]"
@@ -860,6 +879,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   // append value attribute when field is not  empty
                                   {...(!isEmpty(field.value) && {
                                     value: field.value,
+                                    defaultValue: initialData?.customer?.name,
                                   })}
                                 >
                                   {customers?.pages.map(
@@ -955,85 +975,87 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     <FormField
                       name="fleet"
                       control={form.control}
-                      render={({ field }) => (
-                        <Space size={12} direction="vertical">
-                          <FormLabel className="relative label-required">
-                            Armada
-                          </FormLabel>
-                          <div className="flex">
-                            <FormControl>
-                              <AntdSelect
-                                defaultValue={initialData?.fleet?.name}
-                                showSearch
-                                placeholder="Pilih Armada"
-                                className={cn(
-                                  isMinimized
-                                    ? "min-[1920px]:w-[505px] w-[385px]"
-                                    : "min-[1920px]:w-[387px] w-[267px]",
-                                  "mr-2",
-                                )}
-                                style={{
-                                  height: "40px",
-                                }}
-                                onSearch={setSearchFleetTerm}
-                                onChange={field.onChange}
-                                onPopupScroll={handleScrollFleets}
-                                filterOption={false}
-                                notFoundContent={
-                                  isFetchingNextFleets ? (
-                                    <p className="px-3 text-sm">loading</p>
-                                  ) : null
-                                }
-                                // append value attribute when field is not  empty
-                                {...(!isEmpty(field.value) && {
-                                  value: field.value,
-                                })}
-                              >
-                                {fleets?.pages.map(
-                                  (page: any, pageIndex: any) =>
-                                    page.data.items.map(
-                                      (item: any, itemIndex: any) => {
-                                        return (
-                                          <Option
-                                            key={item.id}
-                                            value={item.id.toString()}
-                                          >
-                                            {item.name}
-                                          </Option>
-                                        );
-                                      },
-                                    ),
-                                )}
+                      render={({ field }) => {
+                        return (
+                          <Space size={12} direction="vertical">
+                            <FormLabel className="relative label-required">
+                              Armada
+                            </FormLabel>
+                            <div className="flex">
+                              <FormControl>
+                                <AntdSelect
+                                  className={cn(
+                                    isMinimized
+                                      ? "min-[1920px]:w-[505px] w-[385px]"
+                                      : "min-[1920px]:w-[387px] w-[267px]",
+                                    "mr-2",
+                                  )}
+                                  showSearch
+                                  placeholder="Pilih Armada"
+                                  style={{
+                                    height: "40px",
+                                  }}
+                                  onSearch={setSearchFleetTerm}
+                                  onChange={field.onChange}
+                                  onPopupScroll={handleScrollFleets}
+                                  filterOption={false}
+                                  notFoundContent={
+                                    isFetchingNextFleets ? (
+                                      <p className="px-3 text-sm">loading</p>
+                                    ) : null
+                                  }
+                                  // append value attribute when field is not  empty
+                                  {...(!isEmpty(field.value) && {
+                                    value: field.value,
+                                    defaultValue: initialData?.fleet?.name,
+                                  })}
+                                >
+                                  {fleets?.pages.map(
+                                    (page: any, pageIndex: any) =>
+                                      page.data.items.map(
+                                        (item: any, itemIndex: any) => {
+                                          return (
+                                            <Option
+                                              key={item.id}
+                                              value={item.id.toString()}
+                                            >
+                                              {item.name}
+                                            </Option>
+                                          );
+                                        },
+                                      ),
+                                  )}
 
-                                {isFetchingNextFleets && (
-                                  <Option disabled>
-                                    <p className="px-3 text-sm">loading</p>
-                                  </Option>
+                                  {isFetchingNextFleets && (
+                                    <Option disabled>
+                                      <p className="px-3 text-sm">loading</p>
+                                    </Option>
+                                  )}
+                                </AntdSelect>
+                              </FormControl>
+                              <Button
+                                className={cn(
+                                  buttonVariants({ variant: "main" }),
+                                  "w-[65px] h-[40px]",
                                 )}
-                              </AntdSelect>
-                            </FormControl>
-                            <Button
-                              className={cn(
-                                buttonVariants({ variant: "main" }),
-                                "w-[65px] h-[40px]",
-                              )}
-                              disabled={
-                                !form.getFieldState("fleet").isDirty &&
-                                isEmpty(form.getValues("fleet"))
-                              }
-                              type="button"
-                              onClick={() => {
-                                setOpenFleetDetail(true);
-                                setOpenCustomerDetail(false);
-                                setOpenDriverDetail(false);
-                              }}
-                            >
-                              Lihat
-                            </Button>
-                          </div>
-                          <FormMessage />
-                        </Space>
-                      )}
+                                disabled={
+                                  !form.getFieldState("customer").isDirty &&
+                                  isEmpty(form.getValues("customer"))
+                                }
+                                type="button"
+                                onClick={() => {
+                                  setOpenCustomerDetail(true);
+                                  setOpenFleetDetail(false);
+                                  setOpenDriverDetail(false);
+                                }}
+                              >
+                                Lihat
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </Space>
+                        );
+                      }}
                     />
                   ) : (
                     <FormItem>
@@ -1165,6 +1187,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         disabled={!isEdit || loading}
                         onValueChange={field.onChange}
                         defaultValue={defaultValues.duration}
+                        value={field.value}
                       >
                         <FormControl
                           className={cn(
@@ -1234,7 +1257,8 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         </FormLabel>
                         <FormControl>
                           <Tabs
-                            defaultValue={
+                            onValueChange={field.onChange}
+                            value={
                               field.value == false ? "dalam_kota" : "luar_kota"
                             }
                           >
@@ -1276,17 +1300,16 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         </FormLabel>
                         <Select
                           disabled={!isEdit || loading}
-                          {...(!isEmpty(field.value) && {
-                            onValueChange: field.onChange,
-                            value: field.value,
-                          })}
+                          onValueChange={field.onChange}
+                          value={field.value}
                         >
                           <FormControl className="disabled:opacity-100">
                             <SelectTrigger>
-                              <SelectValue placeholder="Tidak menggunakan" />
+                              <SelectValue defaultValue="0" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
+                            <SelectItem value="0">Tidak menggunakan</SelectItem>
                             {/* @ts-ignore  */}
                             {insurances?.data?.items.map((insurance) => (
                               <SelectItem
@@ -1435,7 +1458,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
             )}
             {openCustomerDetail && !isFetchingCustomer && (
               <CustomerDetail
-                data={customer?.data}
+                data={customerData?.data}
                 onClose={() => setOpenCustomerDetail(false)}
               />
             )}
@@ -1447,7 +1470,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
             {openFleetDetail && !isFetchingFleet && (
               <FleetDetail
-                data={fleet?.data}
+                data={fleetData?.data}
                 onClose={() => setOpenFleetDetail(false)}
               />
             )}
@@ -1588,7 +1611,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     Layanan
                   </FormLabel>
                   <FormControl>
-                    <Tabs defaultValue={field.value == true ? "1" : "0"}>
+                    <Tabs
+                      defaultValue={field.value == true ? "1" : "0"}
+                      value={field.value == true ? "1" : "0"}
+                      onValueChange={field.onChange}
+                    >
                       <TabsList className="grid w-full grid-cols-2">
                         {lists.map((list, index) => {
                           return (
@@ -1778,9 +1805,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       // append value attribute when this field is not empty
-                      {...(!isEmpty(field.value) && {
-                        value: field.value,
-                      })}
+                      value={field.value}
                     />
                   </FormControl>
                   <FormMessage />
