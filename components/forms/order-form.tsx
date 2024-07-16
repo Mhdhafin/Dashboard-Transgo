@@ -879,9 +879,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   // append value attribute when field is not  empty
                                   {...(!isEmpty(field.value) && {
                                     value: field.value,
-                                    defaultValue: initialData?.customer?.name,
                                   })}
                                 >
+                                  {lastPath !== "create" && isEdit && (
+                                    <Option
+                                      value={initialData?.customer?.id?.toString()}
+                                    >
+                                      {initialData?.customer?.name}
+                                    </Option>
+                                  )}
                                   {customers?.pages.map(
                                     (page: any, pageIndex: any) =>
                                       page.data.items.map(
@@ -1007,9 +1013,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   // append value attribute when field is not  empty
                                   {...(!isEmpty(field.value) && {
                                     value: field.value,
-                                    defaultValue: initialData?.fleet?.name,
                                   })}
                                 >
+                                  {lastPath !== "create" && isEdit && (
+                                    <Option
+                                      value={initialData?.fleet?.id?.toString()}
+                                    >
+                                      {initialData?.fleet?.name}
+                                    </Option>
+                                  )}
                                   {fleets?.pages.map(
                                     (page: any, pageIndex: any) =>
                                       page.data.items.map(
@@ -1350,6 +1362,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   setOpenDriverDetail(true);
                   setType("start");
                 }}
+                lastPath={lastPath}
               />
               <DetailSection
                 title="Detail Pengembilan"
@@ -1366,6 +1379,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   setOpenDriverDetail(true);
                   setType("end");
                 }}
+                lastPath={lastPath}
               />
               <div
                 className={cn(
@@ -1523,6 +1537,7 @@ interface DetailSectionProps {
   lists: List[];
   type: "start" | "end";
   handleButton: () => void;
+  lastPath: string;
 }
 
 const DetailSection: React.FC<DetailSectionProps> = ({
@@ -1535,6 +1550,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
   lists,
   type,
   handleButton,
+  lastPath,
 }) => {
   const [searchDriverTerm, setSearchDriverTerm] = useState("");
   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
@@ -1696,6 +1712,19 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           })}
                           disabled={switchValue}
                         >
+                          {lastPath !== "create" && isEdit && (
+                            <Option
+                              value={
+                                type == "start"
+                                  ? initialData?.start_request?.driver?.id?.toString()
+                                  : initialData?.end_request?.driver?.id?.toString()
+                              }
+                            >
+                              {type == "start"
+                                ? initialData?.start_request?.driver?.name
+                                : initialData?.end_request?.driver?.name}
+                            </Option>
+                          )}
                           {drivers?.pages.map((page: any, pageIndex: any) =>
                             page.data.items.map((item: any, itemIndex: any) => {
                               return (
