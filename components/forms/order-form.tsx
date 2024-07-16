@@ -1313,7 +1313,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         <Select
                           disabled={!isEdit || loading}
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value || "0"}
                         >
                           <FormControl className="disabled:opacity-100">
                             <SelectTrigger>
