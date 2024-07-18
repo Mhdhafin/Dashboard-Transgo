@@ -89,7 +89,7 @@ export function DashboardNav({
           item.href && (
             <Link
               key={index}
-              href={item.disabled ? "/" : item.href}
+              href={path.includes(item.href) ? "" : item.href}
               onClick={() => {
                 if (setOpen) setOpen(false);
               }}
