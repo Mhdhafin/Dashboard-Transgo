@@ -137,3 +137,14 @@ export const useRejectCustomer = () => {
     },
   });
 };
+
+export const useCustomersStatusCount = () => {
+  const axiosAuth = useAxiosAuth();
+  const getStatusCountFn = () => {
+    return axiosAuth.get(`${baseEndpoint}/status/count`);
+  };
+  return useQuery({
+    queryKey: ["customers"],
+    queryFn: getStatusCountFn,
+  });
+};

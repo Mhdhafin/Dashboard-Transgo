@@ -10,6 +10,7 @@ import { Dispatch, SetStateAction } from "react";
 import { useSidebar } from "@/hooks/useSidebar";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import { useOrdersStatusCount } from "@/hooks/api/useOrder";
+import { useCustomersStatusCount } from "@/hooks/api/useCustomer";
 
 interface DashboardNavProps {
   items: NavItem[];
@@ -24,8 +25,12 @@ export function DashboardNav({
 }: DashboardNavProps) {
   const path = usePathname();
   const { isMinimized, toggle } = useSidebar();
-  const { data: statusCount, isFetching } = useOrdersStatusCount();
-  const count = statusCount?.data;
+  const { data: orderStatusCount, isFetching: isFetchingOrderStatus } =
+    useOrdersStatusCount();
+  const { data: customerStatusCount, isFetching: isFetchingCustomerStatus } =
+    useCustomersStatusCount();
+  const orderCount = orderStatusCount?.data;
+  const customerCount = customerStatusCount?.data;
 
   if (!items?.length) {
     return null;
@@ -105,11 +110,17 @@ export function DashboardNav({
                 {isMobileNav || (!isMinimized && !isMobileNav) ? (
                   <div className="flex justify-between w-full">
                     <span className="ml-2 mr-2 truncate">{item.title}</span>
-                    {item.title === "Pesanan" && !isFetching && (
+                    {item.title === "Pesanan" && !isFetchingOrderStatus && (
                       <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
-                        <span>{count?.pending ?? 0}</span>
+                        <span>{orderCount?.pending ?? 0}</span>
                       </div>
                     )}
+                    {item.title === "Customers" &&
+                      !isFetchingCustomerStatus && (
+                        <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
+                          <span>{customerCount?.pending ?? 0}</span>
+                        </div>
+                      )}
                   </div>
                 ) : (
                   ""
