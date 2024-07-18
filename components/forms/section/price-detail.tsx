@@ -204,6 +204,8 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                           value={field.value || "0"}
                           onChange={field.onChange}
                           onBlur={field.onBlur}
+                          max={100}
+                          min={1}
                         />
                       </div>
                     </FormControl>
