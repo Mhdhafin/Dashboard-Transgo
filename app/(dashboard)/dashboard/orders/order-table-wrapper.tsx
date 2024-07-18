@@ -2,6 +2,7 @@
 import TabLists from "@/components/TabLists";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import SearchInput from "@/components/search-input";
+import Spinner from "@/components/spinner";
 import {
   completedColumns,
   onProgressColumns,
@@ -9,26 +10,15 @@ import {
 } from "@/components/tables/order-tables/columns";
 import { OrderTable } from "@/components/tables/order-tables/order-table";
 import { TabsContent } from "@/components/ui/tabs";
+import { useGetOrders } from "@/hooks/api/useOrder";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { DateRange } from "react-day-picker";
+import { useDebounce } from "use-debounce";
 
-interface OrderTableWrapperProps {
-  orderRes: any;
-  status: string;
-  pageLimit: number;
-  page: number;
-}
-
-const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
-  orderRes,
-  status,
-  pageLimit,
-  page,
-}) => {
+const OrderTableWrapper = () => {
   // THIS MORNING I WOULD LIKE TO FIX THIS !!!!!!
-  const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [dateRange, setDateRange] = React.useState<DateRange>({
     from: undefined,
     to: undefined,
@@ -36,6 +26,58 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+  const pageLimit = Number(searchParams.get("limit")) || 10;
+  const defaultTab = searchParams.get("status") ?? "pending";
+  const q = searchParams.get("q");
+  const startDate = searchParams.get("start_date") || "";
+  const endDate = searchParams.get("end_date") || "";
+
+  const [searchQuery, setSearchQuery] = React.useState<string>(q ?? "");
+  const [searchDebounce] = useDebounce(searchQuery, 500);
+
+  const { data: pendingData, isFetching: isFetchingPendingData } = useGetOrders(
+    {
+      limit: pageLimit,
+      page: page,
+      q: searchDebounce,
+      status: "pending",
+      start_date: startDate,
+      end_date: endDate,
+    },
+    {
+      enabled: defaultTab === "pending",
+    },
+    "pending",
+  );
+
+  const { data: onProgressData, isFetching: isFetchingOnProgressData } =
+    useGetOrders(
+      {
+        limit: pageLimit,
+        page: page,
+        q: searchDebounce,
+        status: "on_progress",
+        start_date: startDate,
+        end_date: endDate,
+      },
+      { enabled: defaultTab === "on_progress" },
+      "on_progress",
+    );
+
+  const { data: completedData, isFetching: isFetchingCompletedData } =
+    useGetOrders(
+      {
+        limit: pageLimit,
+        page: page,
+        q: searchDebounce,
+        status: "done",
+        start_date: startDate,
+        end_date: endDate,
+      },
+      { enabled: defaultTab === "done" },
+      "done",
+    );
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null | undefined>) => {
@@ -52,49 +94,17 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
     },
     [],
   );
-  React.useEffect(() => {
-    const q = searchParams.get("q") || "";
-    setSearchQuery(q);
-    // const start = searchParams.get("start_date");
-    // const end = searchParams.get("end_date");
-    // setDateRange({
-    //   from: start ? new Date(start) : null,
-    //   to: end ? new Date(end) : null,
-    // });
-  }, [searchParams]);
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
-    router.push(
-      `${pathname}?${createQueryString({
-        status: status,
-        q: query,
-      })}`,
-    );
   };
 
   const handleDateRangeChange = (range: DateRange) => {
     setDateRange(range);
-    if (range && range.from && range.to) {
-      router.push(
-        `${pathname}?${createQueryString({
-          status: status,
-          start_date: dayjs(range?.from).format("YYYY-MM-DD"),
-          end_date: dayjs(range?.to).format("YYYY-MM-DD"),
-        })}`,
-      );
-    }
   };
 
   const handleClearDate = () => {
     setDateRange({ from: undefined, to: undefined });
-    router.push(
-      `${pathname}?${createQueryString({
-        status: status,
-        start_date: null,
-        end_date: null,
-      })}`,
-    );
   };
 
   const lists = [
@@ -111,6 +121,52 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
       value: "done",
     },
   ];
+
+  useEffect(() => {
+    if (dateRange && dateRange.from && dateRange.to) {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          start_date: dayjs(dateRange?.from).format("YYYY-MM-DD"),
+          end_date: dayjs(dateRange?.to).format("YYYY-MM-DD"),
+        })}`,
+      );
+    } else {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          start_date: null,
+          end_date: null,
+        })}`,
+      );
+    }
+  }, [dateRange]);
+
+  useEffect(() => {
+    if (
+      searchDebounce !== undefined ||
+      searchDebounce !== "" ||
+      searchDebounce
+    ) {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          q: searchDebounce,
+          page: null,
+          limit: pageLimit,
+        })}`,
+      );
+    } else {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          q: null,
+          page: null,
+          limit: null,
+        })}`,
+      );
+    }
+  }, [searchDebounce]);
 
   return (
     <>
@@ -130,37 +186,46 @@ const OrderTableWrapper: React.FC<OrderTableWrapperProps> = ({
         </div>
       </div>
       <TabsContent value="pending" className="space-y-4">
-        <OrderTable
-          columns={pendingColumns}
-          data={orderRes.items}
-          searchKey="name"
-          totalUsers={orderRes.meta?.total_items}
-          pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
-          pageNo={page}
-          searchQuery={searchQuery}
-        />
+        {isFetchingPendingData && <Spinner />}
+        {!isFetchingPendingData && pendingData && (
+          <OrderTable
+            columns={pendingColumns}
+            data={pendingData.items}
+            searchKey="name"
+            totalUsers={pendingData.meta?.total_items}
+            pageCount={Math.ceil(pendingData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
       </TabsContent>
       <TabsContent value="on_progress" className="space-y-4">
-        <OrderTable
-          columns={onProgressColumns}
-          data={orderRes.items}
-          searchKey="name"
-          totalUsers={orderRes.meta?.total_items}
-          pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
-          pageNo={page}
-          searchQuery={searchQuery}
-        />
+        {isFetchingOnProgressData && <Spinner />}
+        {!isFetchingOnProgressData && onProgressData && (
+          <OrderTable
+            columns={onProgressColumns}
+            data={onProgressData.items}
+            searchKey="name"
+            totalUsers={onProgressData.meta?.total_items}
+            pageCount={Math.ceil(onProgressData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
       </TabsContent>
       <TabsContent value="done" className="space-y-4">
-        <OrderTable
-          columns={completedColumns}
-          data={orderRes.items}
-          searchKey="name"
-          totalUsers={orderRes.meta?.total_items}
-          pageCount={Math.ceil(orderRes.meta?.total_items / pageLimit)}
-          pageNo={page}
-          searchQuery={searchQuery}
-        />
+        {isFetchingCompletedData && <Spinner />}
+        {!isFetchingCompletedData && completedData && (
+          <OrderTable
+            columns={completedColumns}
+            data={completedData.items}
+            searchKey="name"
+            totalUsers={completedData.meta?.total_items}
+            pageCount={Math.ceil(completedData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
       </TabsContent>
     </>
   );

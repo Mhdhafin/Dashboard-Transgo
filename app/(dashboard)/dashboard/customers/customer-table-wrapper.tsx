@@ -16,9 +16,7 @@ import { useDebounce } from "use-debounce";
 const CustomerTableWrapper = () => {
   const router = useRouter();
   const pathname = usePathname();
-
   const searchParams = useSearchParams();
-
   const page = Number(searchParams.get("page")) || 1;
   const pageLimit = Number(searchParams.get("limit")) || 10;
   const defaultTab = searchParams.get("status") ?? "pending";

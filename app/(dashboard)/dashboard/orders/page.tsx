@@ -11,6 +11,12 @@ import { authOptions } from "@/lib/auth-options";
 import { Tabs } from "@/components/ui/tabs";
 import type { Metadata } from "next";
 import OrderTableWrapper from "./order-table-wrapper";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getOrders } from "@/client/orderClient";
 
 const breadcrumbItems = [{ title: "Pesanan", link: "/dashboard/orders" }];
 type paramsProps = {
@@ -25,27 +31,14 @@ export const metadata: Metadata = {
 };
 
 const page = async ({ searchParams }: paramsProps) => {
-  const session = await getServerSession(authOptions);
-  const page = Number(searchParams.page) || 1;
-  const pageLimit = Number(searchParams.limit) || 10;
-  const q = searchParams.q || null;
-  const status = searchParams.status ?? "pending";
-  const startDate = searchParams.start_date || "";
-  const endDate = searchParams.end_date || "";
+  const queryClient = new QueryClient();
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/orders?status=${status}&page=${page}&limit=${pageLimit}` +
-      (q ? `&q=${q}` : "") +
-      (startDate ? `&start_date=${startDate}` : "") +
-      (endDate ? `&end_date=${endDate}` : ""),
-    {
-      headers: {
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
-    },
-  );
-  const orderRes = await res.json();
-  console.log("res", orderRes);
+  await queryClient.prefetchQuery({
+    queryKey: ["orders"],
+    queryFn: getOrders,
+  });
+
+  const defaultTab = searchParams.status ?? "pending";
 
   return (
     <>
@@ -63,13 +56,10 @@ const page = async ({ searchParams }: paramsProps) => {
           </Link>
         </div>
         <Separator />
-        <Tabs defaultValue={status} className="space-y-4">
-          <OrderTableWrapper
-            orderRes={orderRes}
-            status={status}
-            pageLimit={pageLimit}
-            page={page}
-          />
+        <Tabs defaultValue={defaultTab} className="space-y-4">
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <OrderTableWrapper />
+          </HydrationBoundary>
         </Tabs>
       </div>
     </>

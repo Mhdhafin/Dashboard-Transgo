@@ -3,6 +3,36 @@ import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/orders";
 
+interface GetOrdersParams {
+  status: string;
+  page: number;
+  limit: number;
+  q?: string;
+  start_date?: string | Date | undefined;
+  end_date?: string | Date | undefined;
+}
+
+export const useGetOrders = (
+  params: GetOrdersParams,
+  options = {},
+  type: string,
+) => {
+  const axiosAuth = useAxiosAuth();
+
+  const getOrders = async () => {
+    const { data } = await axiosAuth.get(baseEndpoint, {
+      params,
+    });
+    return data;
+  };
+
+  return useQuery({
+    queryKey: ["orders", params, type],
+    queryFn: getOrders,
+    ...options,
+  });
+};
+
 export const useGetDetailOrder = (id: number | string) => {
   const axiosAuth = useAxiosAuth();
 
