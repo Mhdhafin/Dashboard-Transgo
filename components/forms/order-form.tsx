@@ -1451,7 +1451,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             placeholder="Masukkan Deskripsi pesanan anda di sini..."
                             className="col-span-3"
                             rows={3}
-                            disabled
                             value={field.value || ""}
                             onChange={field.onChange}
                           />
