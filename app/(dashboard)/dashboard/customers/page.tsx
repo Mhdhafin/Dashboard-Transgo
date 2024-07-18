@@ -6,10 +6,14 @@ import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth-options";
-import { CustomerTable } from "@/components/tables/customer-tables/customer-table";
-import { columns } from "@/components/tables/customer-tables/columns";
+import { Tabs } from "@/components/ui/tabs";
+import CustomerTableWrapper from "./customer-table-wrapper";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getCustomers } from "@/client/customerClient";
 
 export const metadata: Metadata = {
   title: "Customers | Transgo",
@@ -25,21 +29,15 @@ type paramsProps = {
 const breadcrumbItems = [{ title: "Customers", link: "/dashboard/customers" }];
 
 export default async function page({ searchParams }: paramsProps) {
-  const session = await getServerSession(authOptions);
-  const page = Number(searchParams.page) || 1;
-  const pageLimit = Number(searchParams.limit) || 10;
-  const q = searchParams.q || null;
+  const queryClient = new QueryClient();
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/customers?page=${page}&limit=${pageLimit}` +
-      (q ? `&q=${q}` : ""),
-    {
-      headers: {
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
-    },
-  );
-  const customerRes = await res.json();
+  await queryClient.prefetchQuery({
+    queryKey: ["customers"],
+    queryFn: getCustomers,
+  });
+
+  const defaultTab = searchParams.status ?? "pending";
+
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
@@ -54,14 +52,11 @@ export default async function page({ searchParams }: paramsProps) {
           </Link>
         </div>
         <Separator />
-        <CustomerTable
-          columns={columns}
-          data={customerRes.items}
-          searchKey="name"
-          totalUsers={customerRes.meta?.total_items}
-          pageCount={Math.ceil(customerRes.meta?.total_items / pageLimit)}
-          pageNo={page}
-        />
+        <Tabs defaultValue={defaultTab} className="space-y-4">
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <CustomerTableWrapper />
+          </HydrationBoundary>
+        </Tabs>
       </div>
     </>
   );

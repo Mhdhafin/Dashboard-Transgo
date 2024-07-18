@@ -8,15 +8,18 @@ import useAxiosAuth from "../axios/use-axios-auth";
 
 const baseEndpoint = "/customers";
 
-export const useGetCustomers = (params: any) => {
+export const useGetCustomers = (params: any, options = {}, type: string) => {
   const axiosAuth = useAxiosAuth();
 
-  const getCustomers = () => {
-    return axiosAuth.get(baseEndpoint, { params });
+  const getCustomers = async () => {
+    const { data } = await axiosAuth.get(baseEndpoint, { params });
+    return data;
   };
+
   return useQuery({
-    queryKey: ["customers", params],
+    queryKey: ["customers", params, type],
     queryFn: getCustomers,
+    ...options,
   });
 };
 
