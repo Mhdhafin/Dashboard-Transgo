@@ -17,7 +17,6 @@ import { Separator } from "@/components/ui/separator";
 import { cn, formatRupiah } from "@/lib/utils";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import dayjs from "dayjs";
-import { isEmpty } from "lodash";
 import { ChevronDown, EyeIcon, Info } from "lucide-react";
 
 interface PriceDetailProps {
@@ -43,11 +42,6 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   confirmLoading,
   type,
 }) => {
-  console.log(
-    "de",
-    !form.getValues("is_with_driver"),
-    detail?.out_of_town_price,
-  );
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l border-neutral-400"
@@ -201,11 +195,18 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                           disabled={!isEdit}
                           type="number"
                           className="pr-4"
-                          value={field.value || "0"}
-                          onChange={field.onChange}
+                          value={field.value ?? 0}
+                          onChange={(e) => {
+                            const value = e.target.valueAsNumber;
+                            field.onChange(
+                              isNaN(value)
+                                ? 0
+                                : Math.max(0, Math.min(100, value)),
+                            );
+                          }}
                           onBlur={field.onBlur}
                           max={100}
-                          min={1}
+                          min={0}
                         />
                       </div>
                     </FormControl>
