@@ -49,6 +49,7 @@
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.11",
+    "embla-carousel-react": "^8.1.7",
     "eslint": "8.48.0",
     "eslint-config-next": "^14.0.1",
     "lodash": "^4.17.21",

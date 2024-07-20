@@ -63,6 +63,16 @@ import PriceDetail from "./section/price-detail";
 import Spinner from "../spinner";
 import { RejectModal } from "../modal/reject-modal";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { Card, CardContent } from "../ui/card";
+import { PreviewImage } from "../modal/preview-image";
 
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
@@ -1555,6 +1565,13 @@ const DetailSection: React.FC<DetailSectionProps> = ({
   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
   const { isMinimized } = useSidebar();
   const [switchValue, setSwitchValue] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState(null);
+
+  const onHandlePreview = (file: any) => {
+    setContent(file);
+    setOpen(true);
+  };
   const {
     data: drivers,
     fetchNextPage: fetchNextDrivers,
@@ -1568,6 +1585,18 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       fetchNextDrivers();
     }
   };
+  const startRequest = initialData?.start_request;
+  const startRequestLog = initialData?.start_request?.logs?.filter(
+    (log: any) => log.type === "end",
+  );
+  const endRequest = initialData?.end_request;
+  const endRequestLog = initialData?.end_request?.logs?.filter(
+    (log: any) => log.type === "end",
+  );
+  console.log("initi", startRequestLog);
+
+  const typeRequestLog = type === "start" ? startRequestLog : endRequestLog;
+  const typeRequest = type === "start" ? startRequest : endRequest;
 
   const watchedFields = form.watch([
     "start_request.is_self_pickup",
@@ -1592,7 +1621,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="space-y-4">
         <div className="flex justify-between">
           <h3 className="mb-4">{title}</h3>
           {type === "end" && lastPath !== "detail" && (
@@ -1608,6 +1637,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             </div>
           )}
         </div>
+        {/* Layanan */}
         <div
           className={cn(
             "gap-5",
@@ -1658,6 +1688,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             }}
           />
         </div>
+        {/* Penanggung Jawab */}
         <div
           className={cn(
             "flex gap-5 items-start",
@@ -1842,6 +1873,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             />
           </div>
         </div>
+        {/* Alamat */}
         <div
           className={cn(
             isMinimized
@@ -1901,7 +1933,135 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             />
           )}
         </div>
+        {lastPath === "detail" && (
+          <>
+            {/* Bukti Serah Terima */}
+            <div
+              className={cn(
+                isMinimized
+                  ? "min-[1920px]:w-[1176px] w-[936px]"
+                  : "min-[1920px]:w-[940px] w-[700px]",
+              )}
+            >
+              <FormItem>
+                <FormLabel>Bukti Serah Terima</FormLabel>
+                <Carousel>
+                  <CarouselContent className="-ml-1">
+                    {isEmpty(typeRequestLog?.[0]?.photos) && (
+                      <div className="ml-1">
+                        <p className="text-base font-normal">
+                          Belum selesai dilakukan
+                        </p>
+                      </div>
+                    )}
+                    {typeRequestLog?.[0]?.photos?.length > 0 &&
+                      typeRequestLog?.[0]?.photos?.map(
+                        (photo: any, index: any) => (
+                          <CarouselItem
+                            key={index}
+                            className="pl-1 md:basis-1/2 lg:basis-1/3"
+                          >
+                            <div className="p-1">
+                              {/* <Card>
+                              <CardContent className="flex aspect-square items-center justify-center p-6 relative  w-[300px] h-[202px]">
+                                <Image
+                                  className="border object-cover cursor-pointer rounded-lg"
+                                  alt={"test"}
+                                  src={photo?.photo}
+                                  fill
+                                />
+                              </CardContent>
+                            </Card> */}
+                              <div
+                                key={index}
+                                className=" w-full h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative "
+                              >
+                                <img
+                                  src={photo.photo}
+                                  alt={`Slide ${index}`}
+                                  className="border object-cover cursor-pointer rounded-lg w-full h-full"
+                                  onClick={() => {
+                                    setOpen(true);
+                                    onHandlePreview(photo?.photo);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </CarouselItem>
+                        ),
+                      )}
+                  </CarouselContent>
+                  {typeRequestLog?.[0]?.photos?.length < 2 && (
+                    <>
+                      <CarouselPrevious
+                        type="button"
+                        className="-left-1 top-1/2 -translate-y-1/2 bg-accent"
+                      />
+                      <CarouselNext
+                        type="button"
+                        className="-right-1 top-1/2 -translate-y-1/2 bg-accent"
+                      />
+                    </>
+                  )}
+                </Carousel>
+              </FormItem>
+            </div>
+            {/* Durasi */}
+            <div
+              className={cn(
+                isMinimized
+                  ? "min-[1920px]:w-[1176px] w-[936px]"
+                  : "min-[1920px]:w-[940px] w-[700px]",
+              )}
+            >
+              <FormItem>
+                <FormLabel>Durasi</FormLabel>
+                <FormControl>
+                  <Input
+                    className={cn(
+                      // !isMinimized ? "w-[700px]" : "w-full"
+                      isMinimized
+                        ? "w-full"
+                        : "min-[1920px]:w-[940px] w-[700px]",
+                    )}
+                    placeholder="Tanggal dan waktu selesai"
+                    value={typeRequest?.progress_duration_second ?? "--"}
+                    readOnly
+                    disabled
+                  />
+                </FormControl>
+              </FormItem>
+            </div>
+            {/* Catatan Driver */}
+            <div
+              className={cn(
+                isMinimized
+                  ? "min-[1920px]:w-[1176px] w-[936px]"
+                  : "min-[1920px]:w-[940px] w-[700px]",
+              )}
+            >
+              <FormItem>
+                <FormLabel>Catatan Driver</FormLabel>
+                <FormControl>
+                  <Input
+                    className={cn(
+                      // !isMinimized ? "w-[700px]" : "w-full"
+                      isMinimized
+                        ? "w-full"
+                        : "min-[1920px]:w-[940px] w-[700px]",
+                    )}
+                    placeholder="Tanggal dan waktu selesai"
+                    value={typeRequest?.description ?? "-"}
+                    readOnly
+                    disabled
+                  />
+                </FormControl>
+              </FormItem>
+            </div>
+          </>
+        )}
       </div>
+
       <Separator
         className={cn(
           "mt-1",
@@ -1910,62 +2070,68 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             : "min-[1920px]:w-[940px] w-[700px]",
         )}
       />
+
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
     </>
   );
 };
 
-export const Carousel = ({ images }: any) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+// export const Carousel = ({ images }: any) => {
+//   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1,
-    );
-  };
+//   const prevSlide = () => {
+//     setCurrentIndex((prevIndex) =>
+//       prevIndex === 0 ? images.length - 1 : prevIndex - 1,
+//     );
+//   };
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1,
-    );
-  };
+//   const nextSlide = () => {
+//     setCurrentIndex((prevIndex) =>
+//       prevIndex === images.length - 1 ? 0 : prevIndex + 1,
+//     );
+//   };
 
-  return (
-    <div className="relative w-full  h-[300px] overflow-hidden">
-      <div
-        className="absolute top-0 left-0 w-full h-full flex transition-transform duration-300"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-      >
-        {!images && <p>Driver Tidak memilik foto</p>}
-        {images.map((image: any, index: any) => (
-          <div key={index} className="w-full h-[300px] flex-shrink-0">
-            <img
-              src={image.photo}
-              alt={`Slide ${index}`}
-              className="w-full h-full object-contain"
-            />
-          </div>
-        ))}
-      </div>
-      {images.length > 1 && (
-        <>
-          <Button
-            onClick={prevSlide}
-            className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
-            type="button"
-          >
-            {"<"}
-          </Button>
-          {images.length > 1 && currentIndex < images.length - 1 && (
-            <Button
-              onClick={nextSlide}
-              className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
-              type="button"
-            >
-              {">"}
-            </Button>
-          )}
-        </>
-      )}
-    </div>
-  );
-};
+//   return (
+//     <div className="relative w-full  h-[300px] overflow-hidden">
+//       <div
+//         className="absolute top-0 left-0 w-full h-full flex transition-transform duration-300"
+//         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+//       >
+//         {!images && <p>Driver Tidak memilik foto</p>}
+//         {images.map((image: any, index: any) => (
+//           <div key={index} className="w-full h-[300px] flex-shrink-0">
+//             <img
+//               src={image.photo}
+//               alt={`Slide ${index}`}
+//               className="w-full h-full object-contain"
+//             />
+//           </div>
+//         ))}
+//       </div>
+//       {images.length > 1 && (
+//         <>
+//           <Button
+//             onClick={prevSlide}
+//             className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
+//             type="button"
+//           >
+//             {"<"}
+//           </Button>
+//           {images.length > 1 && currentIndex < images.length - 1 && (
+//             <Button
+//               onClick={nextSlide}
+//               className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
+//               type="button"
+//             >
+//               {">"}
+//             </Button>
+//           )}
+//         </>
+//       )}
+//     </div>
+//   );
+// };

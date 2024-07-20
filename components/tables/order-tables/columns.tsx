@@ -307,11 +307,11 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <>
         {row.original.request_status === "pending" ? (
-          <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+          <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full max-w-[105px]">
             Belum Kembali
           </div>
         ) : (
-          <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+          <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full max-w-[62px]">
             Selesai
           </div>
         )}
