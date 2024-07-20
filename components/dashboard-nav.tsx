@@ -64,6 +64,7 @@ export function DashboardNav({
         const isActive = () => {
           const basePaths = [
             "/dashboard",
+            "/dashboard/calendar",
             "/dashboard/orders",
             "/dashboard/requests",
             "/dashboard/fleets",
