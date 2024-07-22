@@ -113,6 +113,23 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 </div>
               )}
               <Separator className="mb-1" />
+              {form.getValues("is_out_of_town") && (
+                <>
+                  <p className="font-medium text-sm text-neutral-700 mb-1">
+                    Pemakaian
+                  </p>
+                  <div className="flex justify-between mb-1">
+                    <p className="font-medium text-sm text-neutral-700">
+                      Luar Kota
+                    </p>
+                    <p className="font-semibold text-base">
+                      {formatRupiah(detail?.out_of_town_price ?? 0)}
+                    </p>
+                  </div>
+
+                  <Separator className="mb-1" />
+                </>
+              )}
               {showServicePrice && (
                 <>
                   <p className="font-medium text-sm text-neutral-700 mb-1">
@@ -120,7 +137,12 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   </p>
                   <div className="flex justify-between mb-1">
                     <p className="font-medium text-sm text-neutral-700">
-                      Diantar & Dijemput
+                      {!form.getValues("start_request.is_self_pickup") &&
+                      !form.getValues("end_request.is_self_pickup")
+                        ? "Diantar & Dijemput"
+                        : !form.getValues("start_request.is_self_pickup")
+                        ? "Diantar"
+                        : "Dijemput"}
                     </p>
                     <p className="font-semibold text-base">
                       {formatRupiah(detail?.service_price ?? 0)}
