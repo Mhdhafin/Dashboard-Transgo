@@ -167,39 +167,38 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
             <Carousel className="max-w-xs mx-auto">
               <CarouselContent>
                 {data?.id_cards.map((photo: any, index: any) => (
-                  <CarouselItem key={index} className="">
+                  <CarouselItem key={index}>
                     <div className="p-1">
-                      <Card>
+                      <Card className="w-[310px] h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative ">
                         {/* <CardContent className="flex aspect-square items-center justify-center p-6">
                        
                       </CardContent> */}
-                        <div
-                          key={index}
-                          className="w-[300px] h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative "
-                        >
-                          <img
-                            src={photo.photo}
-                            alt={`Slide ${index}`}
-                            className="border object-cover cursor-pointer rounded-lg w-full h-full"
-                            onClick={() => {
-                              setOpen(true);
-                              onHandlePreview(photo?.photo);
-                            }}
-                          />
-                        </div>
+                        <img
+                          src={photo.photo}
+                          alt={`Slide ${index}`}
+                          className="object-cover cursor-pointer rounded-lg w-full h-full"
+                          onClick={() => {
+                            setOpen(true);
+                            onHandlePreview(photo?.photo);
+                          }}
+                        />
                       </Card>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious
-                type="button"
-                className="-left-1 top-1/2 -translate-y-1/2 bg-accent"
-              />
-              <CarouselNext
-                type="button"
-                className="-right-1 top-1/2 -translate-y-1/2 bg-accent"
-              />
+              {data?.id_cards && data?.id_cards?.length > 1 && (
+                <>
+                  <CarouselPrevious
+                    type="button"
+                    className="-left-1 top-1/2 -translate-y-1/2 bg-accent"
+                  />
+                  <CarouselNext
+                    type="button"
+                    className="-right-1 top-1/2 -translate-y-1/2 bg-accent"
+                  />
+                </>
+              )}
             </Carousel>
           )}
         </div>
