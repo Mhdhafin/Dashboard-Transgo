@@ -89,7 +89,6 @@ export function DashboardNav({
           );
         };
 
-        console.log("path", path, item.href);
         return (
           item.href && (
             <Link
