@@ -321,13 +321,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         start_request: {
           is_self_pickup: true,
           address: "",
-          distance: "",
+          distance: 0,
           driver_id: "",
         },
         end_request: {
           is_self_pickup: true,
           address: "",
-          distance: "",
+          distance: 0,
           driver_id: "",
         },
         customer: "",
