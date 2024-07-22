@@ -111,13 +111,13 @@ export function DashboardNav({
                     <span className="ml-2 mr-2 truncate">{item.title}</span>
                     {item.title === "Pesanan" && !isFetchingOrderStatus && (
                       <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
-                        <span>{orderCount?.pending ?? 0}</span>
+                        <span>{orderCount?.[0]?.count ?? 0}</span>
                       </div>
                     )}
                     {item.title === "Customers" &&
                       !isFetchingCustomerStatus && (
                         <div className="bg-red-500 text-sm font-medium w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
-                          <span>{customerCount?.pending ?? 0}</span>
+                          <span>{customerCount?.[0]?.count ?? 0}</span>
                         </div>
                       )}
                   </div>
