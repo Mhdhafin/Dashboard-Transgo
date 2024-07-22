@@ -77,15 +77,15 @@ import { PreviewImage } from "../modal/preview-image";
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
   start_request: z.object({
-    is_self_pickup: z.boolean(),
-    address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-    distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
+    is_self_pickup: z.any(),
+    // address: z.string().min(1, { message: "Tolong masukkan alamat" }),
+    // distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
     driver_id: z.string().min(1, { message: "Tolong pilih Penanggung Jawab" }),
   }),
   end_request: z.object({
-    is_self_pickup: z.boolean(),
-    address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-    distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
+    is_self_pickup: z.any(),
+    // address: z.string().min(1, { message: "Tolong masukkan alamat" }),
+    // distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
     driver_id: z.string().min(1, { message: "Tolong pilih Penanggung Jawab" }),
   }),
   customer: z.string().min(1, { message: "Tolong pilih pelanggan" }),
@@ -100,14 +100,40 @@ const formSchema = z.object({
   insurance_id: z.string().min(1, { message: "tolong pilih asuransi" }),
 });
 
-const generateSchema = (watchServicePrice: boolean) => {
-  return watchServicePrice
-    ? formSchema.extend({
-        service_price: z.coerce
-          .string()
-          .min(1, { message: "tolong masukkan harga layanan" }),
-      })
-    : formSchema;
+const generateSchema = (startSelfPickUp?: boolean, endSelfPickup?: boolean) => {
+  let schema = formSchema;
+
+  if (!startSelfPickUp) {
+    console.log("start");
+
+    schema = schema.extend({
+      service_price: z.coerce
+        .string()
+        .min(1, { message: "tolong masukkan harga layanan" }),
+
+      start_request: schema.shape.start_request.extend({
+        address: z.string().min(1, { message: "Tolong masukkan alamat" }),
+        distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
+      }),
+    });
+  }
+
+  if (!endSelfPickup) {
+    console.log("end");
+
+    schema = schema.extend({
+      service_price: z.coerce
+        .string()
+        .min(1, { message: "tolong masukkan harga layanan" }),
+
+      end_request: schema.shape.end_request.extend({
+        address: z.string().min(1, { message: "Tolong masukkan alamat" }),
+        distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
+      }),
+    });
+  }
+
+  return schema;
 };
 
 const editFormSchema = z.object({
@@ -140,7 +166,15 @@ const editFormSchema = z.object({
 });
 
 type OrderFormValues = z.infer<typeof formSchema> & {
-  service_price?: string;
+  service_price: string;
+  start_request: {
+    distance: number;
+    address: string;
+  };
+  end_request: {
+    distance: number;
+    address: string;
+  };
 };
 
 interface FleetFormProps {
@@ -238,7 +272,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const [openDriverDetail, setOpenDriverDetail] = useState<boolean>(false);
   const [showServicePrice, setShowServicePrice] = useState<boolean>(true);
   const [type, setType] = useState<string>("");
-  const [schema, setSchema] = useState(() => generateSchema(showServicePrice));
+  const [schema, setSchema] = useState(() => generateSchema(true, true));
   const {
     data: customers,
     fetchNextPage: fetchNextCustomers,
@@ -312,6 +346,29 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  const customerField = form.watch("customer");
+  const fleetField = form.watch("fleet");
+  const dateField = form.watch("date");
+  const durationField = form.watch("duration");
+  const isOutOfTownField = form.watch("is_out_of_town");
+  const isWithDriverField = form.watch("is_with_driver");
+  const insuranceField = form.watch("insurance_id");
+  const startSelfPickUpField = form.watch("start_request.is_self_pickup");
+  const startDriverField = form.watch("start_request.driver_id");
+  const startDistanceField = form.watch("start_request.distance");
+  const startAddressField = form.watch("start_request.address");
+  const endSelfPickUpField = form.watch("end_request.is_self_pickup");
+  const endDriverField = form.watch("end_request.driver_id");
+  const endDistanceField = form.watch("end_request.distance");
+  const endAddressField = form.watch("end_request.address");
+  const discountField = form.watch("discount");
+  const descriptionField = form.watch("description");
+  const serviceField = form.watch("service_price");
+
+  const watchServicePrice = !(startSelfPickUpField && endSelfPickUpField);
+  const servicePrice = serviceField ?? 0;
+
   const { data: customerData, isFetching: isFetchingCustomer } =
     useGetDetailCustomer(form.getValues("customer"));
   const { data: fleetData, isFetching: isFetchingFleet } = useGetDetailFleet(
@@ -342,167 +399,79 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     setLoading(true);
     console.log("submit", data);
 
-    if (lastPath === "edit") {
-      console.log("masuk sini");
-      const payload = {
-        start_request: {
-          is_self_pickup: data.start_request.is_self_pickup,
+    const createPayload = (data: OrderFormValues) => ({
+      start_request: {
+        is_self_pickup: data.start_request.is_self_pickup,
+        driver_id: +data.start_request.driver_id,
+        ...(!startSelfPickUpField && {
           address: data.start_request.address,
           distance: +data.start_request.distance,
-          driver_id: +data.start_request.driver_id,
-        },
-        end_request: {
-          is_self_pickup: data.end_request.is_self_pickup,
-          address: data.end_request.address,
+        }),
+      },
+      end_request: {
+        is_self_pickup: data.end_request.is_self_pickup,
+        driver_id: +data.end_request.driver_id,
+        ...(!endSelfPickUpField && {
           distance: +data.end_request.distance,
-          driver_id: +data.end_request.driver_id,
-        },
-        customer_id: +data.customer,
-        fleet_id: +data.fleet,
-        description: "",
-        is_with_driver: data.is_with_driver,
-        is_out_of_town: data.is_out_of_town,
-        date: data.date.toISOString(),
-        duration: +data.duration,
-        discount: +data.discount,
-        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
-        ...(showServicePrice &&
-          data?.service_price && {
-            service_price: +data.service_price.replace(/,/g, ""),
-          }),
-      };
-
-      setLoading(true);
-
-      editOrder(payload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["orders"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.refresh();
-          router.push(`/dashboard/orders`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            //@ts-ignore
-            description: `error: ${error?.response?.data?.message}`,
-          });
-        },
-      });
-    } else if (lastPath === "preview") {
-      const payload = {
-        start_request: {
-          is_self_pickup: data.start_request.is_self_pickup,
-          address: data.start_request.address,
-          distance: +data.start_request.distance,
-          driver_id: +data.start_request.driver_id,
-        },
-        end_request: {
-          is_self_pickup: data.end_request.is_self_pickup,
           address: data.end_request.address,
-          distance: +data.end_request.distance,
-          driver_id: +data.end_request.driver_id,
-        },
-        customer_id: +data.customer,
-        fleet_id: +data.fleet,
-        description: "",
-        is_with_driver: data.is_with_driver,
-        is_out_of_town: data.is_out_of_town,
-        date: data.date.toISOString(),
-        duration: +data.duration,
-        discount: +data.discount,
-        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
+        }),
+      },
+      customer_id: +data.customer,
+      fleet_id: +data.fleet,
+      description: "",
+      is_with_driver: data.is_with_driver,
+      is_out_of_town: data.is_out_of_town,
+      date: data.date.toISOString(),
+      duration: +data.duration,
+      discount: +data.discount,
+      insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
+      ...(showServicePrice &&
+        data?.service_price && {
+          service_price: +data.service_price.replace(/,/g, ""),
+        }),
+    });
 
-        ...(showServicePrice &&
-          data?.service_price && {
-            service_price: +data.service_price.replace(/,/g, ""),
-          }),
-      };
-
-      setLoading(true);
-
-      acceptOrder(payload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["orders"] });
-          toast({
-            variant: "success",
-            title: "Pesanan berhasil dikonfirmasi",
-          });
-          router.refresh();
-          router.push(`/dashboard/orders`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            //@ts-ignore
-            description: `error: ${error?.response?.data?.message}`,
-          });
-        },
+    const handleSuccess = () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      toast({
+        variant: "success",
+        title: toastMessage,
       });
-    } else {
-      console.log("sini", data);
-      const payload = {
-        start_request: {
-          is_self_pickup: data.start_request.is_self_pickup,
-          address: data.start_request.address,
-          distance: +data.start_request.distance,
-          driver_id: +data.start_request.driver_id,
-        },
-        end_request: {
-          is_self_pickup: data.end_request.is_self_pickup,
-          address: data.end_request.address,
-          distance: +data.end_request.distance,
-          driver_id: +data.end_request.driver_id,
-        },
-        customer_id: +data.customer,
-        fleet_id: +data.fleet,
-        description: "",
-        is_with_driver: data.is_with_driver,
-        is_out_of_town: data.is_out_of_town,
-        date: data.date.toISOString(),
-        duration: +data.duration,
-        discount: +data.discount,
-        insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
+      // router.refresh();
+      router.push(`/dashboard/orders`);
+    };
 
-        ...(showServicePrice &&
-          data?.service_price && {
-            service_price: +data.service_price.replace(/,/g, ""),
-          }),
-      };
-      setLoading(true);
-      createOrder(payload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["orders"] });
-          toast({
-            variant: "success",
-            title: toastMessage,
-          });
-          router.refresh();
-          router.push(`/dashboard/orders`);
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            //@ts-ignore
-            description: `error: ${error?.response?.message}`,
-          });
-        },
+    const handleError = (error: any) => {
+      setOpenApprovalModal(false);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! ada sesuatu yang error",
+        //@ts-ignore
+        description: `error: ${error?.response?.data?.message}`,
       });
+    };
+
+    const handleResponse = (payload: any, action: Function) => {
+      setLoading(true);
+      action(payload, {
+        onSuccess: handleSuccess,
+        onSettled: () => setLoading(false),
+        onError: handleError,
+      });
+    };
+
+    const payload = createPayload(data);
+
+    switch (lastPath) {
+      case "edit":
+        handleResponse(payload, editOrder);
+        break;
+      case "preview":
+        handleResponse(payload, acceptOrder);
+        break;
+      default:
+        handleResponse(payload, createOrder);
+        break;
     }
   };
 
@@ -545,65 +514,27 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
   const { mutate: calculatePrice } = useOrderCalculate();
 
-  const isFieldFilled = (field: any) => {
-    return field !== undefined && field !== null && field !== "";
-  };
-
-  const customerField = form.watch("customer");
-  const fleetField = form.watch("fleet");
-  const dateField = form.watch("date");
-  const durationField = form.watch("duration");
-  const isOutOfTownField = form.watch("is_out_of_town");
-  const isWithDriverField = form.watch("is_with_driver");
-  const insuranceField = form.watch("insurance_id");
-  const startSelfPickUpField = form.watch("start_request.is_self_pickup");
-  const startDriverField = form.watch("start_request.driver_id");
-  const startDistanceField = form.watch("start_request.distance");
-  const startAddressField = form.watch("start_request.address");
-  const endSelfPickUpField = form.watch("end_request.is_self_pickup");
-  const endDriverField = form.watch("end_request.driver_id");
-  const endDistanceField = form.watch("end_request.distance");
-  const endAddressField = form.watch("end_request.address");
-  const discountField = form.watch("discount");
-  const descriptionField = form.watch("description");
-  const serviceField = form.watch("service_price");
-
-  const watchServicePrice = !(startSelfPickUpField && endSelfPickUpField);
-  const servicePrice = serviceField ?? 0;
-
-  const allFieldsFilled =
-    isFieldFilled(customerField) &&
-    isFieldFilled(fleetField) &&
-    isFieldFilled(dateField) &&
-    isFieldFilled(durationField) &&
-    isFieldFilled(isOutOfTownField) &&
-    isFieldFilled(isWithDriverField) &&
-    isFieldFilled(insuranceField) &&
-    isFieldFilled(startSelfPickUpField) &&
-    isFieldFilled(startDriverField) &&
-    isFieldFilled(startDistanceField) &&
-    isFieldFilled(startAddressField) &&
-    isFieldFilled(endSelfPickUpField) &&
-    isFieldFilled(endDriverField) &&
-    isFieldFilled(endDistanceField) &&
-    isFieldFilled(endAddressField) &&
-    isFieldFilled(discountField) &&
-    ((startSelfPickUpField && endSelfPickUpField) ||
-      isFieldFilled(serviceField));
-
   useEffect(() => {
     if (startSelfPickUpField && endSelfPickUpField) {
-      setSchema(generateSchema(false));
+      // Jika start_request.is_self_pickup dan end_request.is_self_pickup keduanya true
+      setSchema(generateSchema(true, true));
       setShowServicePrice(false);
+    } else if (startSelfPickUpField) {
+      // Jika hanya start_request.is_self_pickup yang true
+      setSchema(generateSchema(true, false));
+      setShowServicePrice(true);
+    } else if (endSelfPickUpField) {
+      // Jika hanya end_request.is_self_pickup yang true
+      setSchema(generateSchema(false, true));
+      setShowServicePrice(true);
     } else {
-      setSchema(generateSchema(true));
+      // Jika keduanya false
+      setSchema(generateSchema(false, false));
       setShowServicePrice(true);
     }
   }, [startSelfPickUpField, endSelfPickUpField]);
 
   useEffect(() => {
-    console.log("service payload", servicePrice);
-
     const payload = {
       customer_id: +(customerField ?? 0),
       fleet_id: +(fleetField ?? 0),
@@ -613,14 +544,18 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       start_request: {
         is_self_pickup: startSelfPickUpField,
         driver_id: +(startDriverField ?? 0),
-        distance: +(startDistanceField ?? 0),
-        address: startAddressField,
+        ...(!startSelfPickUpField && {
+          distance: +(startDistanceField ?? 0),
+          address: startAddressField,
+        }),
       },
       end_request: {
         is_self_pickup: endSelfPickUpField,
         driver_id: +(endDriverField ?? 0),
-        distance: +(endDistanceField ?? 0),
-        address: endAddressField,
+        ...(!endSelfPickUpField && {
+          distance: +(endDistanceField ?? 0),
+          address: endAddressField,
+        }),
       },
       description: descriptionField,
       ...(!isEmpty(dateField) && {
@@ -1338,7 +1273,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                 key={insurance.id}
                                 value={insurance.id.toString()}
                               >
-                                {insurance.name}
+                                {insurance.name} - {insurance.description}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -1593,7 +1528,6 @@ const DetailSection: React.FC<DetailSectionProps> = ({
   const endRequestLog = initialData?.end_request?.logs?.filter(
     (log: any) => log.type === "end",
   );
-  console.log("initi", startRequestLog);
 
   const typeRequestLog = type === "start" ? startRequestLog : endRequestLog;
   const typeRequest = type === "start" ? startRequest : endRequest;
@@ -1618,6 +1552,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       form.setValue("end_request.address", watchedFields[3]);
     }
   }, [...watchedFields, switchValue]);
+
+  console.log(
+    "watch",
+    watchedFields[0],
+    form.getValues(`${type}_request.is_self_pickup`),
+  );
 
   return (
     <>
@@ -1839,39 +1779,41 @@ const DetailSection: React.FC<DetailSectionProps> = ({
               </FormItem>
             )}
           </div>
-          <div className={cn("flex gap-2 items-end")}>
-            <FormField
-              name={`${type}_request.distance`}
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="relative label-required">
-                    Jarak
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      min={0}
-                      disabled={!isEdit || loading || switchValue}
-                      type="number"
-                      placeholder="Masukkan jarak (contoh 10 Km)"
-                      className={cn(
-                        "h-[40px]",
-                        // isMinimized ? "w-[458px]" : "w-[340px]",
-                        isMinimized
-                          ? "min-[1920px]:w-[578px] w-[458px]"
-                          : "min-[1920px]:w-[460px] w-[340px]",
-                      )}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      // append value attribute when this field is not empty
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {!form.getValues(`${type}_request.is_self_pickup`) && (
+            <div className={cn("flex gap-2 items-end")}>
+              <FormField
+                name={`${type}_request.distance`}
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Jarak
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        min={0}
+                        disabled={!isEdit || loading || switchValue}
+                        type="number"
+                        placeholder="Masukkan jarak (contoh 10 Km)"
+                        className={cn(
+                          "h-[40px]",
+                          // isMinimized ? "w-[458px]" : "w-[340px]",
+                          isMinimized
+                            ? "min-[1920px]:w-[578px] w-[458px]"
+                            : "min-[1920px]:w-[460px] w-[340px]",
+                        )}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        // append value attribute when this field is not empty
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
         </div>
         {/* Alamat */}
         <div
@@ -1908,29 +1850,31 @@ const DetailSection: React.FC<DetailSectionProps> = ({
               />
             </FormItem>
           ) : (
-            <FormField
-              control={form.control}
-              name={`${type}_request.address`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="relative label-required">
-                    Alamat
-                  </FormLabel>
-                  <FormControl className="disabled:opacity-100">
-                    <Textarea
-                      id="alamat"
-                      placeholder="Masukkan Alamat..."
-                      className="col-span-3"
-                      rows={3}
-                      disabled={!isEdit || loading || switchValue}
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            !form.getValues(`${type}_request.is_self_pickup`) && (
+              <FormField
+                control={form.control}
+                name={`${type}_request.address`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Alamat
+                    </FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Textarea
+                        id="alamat"
+                        placeholder="Masukkan Alamat..."
+                        className="col-span-3"
+                        rows={3}
+                        disabled={!isEdit || loading || switchValue}
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )
           )}
         </div>
         {lastPath === "detail" && (
