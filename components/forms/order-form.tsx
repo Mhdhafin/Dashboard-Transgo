@@ -882,7 +882,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     />
                   ) : (
                     <FormItem>
-                      <FormLabel>Pelanggan</FormLabel>
+                      <FormLabel
+                        className={cn(
+                          initialData?.customer?.status === "pending"
+                            ? "text-destructive"
+                            : "",
+                        )}
+                      >
+                        Pelanggan
+                      </FormLabel>
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
@@ -918,6 +926,15 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           Lihat
                         </Button>
                       </div>
+                      {initialData?.customer?.status == "pending" && (
+                        <p
+                          className={cn(
+                            "text-[0.8rem] font-medium text-destructive",
+                          )}
+                        >
+                          Pelanggan belum verified
+                        </p>
+                      )}
                     </FormItem>
                   )}
                 </div>
