@@ -213,7 +213,6 @@ export const LocationForm: React.FC<LocationFormProps> = ({
               />
             )}
           </div>
-          {/* <div className="md:grid md:grid-cols-2 gap-8"></div> */}
           <div className="md:grid md:grid-cols-2 gap-8">
             {!isEdit ? (
               <FormItem>
