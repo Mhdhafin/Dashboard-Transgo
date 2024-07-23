@@ -5,6 +5,7 @@ import { User } from "@/constants/data";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export const PendingColumns: ColumnDef<any>[] = [
   // {
@@ -58,7 +59,15 @@ export const PendingColumns: ColumnDef<any>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => (
+      <Link
+        href={`/dashboard/customers/${row.original?.id}/preview`}
+        className={cn(buttonVariants({ variant: "main" }))}
+        onClick={(e) => e.stopPropagation()}
+      >
+        Tinjau
+      </Link>
+    ),
   },
 ];
 

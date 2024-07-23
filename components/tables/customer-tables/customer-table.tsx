@@ -190,18 +190,20 @@ export function CustomerTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row: any) => (
                 <TableRow
                   className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
-                  onClick={() =>
-                    router.push(
-                      `/dashboard/customers/${(row.original as any).id}/detail`,
-                    )
-                  }
+                  onClick={() => {
+                    if (row?.original?.status !== "pending") {
+                      router.push(
+                        `/dashboard/customers/${row.original.id}/detail`,
+                      );
+                    }
+                  }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => {
+                  {row.getVisibleCells().map((cell: any) => {
                     return (
                       <TableCell
                         key={cell.id}
