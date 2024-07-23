@@ -30,6 +30,8 @@ dayjs.locale("id");
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nama diperlukan" }),
   description: z.string().optional().nullable(),
+  map_url: z.string().optional().nullable(),
+  redirect_url: z.string().optional().nullable(),
 });
 
 type LocationFormValues = z.infer<typeof formSchema>;
@@ -73,6 +75,8 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     : {
         name: "",
         description: "",
+        map_url: "",
+        redirect_url: "",
       };
 
   const form = useForm<LocationFormValues>({
@@ -85,6 +89,8 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     const payload = {
       name: data.name,
       description: !isEmpty(data.description) ? data.description : null,
+      map_url: !isEmpty(data.map_url) ? data.map_url : null,
+      redirect_url: !isEmpty(data.redirect_url) ? data.redirect_url : null,
     };
 
     if (initialData) {
@@ -169,8 +175,6 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                 </FormItem>
               )}
             />
-          </div>
-          <div className="md:grid md:grid-cols-2 gap-8">
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Deskripsi</FormLabel>
@@ -196,6 +200,83 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                       <Textarea
                         id="description"
                         placeholder="Deskripsi..."
+                        className="col-span-4"
+                        rows={8}
+                        disabled={!isEdit || loading}
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+          {/* <div className="md:grid md:grid-cols-2 gap-8"></div> */}
+          <div className="md:grid md:grid-cols-2 gap-8">
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Link Maps</FormLabel>
+                <p
+                  className="border border-gray-200 rounded-md px-3 py-1 break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: !isEmpty(defaultValues?.map_url)
+                      ? makeUrlsClickable(
+                          defaultValues?.map_url?.replace(/\n/g, "<br />"),
+                        )
+                      : "-",
+                  }}
+                />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="map_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Link Maps</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Textarea
+                        id="description"
+                        placeholder="Masukkan Link Maps..."
+                        className="col-span-4"
+                        rows={8}
+                        disabled={!isEdit || loading}
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Link Redirect</FormLabel>
+                <p
+                  className="border border-gray-200 rounded-md px-3 py-1 break-words"
+                  dangerouslySetInnerHTML={{
+                    __html: !isEmpty(defaultValues?.redirect_url)
+                      ? makeUrlsClickable(
+                          defaultValues?.redirect_url?.replace(/\n/g, "<br />"),
+                        )
+                      : "-",
+                  }}
+                />
+              </FormItem>
+            ) : (
+              <FormField
+                control={form.control}
+                name="redirect_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Link Redirect</FormLabel>
+                    <FormControl className="disabled:opacity-100">
+                      <Textarea
+                        id="description"
+                        placeholder="Masukkan Link Redirect..."
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
