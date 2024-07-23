@@ -43,6 +43,7 @@ import { omitBy } from "lodash";
 import { convertEmptyStringsToNull } from "@/lib/utils";
 import { ConfirmModal } from "../modal/confirm-modal";
 import { RejectCustomerModal } from "../modal/reject-customer-modal";
+import Spinner from "../spinner";
 const fileSchema = z.custom<any>(
   (val: any) => {
     // if (!(val instanceof FileList)) return false;
@@ -74,20 +75,6 @@ const formSchema = z.object({
   name: z
     .string({ required_error: "Nama diperlukan" })
     .min(3, { message: "Nama minimal harus 3 karakter" }),
-  nik: z
-    .string()
-    .optional()
-    .nullable()
-    .refine(
-      (val) => {
-        if (val !== undefined && val !== null && val !== "") {
-          return val.length == 16;
-        }
-
-        return true;
-      },
-      { message: "NIK harus 16 karakter" },
-    ),
   email: z
     .string({ required_error: "Email diperlukan" })
     .email({ message: "Email harus valid" }),
@@ -123,20 +110,6 @@ const formEditSchema = z.object({
     .string({ required_error: "Nama diperlukan" })
     .min(3, { message: "Nama minimal harus 3 karakter" }),
   // imgUrl: z.array(ImgSchema),
-  nik: z
-    .string()
-    .optional()
-    .nullable()
-    .refine(
-      (val) => {
-        if (val !== undefined && val !== null && val !== "") {
-          return val.length == 16;
-        }
-
-        return true;
-      },
-      { message: "NIK harus 16 karakter" },
-    ),
   email: z
     .string({ required_error: "Email diperlukan" })
     .email({ message: "Email harus valid" }),
@@ -200,7 +173,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const defaultValues = initialData
     ? {
         name: initialData?.name,
-        nik: initialData?.nik,
         email: initialData?.email,
         date_of_birth: initialData?.date_of_birth,
         gender: initialData?.gender,
@@ -210,7 +182,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       }
     : {
         name: "",
-        nik: "",
         email: "",
         date_of_birth: "",
         gender: "",
@@ -289,7 +260,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               variant: "success",
               title: toastMessage,
             });
-            router.refresh();
             router.push(`/dashboard/customers`);
           },
           onSettled: () => {
@@ -356,7 +326,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           variant: "success",
           title: "Customer berhasil disetujui",
         });
-        router.refresh();
         router.push(`/dashboard/customers`);
       },
       onSettled: () => {
@@ -386,7 +355,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             variant: "success",
             title: "Customer berhasil ditolak",
           });
-          router.refresh();
           router.push(`/dashboard/customers`);
         },
         onSettled: () => {
@@ -536,34 +504,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             />
             {!isEdit ? (
               <FormItem>
-                <FormLabel>NIK</FormLabel>
-                <FormControl className="disabled:opacity-100">
-                  <Input disabled value={initialData?.nik ?? "-"} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            ) : (
-              <FormField
-                control={form.control}
-                name="nik"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>NIK</FormLabel>
-                    <FormControl className="disabled:opacity-100">
-                      <Input
-                        disabled={!isEdit || loading}
-                        placeholder="NIK"
-                        value={field.value ?? ""}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            {!isEdit ? (
-              <FormItem>
                 <FormLabel>Jenis Kelamin</FormLabel>
                 <FormControl className="disabled:opacity-100">
                   <Input
@@ -674,7 +614,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               className="ml-auto bg-main hover:bg-main/90"
               type="submit"
             >
-              {action}
+              {loading ? <Spinner className="h-5 w-5" /> : action}
             </Button>
           )}
         </form>
@@ -687,7 +627,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             type="button"
             onClick={() => setOpenRejectModal(true)}
           >
-            Tolak
+            {loading ? <Spinner className="h-5 w-5" /> : "Tolak"}
           </Button>
           <Button
             disabled={loading}
@@ -695,7 +635,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             type="button"
             onClick={() => setOpenApprovalModal(true)}
           >
-            Setuju
+            {loading ? <Spinner className="h-5 w-5" /> : "Setuju"}
           </Button>
         </div>
       )}
