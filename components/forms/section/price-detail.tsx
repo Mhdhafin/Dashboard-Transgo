@@ -298,7 +298,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             </div>
           )}
 
-          {(type === "create" || type === "edit") && (
+          {type === "create" && (
             <div className="flex flex-col gap-5 sticky bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
@@ -321,7 +321,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               </Button>
             </div>
           )}
-          {type === "detail" &&
+          {(type === "detail" || type === "edit") &&
             initialData?.status !== "pending" &&
             initialData?.payment_pdf_url && (
               <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1 sticky bottom-1">
