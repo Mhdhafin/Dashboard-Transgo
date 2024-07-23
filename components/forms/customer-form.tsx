@@ -4,7 +4,7 @@ import * as z from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConfigProvider, DatePicker, Space } from "antd";
@@ -146,19 +146,29 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const title = !isEdit
-    ? "Detail Customer"
-    : initialData
-    ? "Edit Customer"
-    : "Create Customer";
-  const description = !isEdit
-    ? ""
-    : initialData
-    ? "Edit a customer"
-    : "Add a new customer";
+  const pathname = usePathname();
+  const splitPath = pathname.split("/");
+  const lastPath = splitPath[splitPath.length - 1];
+
+  const title =
+    lastPath === "preview"
+      ? "Tinjau Customer"
+      : lastPath === "edit"
+      ? "Edit Customer"
+      : lastPath === "detail"
+      ? "Detail Customer"
+      : "Tambah Customer";
+  const description =
+    lastPath === "preview"
+      ? ""
+      : lastPath === "edit"
+      ? "Edit Customer"
+      : lastPath === "detail"
+      ? ""
+      : "Add a new Customer";
   const toastMessage = initialData
-    ? "Customer changed successfully!"
-    : "Customer created successfully!";
+    ? "Customer berhasil diubah!"
+    : "Customer berhasil dibuat";
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
   const [openApprovalModal, setOpenApprovalModal] = useState(false);
@@ -608,7 +618,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               </FormItem>
             )}
           />
-          {isEdit && (
+          {isEdit && lastPath !== "preview" && (
             <Button
               disabled={loading}
               className="ml-auto bg-main hover:bg-main/90"
@@ -619,7 +629,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           )}
         </form>
       </Form>
-      {!isEdit && initialData?.status === "pending" && (
+      {lastPath === "preview" && initialData?.status === "pending" && (
         <div className="flex justify-start gap-4">
           <Button
             disabled={loading}
