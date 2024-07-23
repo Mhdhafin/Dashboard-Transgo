@@ -7,9 +7,19 @@ import {
   PhoneCall,
   User,
 } from "lucide-react";
-import { Carousel } from "../order-form";
 import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { isEmpty } from "lodash";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card } from "@/components/ui/card";
+import { PreviewImage } from "@/components/modal/preview-image";
 
 interface DriverDetailProps {
   onClose: () => void;
@@ -17,6 +27,14 @@ interface DriverDetailProps {
 }
 
 const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState(null);
+
+  const onHandlePreview = (file: any) => {
+    setContent(file);
+    setOpen(true);
+  };
+
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 absolute  mt-[-140px] right-0 border-l border-neutral-400"
@@ -119,9 +137,53 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
               </div>
             </div>
           </div>
-          <Carousel images={data?.id_cards} />
+          {isEmpty(data?.id_cards) ? (
+            <p>Belum ada Foto</p>
+          ) : (
+            <Carousel className="max-w-xs mx-auto">
+              <CarouselContent>
+                {data?.id_cards.map((photo: any, index: any) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1">
+                      <Card className="w-[310px] h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative ">
+                        {/* <CardContent className="flex aspect-square items-center justify-center p-6">
+                       
+                      </CardContent> */}
+                        <img
+                          src={photo.photo}
+                          alt={`Slide ${index}`}
+                          className="object-cover cursor-pointer rounded-lg w-full h-full"
+                          onClick={() => {
+                            setOpen(true);
+                            onHandlePreview(photo?.photo);
+                          }}
+                        />
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {data?.id_cards && data?.id_cards?.length > 1 && (
+                <>
+                  <CarouselPrevious
+                    type="button"
+                    className="-left-1 top-1/2 -translate-y-1/2 bg-accent"
+                  />
+                  <CarouselNext
+                    type="button"
+                    className="-right-1 top-1/2 -translate-y-1/2 bg-accent"
+                  />
+                </>
+              )}
+            </Carousel>
+          )}
         </div>
       </div>
+      <PreviewImage
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        content={content}
+      />
     </div>
   );
 };
