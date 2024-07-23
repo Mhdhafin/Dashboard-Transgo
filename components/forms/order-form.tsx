@@ -682,8 +682,69 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         <Heading title={title} description={description} />
         {initialData?.status !== "pending" &&
           initialData?.request_status === "pending" &&
-          !isEdit && (
+          lastPath !== "pending" && (
             <div className="flex gap-2">
+              {lastPath === "edit" && (
+                <>
+                  <Button
+                    onClick={handleReset}
+                    disabled={!form.formState.isDirty}
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "text-black",
+                    )}
+                  >
+                    Reset berdasarkan data pengguna
+                  </Button>
+                  <Button
+                    onClick={form.handleSubmit(onSubmit)}
+                    className={cn(buttonVariants({ variant: "main" }))}
+                  >
+                    Selesai
+                  </Button>
+                </>
+              )}
+              {lastPath !== "edit" && (
+                <Link
+                  href={`/dashboard/orders/${orderId}/edit`}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "text-black",
+                  )}
+                >
+                  Edit Pesanan
+                </Link>
+              )}
+              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+                Belum kembali
+              </div>
+            </div>
+          )}
+
+        {initialData?.request_status === "done" && (
+          <div className="flex gap-2">
+            {lastPath === "edit" && (
+              <>
+                <Button
+                  onClick={handleReset}
+                  disabled={!form.formState.isDirty}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "text-black",
+                  )}
+                >
+                  Reset berdasarkan data pengguna
+                </Button>
+                <Button
+                  onClick={form.handleSubmit(onSubmit)}
+                  className={cn(buttonVariants({ variant: "main" }))}
+                >
+                  Selesai
+                </Button>
+              </>
+            )}
+
+            {lastPath !== "edit" && (
               <Link
                 href={`/dashboard/orders/${orderId}/edit`}
                 className={cn(
@@ -693,23 +754,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               >
                 Edit Pesanan
               </Link>
-
-              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
-                Belum kembali
-              </div>
-            </div>
-          )}
-
-        {initialData?.request_status === "done" && !isEdit && (
-          <div className="flex gap-2">
-            <Button
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "text-black",
-              )}
-            >
-              Edit Pesanan
-            </Button>
+            )}
 
             <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
               Selesai
@@ -720,6 +765,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         {initialData?.status === "pending" && lastPath === "preview" && (
           <Button
             onClick={handleReset}
+            disabled={form.formState.isDirty}
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
             Reset berdasarkan data pengguna
