@@ -29,6 +29,7 @@ interface PriceDetailProps {
   initialData: any;
   confirmLoading: boolean;
   type?: string;
+  messages?: any;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -41,6 +42,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   initialData,
   confirmLoading,
   type,
+  messages,
 }) => {
   return (
     <div
@@ -233,6 +235,12 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                       </div>
                     </FormControl>
                     <FormMessage />
+                    <FormMessage />
+                    {messages.discount && (
+                      <FormMessage className="text-main">
+                        {messages.discount}
+                      </FormMessage>
+                    )}
                   </FormItem>
                 )}
               />

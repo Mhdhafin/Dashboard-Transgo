@@ -220,6 +220,17 @@ interface DetailPrice {
   weekend_price: number;
 }
 
+type Messages = {
+  [key in keyof OrderFormValues]?: string;
+} & {
+  start_request?: {
+    [key in keyof OrderFormValues["start_request"]]?: string | undefined;
+  };
+  end_request?: {
+    [key in keyof OrderFormValues["end_request"]]?: string | undefined;
+  };
+};
+
 export const OrderForm: React.FC<FleetFormProps> = ({
   initialData,
   isEdit,
@@ -273,6 +284,8 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const [showServicePrice, setShowServicePrice] = useState<boolean>(true);
   const [type, setType] = useState<string>("");
   const [schema, setSchema] = useState(() => generateSchema(true, true));
+  const [messages, setMessages] = useState<any>({});
+
   const {
     data: customers,
     fetchNextPage: fetchNextCustomers,
@@ -391,10 +404,6 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     setEnd(end);
   }, [now, form.getValues("duration")]);
 
-  console.log(
-    form.getValues("start_request.driver_id"),
-    form.getValues("end_request.driver_id"),
-  );
   const onSubmit = async (data: OrderFormValues) => {
     setLoading(true);
     console.log("submit", data);
@@ -652,6 +661,88 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     }
   }, [errors]);
 
+  const generateMessage = (currentValue: any, defaultValue: any) =>
+    currentValue !== defaultValue ? "Data telah diubah" : "";
+
+  useEffect(() => {
+    const newMessages = {
+      customer: generateMessage(customerField, defaultValues.customer),
+      fleet: generateMessage(fleetField, defaultValues.fleet),
+      date: generateMessage(dateField, defaultValues.date),
+      duration: generateMessage(durationField, defaultValues.duration),
+      is_out_of_town: generateMessage(
+        isOutOfTownField,
+        defaultValues.is_out_of_town,
+      ),
+      is_with_driver: generateMessage(
+        isWithDriverField,
+        defaultValues.is_with_driver,
+      ),
+      insurance_id: generateMessage(insuranceField, defaultValues.insurance_id),
+      start_request: {
+        is_self_pickup: generateMessage(
+          startSelfPickUpField,
+          defaultValues.start_request.is_self_pickup,
+        ),
+        driver_id: generateMessage(
+          startDriverField,
+          defaultValues.start_request.driver_id,
+        ),
+        distance: generateMessage(
+          startDistanceField,
+          defaultValues.start_request.distance,
+        ),
+        address: generateMessage(
+          startAddressField,
+          defaultValues.start_request.address,
+        ),
+      },
+      end_request: {
+        is_self_pickup: generateMessage(
+          endSelfPickUpField,
+          defaultValues.end_request.is_self_pickup,
+        ),
+        driver_id: generateMessage(
+          endDriverField,
+          defaultValues.end_request.driver_id,
+        ),
+        distance: generateMessage(
+          endDistanceField,
+          defaultValues.end_request.distance,
+        ),
+        address: generateMessage(
+          endAddressField,
+          defaultValues.end_request.address,
+        ),
+      },
+      discount: generateMessage(discountField, defaultValues.discount),
+      description: generateMessage(descriptionField, defaultValues.description),
+      service_price: generateMessage(serviceField, defaultValues.service_price),
+    };
+
+    setMessages(newMessages);
+  }, [
+    customerField,
+    fleetField,
+    dateField,
+    durationField,
+    isOutOfTownField,
+    isWithDriverField,
+    insuranceField,
+    startSelfPickUpField,
+    startDriverField,
+    startDistanceField,
+    startAddressField,
+    endSelfPickUpField,
+    endDriverField,
+    endDistanceField,
+    endAddressField,
+    discountField,
+    descriptionField,
+    serviceField,
+  ]);
+  console.log("message", messages);
+
   return (
     <>
       {openApprovalModal && (
@@ -765,7 +856,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         {initialData?.status === "pending" && lastPath === "preview" && (
           <Button
             onClick={handleReset}
-            disabled={form.formState.isDirty}
+            disabled={!form.formState.isDirty}
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
             Reset berdasarkan data pengguna
@@ -785,33 +876,47 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 render={({ field }) => {
                   console.log("field", field.value, initialData?.customer);
                   return (
-                    <Tabs
-                      defaultValue={
-                        defaultValues.is_with_driver
-                          ? "dengan_supir"
-                          : "lepas_kunci"
-                      }
-                      onValueChange={field.onChange}
-                      value={field.value ? "dengan_supir" : "lepas_kunci"}
-                      className="w-[235px]"
-                    >
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger
-                          disabled={!isEdit || loading}
-                          value="lepas_kunci"
-                          onClick={() => form.setValue("is_with_driver", false)}
+                    <FormItem>
+                      <FormControl>
+                        <Tabs
+                          defaultValue={
+                            defaultValues.is_with_driver
+                              ? "dengan_supir"
+                              : "lepas_kunci"
+                          }
+                          onValueChange={field.onChange}
+                          value={field.value ? "dengan_supir" : "lepas_kunci"}
+                          className="w-[235px]"
                         >
-                          Lepas Kunci
-                        </TabsTrigger>
-                        <TabsTrigger
-                          disabled={!isEdit || loading}
-                          value="dengan_supir"
-                          onClick={() => form.setValue("is_with_driver", true)}
-                        >
-                          Dengan Supir
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
+                          <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger
+                              disabled={!isEdit || loading}
+                              value="lepas_kunci"
+                              onClick={() =>
+                                form.setValue("is_with_driver", false)
+                              }
+                            >
+                              Lepas Kunci
+                            </TabsTrigger>
+                            <TabsTrigger
+                              disabled={!isEdit || loading}
+                              value="dengan_supir"
+                              onClick={() =>
+                                form.setValue("is_with_driver", true)
+                              }
+                            >
+                              Dengan Supir
+                            </TabsTrigger>
+                          </TabsList>
+                        </Tabs>
+                      </FormControl>
+                      <FormMessage />
+                      {messages.is_with_driver && (
+                        <FormMessage className="text-main">
+                          {messages.is_with_driver}
+                        </FormMessage>
+                      )}
+                    </FormItem>
                   );
                 }}
               />
@@ -1073,6 +1178,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                               </Button>
                             </div>
                             <FormMessage />
+                            {messages.fleet && (
+                              <FormMessage className="text-main">
+                                {messages.fleet}
+                              </FormMessage>
+                            )}
                           </Space>
                         );
                       }}
@@ -1167,6 +1277,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             />
                           </FormControl>
                           <FormMessage />
+                          {messages.date && (
+                            <FormMessage className="text-main">
+                              {messages.date}
+                            </FormMessage>
+                          )}
                         </Space>
                       </ConfigProvider>
                     )}
@@ -1234,6 +1349,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         </SelectContent>
                       </Select>
                       <FormMessage />
+                      {messages.duration && (
+                        <FormMessage className="text-main">
+                          {messages.duration}
+                        </FormMessage>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -1305,6 +1425,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           </Tabs>
                         </FormControl>
                         <FormMessage />
+                        {messages.is_out_of_town && (
+                          <FormMessage className="text-main">
+                            {messages.is_out_of_town}
+                          </FormMessage>
+                        )}
                       </FormItem>
                     );
                   }}
@@ -1342,6 +1467,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           </SelectContent>
                         </Select>
                         <FormMessage />
+                        {messages.insurance_id && (
+                          <FormMessage className="text-main">
+                            {messages.insurance_id}
+                          </FormMessage>
+                        )}
                       </FormItem>
                     );
                   }}
@@ -1371,6 +1501,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   setType("start");
                 }}
                 lastPath={lastPath}
+                messages={messages}
               />
               <DetailSection
                 title="Detail Pengembilan"
@@ -1388,6 +1519,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   setType("end");
                 }}
                 lastPath={lastPath}
+                messages={messages}
               />
               <div
                 className={cn(
@@ -1425,6 +1557,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           </div>
                         </FormControl>
                         <FormMessage />
+                        {messages.service_price && (
+                          <FormMessage className="text-main">
+                            {messages.service_price}
+                          </FormMessage>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -1464,6 +1601,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           />
                         </FormControl>
                         <FormMessage />
+                        {messages.description && (
+                          <FormMessage className="text-main">
+                            {messages.description}
+                          </FormMessage>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -1520,6 +1662,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 handleOpenRejectModal={() => setOpenRejectModal(true)}
                 confirmLoading={loading}
                 type={lastPath}
+                messages={messages}
               />
             )}
           </div>
@@ -1545,6 +1688,7 @@ interface DetailSectionProps {
   type: "start" | "end";
   handleButton: () => void;
   lastPath: string;
+  messages?: any;
 }
 
 const DetailSection: React.FC<DetailSectionProps> = ({
@@ -1558,6 +1702,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
   type,
   handleButton,
   lastPath,
+  messages,
 }) => {
   const [searchDriverTerm, setSearchDriverTerm] = useState("");
   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
@@ -1594,6 +1739,9 @@ const DetailSection: React.FC<DetailSectionProps> = ({
 
   const typeRequestLog = type === "start" ? startRequestLog : endRequestLog;
   const typeRequest = type === "start" ? startRequest : endRequest;
+
+  const detailMessages =
+    type === "start" ? messages?.start_request : messages?.end_request;
 
   const watchedFields = form.watch([
     "start_request.is_self_pickup",
@@ -1686,6 +1834,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     </Tabs>
                   </FormControl>
                   <FormMessage />
+                  {detailMessages?.is_self_pickup && (
+                    <FormMessage className="text-main">
+                      {detailMessages?.is_self_pickup}
+                    </FormMessage>
+                  )}
                 </FormItem>
               );
             }}
@@ -1795,6 +1948,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       </Button>
                     </div>
                     <FormMessage />
+                    {detailMessages?.driver_id && (
+                      <FormMessage className="text-main">
+                        {detailMessages?.driver_id}
+                      </FormMessage>
+                    )}
                   </Space>
                 )}
               />
@@ -1872,6 +2030,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       />
                     </FormControl>
                     <FormMessage />
+                    {detailMessages?.distance && (
+                      <FormMessage className="text-main">
+                        {detailMessages?.distance}
+                      </FormMessage>
+                    )}
                   </FormItem>
                 )}
               />
@@ -1934,6 +2097,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       />
                     </FormControl>
                     <FormMessage />
+                    {detailMessages?.address && (
+                      <FormMessage className="text-main">
+                        {detailMessages?.address}
+                      </FormMessage>
+                    )}
                   </FormItem>
                 )}
               />
