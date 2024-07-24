@@ -93,7 +93,11 @@ export function DashboardNav({
           item.href && (
             <Link
               key={index}
-              href={path.includes(item.href) ? "" : item.href}
+              href={
+                path.replace("dashboard/", "").includes(item.href)
+                  ? ""
+                  : item.href
+              }
               onClick={() => {
                 if (setOpen) setOpen(false);
               }}
