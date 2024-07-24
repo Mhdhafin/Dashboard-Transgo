@@ -71,13 +71,13 @@ const page = async ({ searchParams }: paramsProps) => {
 
         <div className="flex items-start justify-between">
           <Heading title="Requests Tasks" />
-
-          <Link
+          {/* hide button - https://qosim-project.atlassian.net/browse/OMT-32?atlOrigin=eyJpIjoiNmY5MzliYmIyYmM1NDYxMjhiNzNjMTMzYjY5NGEzNjYiLCJwIjoiaiJ9  */}
+          {/* <Link
             href={"/dashboard/requests/create"}
             className={cn(buttonVariants({ variant: "main" }))}
           >
             <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link>
+          </Link> */}
         </div>
         <Separator />
         <Tabs defaultValue={status} className="space-y-4">
