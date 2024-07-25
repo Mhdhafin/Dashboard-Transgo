@@ -816,9 +816,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     Reset berdasarkan data pengguna
                   </Button>
                   <Button
-                    onClick={form.handleSubmit(onSubmit)}
+                    onClick={() => setOpenApprovalModal(true)}
                     className={cn(buttonVariants({ variant: "main" }))}
-                    disabled={loading}
+                    type="button"
                   >
                     {loading ? <Spinner className="h-4 w-4" /> : "Selesai"}
                   </Button>
@@ -835,7 +835,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   Edit Pesanan
                 </Link>
               )}
-              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
                 Belum kembali
               </div>
             </div>
@@ -856,8 +856,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   Reset berdasarkan data pengguna
                 </Button>
                 <Button
-                  onClick={form.handleSubmit(onSubmit)}
+                  onClick={() => setOpenApprovalModal(true)}
                   className={cn(buttonVariants({ variant: "main" }))}
+                  type="button"
                 >
                   Selesai
                 </Button>
@@ -876,7 +877,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
               </Link>
             )}
 
-            <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full">
+            <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
               Selesai
             </div>
           </div>

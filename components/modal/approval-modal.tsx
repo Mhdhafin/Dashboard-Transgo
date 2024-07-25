@@ -48,6 +48,7 @@ export const ApprovalModal: React.FC<ModalProps> = ({
             id="terms"
             checked={!checked}
             onCheckedChange={() => setChecked(!checked)}
+            disabled={loading}
           />
           <label
             htmlFor="terms"
