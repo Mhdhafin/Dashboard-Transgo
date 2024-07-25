@@ -27,7 +27,7 @@ import { useToast } from "../ui/use-toast";
 import { cn, makeUrlsClickable } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetDetailFleet, useGetInfinityFleets } from "@/hooks/api/useFleet";
-import { isEmpty, isString } from "lodash";
+import { isEmpty, isNull, isString } from "lodash";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -1928,19 +1928,21 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                           })}
                           disabled={switchValue}
                         >
-                          {lastPath !== "create" && isEdit && (
-                            <Option
-                              value={
-                                type == "start"
-                                  ? initialData?.start_request?.driver?.id?.toString()
-                                  : initialData?.end_request?.driver?.id?.toString()
-                              }
-                            >
-                              {type == "start"
-                                ? initialData?.start_request?.driver?.name
-                                : initialData?.end_request?.driver?.name}
-                            </Option>
-                          )}
+                          {lastPath !== "preview" &&
+                            lastPath !== "create" &&
+                            isEdit && (
+                              <Option
+                                value={
+                                  type == "start"
+                                    ? initialData?.start_request?.driver?.id?.toString()
+                                    : initialData?.end_request?.driver?.id?.toString()
+                                }
+                              >
+                                {type == "start"
+                                  ? initialData?.start_request?.driver?.name
+                                  : initialData?.end_request?.driver?.name}
+                              </Option>
+                            )}
                           {drivers?.pages.map((page: any, pageIndex: any) =>
                             page.data.items.map((item: any, itemIndex: any) => {
                               return (
