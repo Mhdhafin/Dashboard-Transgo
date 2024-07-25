@@ -720,7 +720,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       service_price: generateMessage(serviceField, defaultValues.service_price),
     };
 
-    setMessages(newMessages);
+    if (lastPath !== "create") {
+      setMessages(newMessages);
+    }
   }, [
     customerField,
     fleetField,
