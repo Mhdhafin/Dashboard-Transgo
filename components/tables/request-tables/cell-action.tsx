@@ -70,15 +70,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-          <DropdownMenuItem
+          {/* hide update function - https://qosim-project.atlassian.net/browse/OMT-42 */}
+          {/* <DropdownMenuItem
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/dashboard/requests/${data?.id}/edit`);
             }}
           >
             <Edit className="mr-2 h-4 w-4" /> Update
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem
             className="text-red-500"
             onClick={(e) => {
