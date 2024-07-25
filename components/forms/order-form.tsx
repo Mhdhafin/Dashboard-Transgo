@@ -327,7 +327,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         date: initialData?.start_date,
         duration: initialData?.duration?.toString(),
         discount: initialData?.discount?.toString(),
-        insurance_id: initialData?.insurance?.id.toString(),
+        insurance_id: initialData?.insurance
+          ? initialData?.insurance?.id.toString()
+          : "0",
         service_price: initialData?.service_price.toString(),
       }
     : {
@@ -792,8 +794,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   <Button
                     onClick={form.handleSubmit(onSubmit)}
                     className={cn(buttonVariants({ variant: "main" }))}
+                    disabled={loading}
                   >
-                    Selesai
+                    {loading ? <Spinner className="h-4 w-4" /> : "Selesai"}
                   </Button>
                 </>
               )}
