@@ -55,7 +55,7 @@ const FleetDetail: React.FC<FleetDetailProps> = ({ onClose, data }) => {
 
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 absolute  mt-[-140px] right-0 border-l border-neutral-400"
+      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5  mt-[-140px] fixed right-0 border-l border-neutral-400"
       id="detail-sidebar"
     >
       <div className="flex justify-between items-center mb-4">

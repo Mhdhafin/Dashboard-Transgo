@@ -1169,13 +1169,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                   "w-[65px] h-[40px]",
                                 )}
                                 disabled={
-                                  !form.getFieldState("customer").isDirty &&
-                                  isEmpty(form.getValues("customer"))
+                                  !form.getFieldState("fleet").isDirty &&
+                                  isEmpty(form.getValues("fleet"))
                                 }
                                 type="button"
                                 onClick={() => {
-                                  setOpenCustomerDetail(true);
-                                  setOpenFleetDetail(false);
+                                  setOpenFleetDetail(true);
+                                  setOpenCustomerDetail(false);
                                   setOpenDriverDetail(false);
                                 }}
                               >
