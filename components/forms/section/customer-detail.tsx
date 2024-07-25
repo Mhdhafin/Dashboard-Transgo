@@ -236,7 +236,11 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Jenis Kelamin
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {data?.gender}
+                    {data?.gender === "male"
+                      ? "Laki-Laki"
+                      : data?.gender === "female"
+                      ? "Perempuan"
+                      : "-"}
                   </span>
                 </div>
               </div>

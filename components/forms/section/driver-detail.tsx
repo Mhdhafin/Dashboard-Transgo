@@ -93,7 +93,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Kontak
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.phone_number}
+                  {data?.phone_number ?? "-"}
                 </span>
               </div>
             </div>
@@ -106,7 +106,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Kontak Darurat
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.emergency_phone_number}
+                  {data?.emergency_phone_number ?? "-"}
                 </span>
               </div>
             </div>
@@ -119,7 +119,11 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Jenis Kelamin
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.gender}
+                  {data?.gender === "male"
+                    ? "Laki-Laki"
+                    : data?.gender === "female"
+                    ? "Perempuan"
+                    : "-"}
                 </span>
               </div>
             </div>

@@ -83,7 +83,11 @@ const FleetDetail: React.FC<FleetDetailProps> = ({ onClose, data }) => {
                   Tipe
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.type}
+                  {data?.type === "motorcycle"
+                    ? "Motor"
+                    : data?.type === "car"
+                    ? "Mobil"
+                    : "-"}
                 </span>
               </div>
             </div>
