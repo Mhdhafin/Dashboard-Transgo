@@ -67,7 +67,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Nama Penanggung Jawab
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.name}
+                  {data?.name ?? "-"}
                 </span>
               </div>
             </div>
@@ -80,7 +80,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Email
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.email}
+                  {data?.email ?? "-"}
                 </span>
               </div>
             </div>

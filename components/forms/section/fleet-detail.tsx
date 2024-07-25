@@ -100,7 +100,7 @@ const FleetDetail: React.FC<FleetDetailProps> = ({ onClose, data }) => {
                   Nama Armada
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.name}
+                  {data?.name ?? "-"}
                 </span>
               </div>
             </div>
@@ -113,7 +113,7 @@ const FleetDetail: React.FC<FleetDetailProps> = ({ onClose, data }) => {
                   Plat Motor
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {data?.plate_number}
+                  {data?.plate_number ?? "-"}
                 </span>
               </div>
             </div>

@@ -184,7 +184,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Nama Pelanggan
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {data?.name}
+                    {data?.name ?? "-"}
                   </span>
                 </div>
               </div>
@@ -197,7 +197,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Email
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {data?.email}
+                    {data?.email ?? "-"}
                   </span>
                 </div>
               </div>
@@ -210,7 +210,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Kontak
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {data?.phone_number}
+                    {data?.phone_number ?? "-"}
                   </span>
                 </div>
               </div>
@@ -223,7 +223,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Kontak Darurat
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {data?.emergency_phone_number}
+                    {data?.emergency_phone_number ?? "-"}
                   </span>
                 </div>
               </div>
@@ -253,7 +253,9 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     Tanggal Ulang tahun
                   </span>
                   <span className="font-medium text-sm text-black">
-                    {dayjs(data?.date_of_birth).format("D MMMM YYYY")}
+                    {data?.date_of_birth
+                      ? dayjs(data?.date_of_birth).format("D MMMM YYYY")
+                      : "-"}
                   </span>
                 </div>
               </div>
