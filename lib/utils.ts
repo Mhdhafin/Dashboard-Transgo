@@ -53,7 +53,7 @@ export const convertTime = (time: number | null) => {
 
   let displayString = "";
   if (days !== 0) {
-    displayString += ` ${days} hari`;
+    displayString += ` ${days} Hari`;
   }
 
   if (hours !== 0) {

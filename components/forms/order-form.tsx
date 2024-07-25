@@ -254,12 +254,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       : "Tambah Pesanan";
   const description =
     lastPath === "preview"
-      ? "Tinjau permintaan baru untuk pengemudi"
+      ? "Tinjau pesanan baru dari pelanggan"
       : lastPath === "edit"
-      ? "Edit permintaan baru untuk pengemudi"
+      ? "Edit pesanan untuk pelanggan"
       : lastPath === "detail"
       ? ""
-      : "Tambah permintaan baru untuk pengemudi";
+      : "Tambah pesanan baru untuk pelanggan";
   const toastMessage = initialData
     ? "Pesanan berhasil diubah!"
     : "Pesanan berhasil dibuat";
@@ -813,7 +813,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                       "text-black",
                     )}
                   >
-                    Reset berdasarkan data pengguna
+                    Reset berdasarkan data Pelanggan
                   </Button>
                   <Button
                     onClick={() => setOpenApprovalModal(true)}
@@ -853,7 +853,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     "text-black",
                   )}
                 >
-                  Reset berdasarkan data pengguna
+                  Reset berdasarkan data Pelanggan
                 </Button>
                 <Button
                   onClick={() => setOpenApprovalModal(true)}
@@ -889,7 +889,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
             disabled={!form.formState.isDirty}
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
-            Reset berdasarkan data pengguna
+            Reset berdasarkan data Pelanggan
           </Button>
         )}
       </div>
@@ -989,7 +989,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                                     "mr-2",
                                   )}
                                   showSearch
-                                  placeholder="Pilih Customer"
+                                  placeholder="Pilih Pelanggan"
                                   style={{
                                     height: "40px",
                                   }}
@@ -1373,7 +1373,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                               key={index}
                               value={(index + 1).toString()}
                             >
-                              {index + 1} hari
+                              {index + 1} Hari
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -1484,7 +1484,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="0">Tidak menggunakan</SelectItem>
+                            <SelectItem value="0">Tidak Ada</SelectItem>
                             {/* @ts-ignore  */}
                             {manipulateInsurance?.map((insurance) => (
                               <SelectItem
@@ -1534,7 +1534,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 messages={messages}
               />
               <DetailSection
-                title="Detail Pengembilan"
+                title="Detail Pengembalian"
                 form={form}
                 initialData={initialData}
                 defaultValues={defaultValues}
@@ -1566,7 +1566,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="relative label-required">
-                          Harga Layanan
+                          Harga Layanan Driver
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -1623,7 +1623,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                         <FormControl className="disabled:opacity-100">
                           <Textarea
                             id="alamat"
-                            placeholder="Masukkan Deskripsi pesanan anda di sini..."
+                            placeholder="Masukkan deskripsi pesanan pelanggan di sini...."
                             className="col-span-3"
                             rows={3}
                             value={field.value || ""}
@@ -1808,7 +1808,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
           {type === "end" && lastPath !== "detail" && (
             <div className="flex gap-2">
               <Label htmlFor="same-field" className="font-normal text-sm">
-                Samakan data seperti pengambilan
+                Samakan data seperti Pengambilan
               </Label>
               <Switch
                 id="same-field"
@@ -2122,7 +2122,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="alamat"
-                        placeholder="Masukkan Alamat..."
+                        placeholder="Masukkan alamat lengkap...."
                         className="col-span-3"
                         rows={3}
                         disabled={!isEdit || loading || switchValue}

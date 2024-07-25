@@ -41,7 +41,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original?.duration} hari
+          {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
           onClick={(e) => {
@@ -127,7 +127,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original?.duration} hari
+          {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
           onClick={(e) => {
@@ -227,7 +227,7 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
-          {row.original?.duration} hari
+          {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
           onClick={(e) => {

@@ -181,7 +181,7 @@ const OrderTableWrapper = () => {
           <SearchInput
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
-            placeholder="Cari pesanan berdasarkan Pelanggan"
+            placeholder="Cari pesanan berdasarkan Pelanggan / Armada / Penanggung Jawab"
           />
         </div>
       </div>

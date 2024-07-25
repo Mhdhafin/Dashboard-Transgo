@@ -49,7 +49,7 @@ dayjs.locale("id");
 const formSchema = z.object({
   fleet: z.string().min(1, { message: "Tolong pilih fleet" }),
   // imgUrl: z.array(ImgSchema),
-  customer: z.string().min(1, { message: "Tolong pilih customer" }),
+  customer: z.string().min(1, { message: "Tolong pilih pelanggan" }),
   pic: z.string().min(1, { message: "Tolong pilih pic" }),
   time: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
   type: z.string().min(1, { message: "Tipe diperlukan" }),
@@ -324,7 +324,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                       <AntdSelect
                         showSearch
                         value={field.value}
-                        placeholder="Pilih Customer"
+                        placeholder="Pilih Pelanggan"
                         style={{ width: "100%" }}
                         onSearch={setSearchCustomerTerm}
                         onChange={field.onChange}

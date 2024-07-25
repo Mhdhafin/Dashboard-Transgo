@@ -105,7 +105,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               {detail?.fleet && (
                 <div className="flex justify-between mb-1">
                   <p className="font-medium text-sm text-neutral-700">
-                    {form.getValues("duration")} hari
+                    {form.getValues("duration")} Hari
                   </p>
                   <p className="font-semibold text-base">
                     {formatRupiah(
@@ -135,7 +135,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
               {showServicePrice && (
                 <>
                   <p className="font-medium text-sm text-neutral-700 mb-1">
-                    Biaya Layanan
+                    Harga Layanan Driver
                   </p>
                   <div className="flex justify-between mb-1">
                     <p className="font-medium text-sm text-neutral-700">
@@ -179,7 +179,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                     ) : (
                       <div className="flex">
                         <p className="font-medium text-sm text-neutral-700 mr-4">
-                          {detail?.weekend_days.length} hari
+                          {detail?.weekend_days.length} Hari
                         </p>
                         <DropdownWeekend days={detail?.weekend_days} />
                       </div>
