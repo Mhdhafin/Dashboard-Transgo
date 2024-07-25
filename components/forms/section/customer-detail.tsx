@@ -79,11 +79,12 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
     approveCustomer(data?.id as unknown as string, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+
         toast({
           variant: "success",
           title: "Customer berhasil disetujui",
         });
-        router.push(`/dashboard/orders`);
       },
       onSettled: () => {
         setLoading(false);
@@ -109,6 +110,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["customers"] });
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
           toast({
             variant: "success",
             title: "Customer berhasil ditolak",
