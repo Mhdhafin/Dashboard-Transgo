@@ -303,6 +303,30 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
   const { data: insurances } = useGetInsurances();
 
+  const manipulateInsurance = insurances?.data?.items?.map((item: any) => {
+    let newName;
+
+    switch (item.code) {
+      case "silver":
+        newName = `${item.name} (s.d. Rp 50 jt)`;
+        break;
+      case "gold":
+        newName = `${item.name} (s.d. Rp 100 jt)`;
+        break;
+      case "platinum":
+        newName = `${item.name} (Semua Kerusakan)`;
+        break;
+      default:
+        newName = item.name;
+        break;
+    }
+
+    return {
+      ...item,
+      name: newName,
+    };
+  });
+
   const { isMinimized } = useSidebar();
   console.log(initialData);
   const defaultValues = initialData
@@ -1461,12 +1485,12 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                           <SelectContent>
                             <SelectItem value="0">Tidak menggunakan</SelectItem>
                             {/* @ts-ignore  */}
-                            {insurances?.data?.items.map((insurance) => (
+                            {manipulateInsurance?.map((insurance) => (
                               <SelectItem
                                 key={insurance.id}
                                 value={insurance.id.toString()}
                               >
-                                {insurance.name} - {insurance.description}
+                                {insurance.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
