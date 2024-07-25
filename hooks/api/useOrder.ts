@@ -127,7 +127,7 @@ export const useAcceptOrder = (id: string | number) => {
   const queryClient = useQueryClient();
 
   const acceptOrder = (body: any) => {
-    return axiosAuth.patch(`${baseEndpoint}/${id}/accept`, body);
+    return axiosAuth.post(`${baseEndpoint}/${id}/accept`, body);
   };
 
   return useMutation({
