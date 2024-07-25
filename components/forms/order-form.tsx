@@ -334,13 +334,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         start_request: {
           is_self_pickup: initialData?.start_request?.is_self_pickup,
           address: initialData?.start_request?.address,
-          distance: initialData?.start_request?.distance,
+          distance: initialData?.start_request?.distance ?? 0,
           driver_id: initialData?.start_request?.driver?.id?.toString(),
         },
         end_request: {
           is_self_pickup: initialData?.end_request?.is_self_pickup,
           address: initialData?.end_request?.address,
-          distance: initialData?.end_request?.distance,
+          distance: initialData?.end_request?.distance ?? 0,
           driver_id: initialData?.end_request?.driver?.id?.toString(),
         },
         customer: initialData?.customer?.id?.toString(),
@@ -2034,38 +2034,40 @@ const DetailSection: React.FC<DetailSectionProps> = ({
               <FormField
                 name={`${type}_request.distance`}
                 control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="relative label-required">
-                      Jarak
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        min={0}
-                        disabled={!isEdit || loading || switchValue}
-                        type="number"
-                        placeholder="Masukkan jarak (contoh 10 Km)"
-                        className={cn(
-                          "h-[40px]",
-                          // isMinimized ? "w-[458px]" : "w-[340px]",
-                          isMinimized
-                            ? "min-[1920px]:w-[578px] w-[458px]"
-                            : "min-[1920px]:w-[460px] w-[340px]",
-                        )}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        // append value attribute when this field is not empty
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    {detailMessages?.distance && (
-                      <FormMessage className="text-main">
-                        {detailMessages?.distance}
-                      </FormMessage>
-                    )}
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Jarak
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          min={0}
+                          disabled={!isEdit || loading || switchValue}
+                          type="number"
+                          placeholder="Masukkan jarak (contoh 10 Km)"
+                          className={cn(
+                            "h-[40px]",
+                            // isMinimized ? "w-[458px]" : "w-[340px]",
+                            isMinimized
+                              ? "min-[1920px]:w-[578px] w-[458px]"
+                              : "min-[1920px]:w-[460px] w-[340px]",
+                          )}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          // append value attribute when this field is not empty
+                          value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      {detailMessages?.distance && (
+                        <FormMessage className="text-main">
+                          {detailMessages?.distance}
+                        </FormMessage>
+                      )}
+                    </FormItem>
+                  );
+                }}
               />
             </div>
           )}
