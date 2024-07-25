@@ -52,7 +52,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
       <div className="">
         <h4 className="text-center font-semibold text-xl mb-4 mt-4">
           Rincian Harga{" "}
-          {form.getValues("is_with_driver") ? "Lepas Kunci" : "Dengan Supir"}
+          {form.getValues("is_with_driver") ? "Dengan Supir" : "Lepas Kunci"}
         </h4>
         <div className="flex flex-col justify-between h-screen">
           <div className="min-h-[400px] overflow-auto mb-[200px]">
