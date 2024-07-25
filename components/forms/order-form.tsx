@@ -480,9 +480,13 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       setOpenApprovalModal(false);
       toast({
         variant: "destructive",
-        title: "Uh oh! ada sesuatu yang error",
-        //@ts-ignore
-        description: `error: ${error?.response?.data?.message}`,
+        title: `Uh oh! ${
+          //@ts-ignore
+          error?.response?.data?.message == "Customer must be verified."
+            ? "Customer belum diverifikasi"
+            : //@ts-ignore
+              error?.response?.data?.message
+        }`,
       });
     };
 
@@ -1104,7 +1108,9 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                             setOpenDriverDetail(false);
                           }}
                         >
-                          Lihat
+                          {initialData?.customer?.status == "pending"
+                            ? "Tinjau"
+                            : "Lihat"}
                         </Button>
                       </div>
                       {initialData?.customer?.status == "pending" && (
