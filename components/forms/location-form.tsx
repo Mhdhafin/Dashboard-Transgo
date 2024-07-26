@@ -28,10 +28,11 @@ dayjs.locale("id");
 
 // perlu dipisah
 const formSchema = z.object({
-  name: z.string().min(1, { message: "Nama diperlukan" }),
-  description: z.string().optional().nullable(),
-  map_url: z.string().optional().nullable(),
-  redirect_url: z.string().optional().nullable(),
+  name: z.string().min(1, { message: "Nama Lokasi diperlukan" }),
+  location: z.string().min(1, { message: "Nama Tempat diperlukan" }),
+  description: z.string().min(1, { message: "Deskripsi Alamat diperlukan" }),
+  map_url: z.string().min(1, { message: "Link Embed Maps diperlukan" }),
+  redirect_url: z.string().min(1, { message: "Link Maps diperlukan" }),
 });
 
 type LocationFormValues = z.infer<typeof formSchema>;
@@ -74,6 +75,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     ? initialData
     : {
         name: "",
+        location: "",
         description: "",
         map_url: "",
         redirect_url: "",
@@ -88,9 +90,10 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     setLoading(true);
     const payload = {
       name: data.name,
-      description: !isEmpty(data.description) ? data.description : null,
-      map_url: !isEmpty(data.map_url) ? data.map_url : null,
-      redirect_url: !isEmpty(data.redirect_url) ? data.redirect_url : null,
+      location: data.location,
+      description: data.description,
+      map_url: data.map_url,
+      redirect_url: data.redirect_url,
     };
 
     if (initialData) {
@@ -162,12 +165,12 @@ export const LocationForm: React.FC<LocationFormProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="relative label-required">
-                    Nama
+                    Nama Lokasi
                   </FormLabel>
                   <FormControl className="disabled:opacity-100">
                     <Input
                       disabled={!isEdit || loading}
-                      placeholder="Nama Location"
+                      placeholder="Nama Lokasi"
                       {...field}
                     />
                   </FormControl>
@@ -175,9 +178,30 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="relative label-required">
+                    Nama Tempat
+                  </FormLabel>
+                  <FormControl className="disabled:opacity-100">
+                    <Input
+                      disabled={!isEdit || loading}
+                      placeholder="Nama Tempat"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="md:grid md:grid-cols-3 gap-8">
             {!isEdit ? (
               <FormItem>
-                <FormLabel>Deskripsi</FormLabel>
+                <FormLabel>Deskripsi Alamat</FormLabel>
                 <p
                   className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
@@ -195,11 +219,13 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deskripsi</FormLabel>
+                    <FormLabel className="relative label-required">
+                      Deskripsi Alamat
+                    </FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="description"
-                        placeholder="Deskripsi..."
+                        placeholder="Deskripsi Alamat..."
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
@@ -212,17 +238,15 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                 )}
               />
             )}
-          </div>
-          <div className="md:grid md:grid-cols-2 gap-8">
             {!isEdit ? (
               <FormItem>
                 <FormLabel>Link Maps</FormLabel>
                 <p
                   className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
-                    __html: !isEmpty(defaultValues?.map_url)
+                    __html: !isEmpty(defaultValues?.redirect_url)
                       ? makeUrlsClickable(
-                          defaultValues?.map_url?.replace(/\n/g, "<br />"),
+                          defaultValues?.redirect_url?.replace(/\n/g, "<br />"),
                         )
                       : "-",
                   }}
@@ -231,10 +255,12 @@ export const LocationForm: React.FC<LocationFormProps> = ({
             ) : (
               <FormField
                 control={form.control}
-                name="map_url"
+                name="redirect_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Link Maps</FormLabel>
+                    <FormLabel className="relative label-required">
+                      Link Maps
+                    </FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="description"
@@ -253,13 +279,13 @@ export const LocationForm: React.FC<LocationFormProps> = ({
             )}
             {!isEdit ? (
               <FormItem>
-                <FormLabel>Link Redirect</FormLabel>
+                <FormLabel>Link Embed Maps</FormLabel>
                 <p
                   className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
-                    __html: !isEmpty(defaultValues?.redirect_url)
+                    __html: !isEmpty(defaultValues?.map_url)
                       ? makeUrlsClickable(
-                          defaultValues?.redirect_url?.replace(/\n/g, "<br />"),
+                          defaultValues?.map_url?.replace(/\n/g, "<br />"),
                         )
                       : "-",
                   }}
@@ -268,14 +294,16 @@ export const LocationForm: React.FC<LocationFormProps> = ({
             ) : (
               <FormField
                 control={form.control}
-                name="redirect_url"
+                name="map_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Link Redirect</FormLabel>
+                    <FormLabel className="relative label-required">
+                      Link Embed Maps
+                    </FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Textarea
                         id="description"
-                        placeholder="Masukkan Link Redirect..."
+                        placeholder="Masukkan Link Embed Maps..."
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
