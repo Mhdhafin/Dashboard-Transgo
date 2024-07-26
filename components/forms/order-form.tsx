@@ -774,6 +774,10 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     serviceField,
   ]);
   console.log("message", messages);
+  const approvalModalTitle =
+    lastPath === "edit"
+      ? "Apakah Anda Yakin Ingin Mengedit Pesanan ini?"
+      : "Apakah Anda Yakin Ingin Mengonfirmasi Pesanan ini?";
 
   return (
     <>
@@ -783,6 +787,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           onClose={() => setOpenApprovalModal(false)}
           onConfirm={form.handleSubmit(onSubmit)}
           loading={loading}
+          title={approvalModalTitle}
         />
       )}
       {openRejectModal && (

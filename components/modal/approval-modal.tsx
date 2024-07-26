@@ -16,6 +16,7 @@ interface ModalProps {
   onClose: () => void;
   loading?: boolean;
   onConfirm: () => void;
+  title: string;
 }
 
 export const ApprovalModal: React.FC<ModalProps> = ({
@@ -23,6 +24,7 @@ export const ApprovalModal: React.FC<ModalProps> = ({
   onClose,
   loading,
   onConfirm,
+  title,
 }) => {
   const [checked, setChecked] = useState<boolean>(true);
   const onChange = (open: boolean) => {
@@ -35,9 +37,7 @@ export const ApprovalModal: React.FC<ModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-left">
-            Apakah Anda Yakin Ingin Mengonfirmasi Pesanan ini?
-          </DialogTitle>
+          <DialogTitle className="text-left">{title}</DialogTitle>
           <DialogDescription className="text-left">
             Konfirmasi pesanan akan otomatis membuat Invoice, mohon pastikan
             data pesanan yang diinput telah benar sepenuhnya
