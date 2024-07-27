@@ -74,19 +74,6 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   </div>
                 </>
               )}
-              {!form.getValues("is_with_driver") &&
-                form.getValues("is_out_of_town") && (
-                  <div className={cn("flex justify-between")}>
-                    <p className="font-medium text-sm text-neutral-700">
-                      {form.getValues("is_out_of_town")
-                        ? "Luar Kota"
-                        : "Dalam Kota"}
-                    </p>
-                    <p className="font-semibold text-base">
-                      {formatRupiah(detail?.out_of_town_price ?? 0)}
-                    </p>
-                  </div>
-                )}
 
               <p className="font-medium text-sm text-neutral-700 mb-1">
                 Nama Armada
