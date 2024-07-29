@@ -30,7 +30,7 @@ dayjs.locale("id");
 const formSchema = z.object({
   name: z.string().min(1, { message: "Nama Lokasi diperlukan" }),
   location: z.string().min(1, { message: "Nama Tempat diperlukan" }),
-  description: z.string().min(1, { message: "Deskripsi Alamat diperlukan" }),
+  address: z.string().min(1, { message: "Deskripsi Alamat diperlukan" }),
   map_url: z.string().min(1, { message: "Link Embed Maps diperlukan" }),
   redirect_url: z.string().min(1, { message: "Link Maps diperlukan" }),
 });
@@ -76,7 +76,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     : {
         name: "",
         location: "",
-        description: "",
+        address: "",
         map_url: "",
         redirect_url: "",
       };
@@ -91,7 +91,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     const payload = {
       name: data.name,
       location: data.location,
-      description: data.description,
+      address: data.address,
       map_url: data.map_url,
       redirect_url: data.redirect_url,
     };
@@ -99,7 +99,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     if (initialData) {
       updateRequest(payload, {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["requests"] });
+          queryClient.invalidateQueries({ queryKey: ["locations"] });
           toast({
             variant: "success",
             title: toastMessage,
@@ -122,7 +122,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
     } else {
       createLocation(payload, {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["location"] });
+          queryClient.invalidateQueries({ queryKey: ["locations"] });
           toast({
             variant: "success",
             title: toastMessage,
@@ -205,9 +205,9 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                 <p
                   className="border border-gray-200 rounded-md px-3 py-1 break-words"
                   dangerouslySetInnerHTML={{
-                    __html: !isEmpty(defaultValues?.description)
+                    __html: !isEmpty(defaultValues?.address)
                       ? makeUrlsClickable(
-                          defaultValues?.description?.replace(/\n/g, "<br />"),
+                          defaultValues?.address?.replace(/\n/g, "<br />"),
                         )
                       : "-",
                   }}
@@ -216,7 +216,7 @@ export const LocationForm: React.FC<LocationFormProps> = ({
             ) : (
               <FormField
                 control={form.control}
-                name="description"
+                name="address"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="relative label-required">
