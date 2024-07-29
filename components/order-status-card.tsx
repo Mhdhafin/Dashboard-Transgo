@@ -10,7 +10,6 @@ const OrderStatusCard = () => {
   const { data: statusCount, isFetching } = useOrdersStatusCount();
 
   const count = statusCount?.data;
-  console.log("count", count);
 
   return (
     <>
