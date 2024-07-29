@@ -10,6 +10,7 @@ const OrderStatusCard = () => {
   const { data: statusCount, isFetching } = useOrdersStatusCount();
 
   const count = statusCount?.data;
+  console.log("count", count);
 
   return (
     <>
@@ -33,7 +34,7 @@ const OrderStatusCard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{`${
-                  count?.pending ?? "0"
+                  count?.[0].count ?? "0"
                 }`}</div>
               </CardContent>
             </Card>
@@ -53,7 +54,7 @@ const OrderStatusCard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{`${
-                  count.on_progress ?? 0
+                  count?.[1].count ?? 0
                 }`}</div>
               </CardContent>
             </Card>

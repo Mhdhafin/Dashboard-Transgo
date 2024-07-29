@@ -28,8 +28,8 @@ export const columns: ColumnDef<any>[] = [
   },
   {
     accessorKey: "description",
-    header: "Deskripsi",
-    cell: ({ row }) => <span>{row.original.description ?? "-"}</span>,
+    header: "Deskripsi Alamat",
+    cell: ({ row }) => <span>{row.original.address ?? "-"}</span>,
   },
   {
     id: "actions",
