@@ -95,9 +95,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                     {form.getValues("duration")} Hari
                   </p>
                   <p className="font-semibold text-base">
-                    {formatRupiah(
-                      detail?.fleet.price * form.getValues("duration"),
-                    )}
+                    {formatRupiah(detail?.total_rent_price)}
                   </p>
                 </div>
               )}
