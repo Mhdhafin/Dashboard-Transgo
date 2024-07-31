@@ -1609,7 +1609,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 )}
                 {!isEdit ? (
                   <FormItem>
-                    <FormLabel>Deskripsi</FormLabel>
+                    <FormLabel>Permintaan Khusus</FormLabel>
                     <p
                       className="border border-gray-200 rounded-md px-3 py-1 break-words"
                       dangerouslySetInnerHTML={{
@@ -1630,11 +1630,11 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Deskripsi</FormLabel>
+                        <FormLabel>Permintaan Khusus</FormLabel>
                         <FormControl className="disabled:opacity-100">
                           <Textarea
                             id="alamat"
-                            placeholder="Masukkan deskripsi pesanan pelanggan di sini...."
+                            placeholder="Masukkan permintaan khusus pelanggan di sini...."
                             className="col-span-3"
                             rows={3}
                             value={field.value || ""}
