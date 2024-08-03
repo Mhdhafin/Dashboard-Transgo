@@ -3,6 +3,8 @@ import { Metadata } from "next";
 
 import BreadCrumb from "@/components/breadcrumb";
 import { Heading } from "@/components/ui/heading";
+import MonthSelector from "@/components/calendar/month-selector";
+import YearSelector from "@/components/calendar/year-selector";
 
 const BREAD_CRUMB_ITEMS = [{ title: "Calendar", link: "/dashboard/calendar" }];
 
@@ -15,7 +17,13 @@ const page = () => {
   return (
     <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
       <BreadCrumb items={BREAD_CRUMB_ITEMS} />
-      <Heading title="Calendar" />
+      <div className="flex flex-row items-center justify-between">
+        <Heading title="Calendar" />
+        <div className="flex items-center gap-[10px]">
+          <MonthSelector />
+          <YearSelector />
+        </div>
+      </div>
     </div>
   );
 };
