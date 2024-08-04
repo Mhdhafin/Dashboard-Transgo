@@ -103,8 +103,9 @@ const Calendar = () => {
                     const dayWidth = 64;
                     const boxHeight = 40;
                     const totalDays = endOffset - startOffset + 1;
-                    const width =
-                      (totalDays - 1) * dayWidth + (totalHours / 24) * dayWidth;
+                    const width = (totalHours / 24) * dayWidth;
+
+                    console.log(totalDays, dayWidth, totalHours);
 
                     return (
                       <div
@@ -115,12 +116,15 @@ const Calendar = () => {
                           left:
                             startOffset * dayWidth +
                             (startTime.hour() / 24) * dayWidth,
-                          width: width,
+                          maxWidth: width,
                           height: boxHeight,
                         }}
                       >
                         <Tooltip type="date">
-                          <div className="flex items-center justify-center h-full">
+                          <div
+                            className="flex p-[10px] items-center justify-center h-full truncate"
+                            style={{ maxWidth: width + "px" }}
+                          >
                             {vehicle.name}
                           </div>
                         </Tooltip>
