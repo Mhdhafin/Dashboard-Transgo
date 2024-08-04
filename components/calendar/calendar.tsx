@@ -8,9 +8,10 @@ import useCalendarViewStore from "@/hooks/components/useCalendarViewStore";
 import LeftColumn from "./left-column";
 import Header from "./header";
 import Tooltip from "./tooltip";
+import Spinner from "../spinner";
 
 const Calendar = () => {
-  const { calendarData } = useCalendarViewStore({
+  const { calendarData, isFetching } = useCalendarViewStore({
     month: "08",
     year: "2024",
   });
@@ -55,6 +56,10 @@ const Calendar = () => {
     const totalHours = end.diff(start, "hour", true);
     return totalHours;
   };
+
+  if (isFetching) {
+    return <Spinner className="w-6 h-6" />;
+  }
 
   return (
     <div
