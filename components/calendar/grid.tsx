@@ -67,7 +67,12 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
                 }}
               >
                 <Tooltip type="date">
-                  <div className="flex p-[10px] items-center justify-center h-full w-full">
+                  <div
+                    className="flex p-[10px] cursor-pointer items-center justify-center h-full w-full"
+                    onClick={() =>
+                      window.open(`/dashboard/orders/${usage.id}/detail`)
+                    }
+                  >
                     <span className="truncate leading-5 font-medium text-[12px] text-green-900">
                       {usage.title}
                     </span>
