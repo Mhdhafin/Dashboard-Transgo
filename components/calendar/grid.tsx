@@ -66,7 +66,7 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
                   height: boxHeight,
                 }}
               >
-                <Tooltip type="date">
+                <Tooltip type="date" data={usage}>
                   <div
                     className="flex p-[10px] cursor-pointer items-center justify-center h-full w-full"
                     onClick={() =>

@@ -1,25 +1,26 @@
-import { formatRupiah } from "@/lib/utils";
 import React from "react";
+
 import { HoverCardContent } from "../ui/hover-card";
 import { Separator } from "../ui/separator";
+import { PAYMENT_STATUS } from "./utils";
 
-const TooltipDate = () => {
+const TooltipDate = ({ data }: { data: any }) => {
   return (
     <HoverCardContent className="w-full h-full p-[12px] flex flex-col gap-[10px]">
       <div className="pl-[16px] pt-[6px] flex flex-col gap-[6px]">
         <div className="flex flex-row items-center justify-between">
-          <p className="leading-5 font-semibold text-[18px]">
-            {formatRupiah(400000)}
-          </p>
-          <div className="bg-green-50 font-medium leading-5 text-[14px] text-green-900 py-[6px] px-2 rounded-lg">
-            Lunas
+          <p className="leading-5 font-semibold text-[18px]">{data.price}</p>
+          <div
+            className={`${PAYMENT_STATUS[data.paymentStatus].bgColor} ${
+              PAYMENT_STATUS[data.paymentStatus].color
+            } font-medium leading-5 text-[14px] py-[6px] px-2 rounded-lg`}
+          >
+            {PAYMENT_STATUS[data.paymentStatus].text}
           </div>
         </div>
 
         <div className="flex flex-col gap-[2px]">
-          <p className="text-[14px] leading-5 font-medium">
-            Daud Dimas Prasetyo
-          </p>
+          <p className="text-[14px] leading-5 font-medium">{data.title}</p>
           <div className="flex flex-row items-center gap-[4px]">
             <div className="size-[12px] bg-blue-500 rounded-full" />
             <p className="text-[14px] leading-5 font-normal">Sedang Berjalan</p>
@@ -33,14 +34,16 @@ const TooltipDate = () => {
             PIC & Tanggal Pengambilan
           </p>
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
-            Johny Doe
+            {data.name}
           </p>
           <div className="flex flex-row gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
-              Minggu, 07 Agt 2024
+              {data.start.format("dddd, DD MMMM YYYY")}
             </p>
             <Separator orientation="vertical" />
-            <p className="text-[12px] leading-4 font-[500]">Jam 08.00 WIB</p>
+            <p className="text-[12px] leading-4 font-[500]">
+              Jam {data.start.format("H:mm")} WIB
+            </p>
           </div>
         </div>
 
@@ -51,14 +54,16 @@ const TooltipDate = () => {
             PIC & Tanggal Pengambalian
           </p>
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
-            Johny Doe
+            {data.name}
           </p>
           <div className="flex flex-row gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
-              Minggu, 08 Agt 2024
+              {data.end.format("dddd, DD MMMM YYYY")}
             </p>
             <Separator orientation="vertical" />
-            <p className="text-[12px] leading-4 font-[500]">Jam 12.00 WIB</p>
+            <p className="text-[12px] leading-4 font-[500]">
+              Jam {data.end.format("H:mm")} WIB
+            </p>
           </div>
         </div>
       </div>

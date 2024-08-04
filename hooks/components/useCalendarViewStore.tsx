@@ -8,15 +8,6 @@ import { formatRupiah } from "@/lib/utils";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const getRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
 const useCalendarViewStore = (filter?: any) => {
   const { data: calendar, isFetching } = useGetCalendar({
     limit: 5,
@@ -36,10 +27,11 @@ const useCalendarViewStore = (filter?: any) => {
       id: order.id,
       start: dayjs(order.start_date).tz("Asia/Jakarta"),
       end: dayjs(order.end_date).tz("Asia/Jakarta"),
+      name: "Jonathan Doe",
       duration: order.duration + " hari",
+      paymentStatus: order.payment_status,
       title: order.customer.name,
       price: formatRupiah(order.total_price),
-      bgColor: getRandomColor(),
     })),
   }));
 
