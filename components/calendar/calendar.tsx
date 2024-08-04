@@ -19,9 +19,10 @@ const Calendar = () => {
     year: year.toString(),
   });
 
-  const now = dayjs();
+  const now = dayjs(`${year}-${month}-01`);
   const start = now.startOf("month");
   const end = now.endOf("month");
+
   const dates: Dayjs[] = [];
   const today = dayjs().format("YYYY-MM-DD");
 
