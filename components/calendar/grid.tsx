@@ -35,7 +35,7 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
               >
                 {isCurrentDate && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-0.5 h-full bg-blue-600"></div>
+                    <div className="w-0.5 z-20 h-full bg-blue-600"></div>
                   </div>
                 )}
               </div>
