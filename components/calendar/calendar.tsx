@@ -22,7 +22,7 @@ const Calendar = () => {
   const dates: Dayjs[] = [];
   const today = dayjs().format("YYYY-MM-DD");
 
-  console.log("🚀 ~ Calendar ~ calendarData:", calendarData);
+  // console.log("🚀 ~ Calendar ~ calendarData:", calendarData);
 
   for (
     let date = start;
