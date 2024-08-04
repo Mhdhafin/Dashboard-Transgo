@@ -1,27 +1,24 @@
 import React from "react";
 import { HoverCardContent } from "../ui/hover-card";
-import { formatRupiah } from "@/lib/utils";
 
-const TooltipFleet = () => {
+const TooltipFleet = ({ data }: { data: any }) => {
   return (
-    <HoverCardContent className="w-full h-[108px] p-0">
-      <div className="flex flex-row gap-[16px]">
-        <div className="size-[100px]">
+    <HoverCardContent className="w-full h-full p-0">
+      <div className="flex flex-row items-center gap-[12px]">
+        <div className="size-[100px] p-[4px]">
           <img
-            className="w-full h-full rounded-lg object-contain"
-            src="https://images.unsplash.com/photo-1515569067071-ec3b51335dd0?q=80&w=2738&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt=""
+            className="w-full h-full rounded-lg object-cover"
+            src={data.image}
+            alt={data.name}
           />
         </div>
-        <div className="flex flex-col gap-[10px]">
-          <p className="text-[18px] font-semibold leading-5">
-            Lamborghini Huracán
-          </p>
-          <div className="flex flex-col">
-            <p className="text-[14px] font-semibold leading-5">{`${formatRupiah(
-              100000,
-            )}/ hari`}</p>
-            <p className="text-[14px] font-normal leading-5">Garasi TransGo</p>
+        <div className="flex flex-col gap-[10px] mr-[16px]">
+          <p className="text-[18px] font-semibold leading-5">{data.name}</p>
+          <div className="flex flex-col gap-[2px]">
+            <p className="text-[14px] font-semibold leading-5">
+              {data.price} / hari
+            </p>
+            <p className="text-[14px] font-normal leading-5">{data.location}</p>
           </div>
         </div>
       </div>

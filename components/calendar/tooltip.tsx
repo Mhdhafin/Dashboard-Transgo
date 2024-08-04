@@ -6,14 +6,20 @@ import TooltipFleet from "./tooltip-fleet";
 const Tooltip = ({
   children,
   type,
+  data,
 }: {
   children: React.ReactNode;
   type: "date" | "fleet";
+  data: any;
 }) => {
   return (
     <HoverCard>
       <HoverCardTrigger>{children}</HoverCardTrigger>
-      {type === "date" ? <TooltipDate /> : <TooltipFleet />}
+      {type === "date" ? (
+        <TooltipDate data={data} />
+      ) : (
+        <TooltipFleet data={data} />
+      )}
     </HoverCard>
   );
 };

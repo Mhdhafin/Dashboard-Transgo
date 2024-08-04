@@ -9,7 +9,7 @@ const LeftColumnItem = ({
   isLast: boolean;
 }) => {
   return (
-    <Tooltip type="fleet">
+    <Tooltip type="fleet" data={vehicle}>
       <div
         className={`w-full h-[64px] border-r border-b border-neutral-200 ${
           isLast ? "border-b-0" : ""
