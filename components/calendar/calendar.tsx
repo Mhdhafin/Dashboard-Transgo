@@ -114,14 +114,14 @@ const Calendar = () => {
                           left:
                             startOffset * dayWidth +
                             (startTime.hour() / 24) * dayWidth,
-                          maxWidth: width,
+                          width: width,
                           height: boxHeight,
                         }}
                       >
                         <Tooltip type="date">
                           <div className="flex p-[10px] items-center justify-center h-full w-full">
                             <span className="truncate leading-5 font-medium text-[12px] text-green-900">
-                              {vehicle.name}
+                              {usage.title}
                             </span>
                           </div>
                         </Tooltip>
