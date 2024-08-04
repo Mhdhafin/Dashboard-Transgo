@@ -2,9 +2,10 @@ import React from "react";
 import { Metadata } from "next";
 
 import BreadCrumb from "@/components/breadcrumb";
-import { Heading } from "@/components/ui/heading";
 import MonthSelector from "@/components/calendar/month-selector";
 import YearSelector from "@/components/calendar/year-selector";
+import Calendar from "@/components/calendar/calendar";
+import { Heading } from "@/components/ui/heading";
 
 const BREAD_CRUMB_ITEMS = [{ title: "Calendar", link: "/dashboard/calendar" }];
 
@@ -24,6 +25,7 @@ const page = () => {
           <YearSelector />
         </div>
       </div>
+      <Calendar />
     </div>
   );
 };
