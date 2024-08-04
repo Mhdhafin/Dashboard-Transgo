@@ -1,17 +1,7 @@
 import React from "react";
 import LeftColumnItem from "./left-column-item";
 
-const LeftColumn = () => {
-  const vehicles = [
-    "Mobil A",
-    "Mobil B",
-    "Mobil C",
-    "Mobil D",
-    "Mobil E",
-    "Mobil A",
-    "Mobil B",
-  ];
-
+const LeftColumn = ({ vehicles }) => {
   return (
     <div className="left-0 sticky z-50 bg-white">
       <div className="sticky left-0 bg-white w-[180px]">
@@ -22,7 +12,11 @@ const LeftColumn = () => {
         </div>
 
         {vehicles.map((vehicle, index) => (
-          <LeftColumnItem key={index} isLast={index === vehicles.length - 1} />
+          <LeftColumnItem
+            key={index}
+            vehicle={vehicle}
+            isLast={index === vehicles.length - 1}
+          />
         ))}
       </div>
     </div>

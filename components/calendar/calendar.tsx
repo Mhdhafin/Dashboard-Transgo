@@ -7,7 +7,6 @@ import LeftColumn from "./left-column";
 import Header from "./header";
 
 import "dayjs/locale/id";
-import Tooltip from "./tooltip";
 
 const Calendar = () => {
   const now = dayjs();
@@ -25,13 +24,43 @@ const Calendar = () => {
   }
 
   const vehicles = [
-    "Mobil A",
-    "Mobil B",
-    "Mobil C",
-    "Mobil D",
-    "Mobil E",
-    "Mobil A",
-    "Mobil E",
+    {
+      name: "Mobil A",
+      usage: [],
+    },
+    {
+      name: "Mobil B",
+      usage: [
+        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
+        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
+      ],
+    },
+    {
+      name: "Mobil C",
+      usage: [],
+    },
+    {
+      name: "Mobil D",
+      usage: [],
+    },
+    {
+      name: "Mobil E",
+      usage: [],
+    },
+    {
+      name: "Mobil E",
+      usage: [
+        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
+        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
+      ],
+    },
+    {
+      name: "Mobil E",
+      usage: [
+        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
+        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
+      ],
+    },
   ];
 
   const tableRef = useRef<HTMLDivElement>(null);
@@ -48,6 +77,17 @@ const Calendar = () => {
     }
   }, [today]);
 
+  const getDayOffset = (date: string) => {
+    return dates.findIndex((d) => d.format("YYYY-MM-DD") === date);
+  };
+
+  const getTimeOffset = (startTime: Dayjs, endTime: Dayjs) => {
+    const start = dayjs(startTime);
+    const end = dayjs(endTime);
+    const totalHours = end.diff(start, "hour", true);
+    return totalHours;
+  };
+
   return (
     <div
       className="overflow-auto border border-neutral-200 rounded-lg"
@@ -55,13 +95,13 @@ const Calendar = () => {
     >
       <div className="min-w-max">
         <div className="flex max-h-[400px]">
-          <LeftColumn />
+          <LeftColumn vehicles={vehicles} />
 
           <div className="flex-1">
             <Header dates={dates} />
             <div>
-              {vehicles.map((_, rowIndex) => (
-                <div key={rowIndex} className="flex">
+              {vehicles.map((vehicle, rowIndex) => (
+                <div key={rowIndex} className="flex relative">
                   {dates.map((date) => {
                     const isCurrentDate = date.format("YYYY-MM-DD") === today;
                     const isLast = rowIndex === vehicles.length - 1;
@@ -69,17 +109,47 @@ const Calendar = () => {
                     return (
                       <div
                         key={date.format("YYYY-MM-DD")}
-                        className={`border-r last:border-r-0 border-b border-gray-300 first:border-l-0 h-[64px] p-[12px] w-16 ${
+                        className={`relative border-r last:border-r-0 border-b border-gray-300 first:border-l-0 h-[64px] p-[12px] w-16 ${
                           isLast ? "border-b-0" : ""
                         }`}
+                        data-date={date.format("YYYY-MM-DD")}
                       >
-                        <Tooltip type="date">
-                          <div className="size-[40px] bg-red-100 rounded-lg" />
-                        </Tooltip>
+                        {isCurrentDate && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-0.5 h-full bg-blue-600"></div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {vehicle.usage.map((usage, usageIndex) => {
+                    const startOffset = getDayOffset(usage.start.split("T")[0]);
+                    const endOffset = getDayOffset(usage.end.split("T")[0]);
+                    const startTime = dayjs(usage.start);
+                    const endTime = dayjs(usage.end);
+                    const totalHours = getTimeOffset(startTime, endTime);
+                    const dayWidth = 64;
+                    const boxHeight = 40;
+                    const totalDays = endOffset - startOffset + 1;
+                    const width =
+                      (totalDays - 1) * dayWidth + (totalHours / 24) * dayWidth;
 
-                        {/* {isCurrentDate && (
-                          <div className="z-50 top-0 w-0.5 h-full bg-blue-600"></div>
-                        )} */}
+                    return (
+                      <div
+                        key={usageIndex}
+                        className="absolute bg-green-200 rounded-lg"
+                        style={{
+                          top: 12,
+                          left:
+                            startOffset * dayWidth +
+                            (startTime.hour() / 24) * dayWidth,
+                          width: width,
+                          height: boxHeight,
+                        }}
+                      >
+                        <div className="flex items-center justify-center h-full">
+                          {vehicle.name}
+                        </div>
                       </div>
                     );
                   })}
