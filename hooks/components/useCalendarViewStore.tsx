@@ -14,6 +14,7 @@ const useCalendarViewStore = (filter?: any) => {
     isFetching,
     hasNextPage,
     fetchNextPage,
+    isFetchingNextPage,
   } = useGetCalendar({
     limit: 5,
     ...filter,
@@ -46,6 +47,7 @@ const useCalendarViewStore = (filter?: any) => {
     isFetching,
     hasNextPage,
     fetchNextPage,
+    isFetchingNextPage,
   };
 };
 
