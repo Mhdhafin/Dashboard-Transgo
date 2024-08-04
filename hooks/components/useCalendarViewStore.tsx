@@ -9,7 +9,12 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const useCalendarViewStore = (filter?: any) => {
-  const { data: calendar, isFetching } = useGetCalendar({
+  const {
+    data: calendar,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetCalendar({
     limit: 5,
     ...filter,
   });
@@ -30,6 +35,7 @@ const useCalendarViewStore = (filter?: any) => {
       name: "Jonathan Doe",
       duration: order.duration + " hari",
       paymentStatus: order.payment_status,
+      orderStatus: order.order_status,
       title: order.customer.name,
       price: formatRupiah(order.total_price),
     })),
@@ -38,6 +44,8 @@ const useCalendarViewStore = (filter?: any) => {
   return {
     calendarData: mappedData,
     isFetching,
+    hasNextPage,
+    fetchNextPage,
   };
 };
 

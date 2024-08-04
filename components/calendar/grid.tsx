@@ -2,6 +2,7 @@ import React from "react";
 import dayjs from "dayjs";
 
 import Tooltip from "./tooltip";
+import { ORDER_STATUS } from "./utils";
 
 const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
   const today = dayjs().format("YYYY-MM-DD");
@@ -56,7 +57,9 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
 
             return (
               <div
-                className="absolute hover:border hover:border-green-900 bg-green-200 rounded-lg"
+                className={`absolute rounded-lg ${
+                  ORDER_STATUS[usage.orderStatus].bgColor
+                } ${ORDER_STATUS[usage.orderStatus].border} `}
                 key={usageIndex}
                 style={{
                   top: 12,
@@ -73,7 +76,11 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
                       window.open(`/dashboard/orders/${usage.id}/detail`)
                     }
                   >
-                    <span className="truncate leading-5 font-medium text-[12px] text-green-900">
+                    <span
+                      className={`truncate leading-5 font-medium text-[12px] ${
+                        ORDER_STATUS[usage.orderStatus].color
+                      }`}
+                    >
                       {usage.title}
                     </span>
                   </div>

@@ -2,7 +2,7 @@ import React from "react";
 
 import { HoverCardContent } from "../ui/hover-card";
 import { Separator } from "../ui/separator";
-import { PAYMENT_STATUS } from "./utils";
+import { ORDER_STATUS, PAYMENT_STATUS } from "./utils";
 
 const TooltipDate = ({ data }: { data: any }) => {
   return (
@@ -22,8 +22,14 @@ const TooltipDate = ({ data }: { data: any }) => {
         <div className="flex flex-col gap-[2px]">
           <p className="text-[14px] leading-5 font-medium">{data.title}</p>
           <div className="flex flex-row items-center gap-[4px]">
-            <div className="size-[12px] bg-blue-500 rounded-full" />
-            <p className="text-[14px] leading-5 font-normal">Sedang Berjalan</p>
+            <div
+              className={`size-[12px] rounded-full ${
+                ORDER_STATUS[data.orderStatus].bgColorDarker
+              }`}
+            />
+            <p className="text-[14px] leading-5 font-normal">
+              {ORDER_STATUS[data.orderStatus].text}
+            </p>
           </div>
         </div>
       </div>
