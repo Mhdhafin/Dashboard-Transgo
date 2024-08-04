@@ -57,9 +57,9 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
 
             return (
               <div
-                className={`absolute rounded-lg ${
-                  ORDER_STATUS[usage.orderStatus].bgColor
-                } ${ORDER_STATUS[usage.orderStatus].border} `}
+                className={`absolute rounded-lg ${ORDER_STATUS[
+                  usage.orderStatus
+                ]?.bgColor} ${ORDER_STATUS[usage.orderStatus]?.border} `}
                 key={usageIndex}
                 style={{
                   top: 12,
@@ -77,9 +77,9 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
                     }
                   >
                     <span
-                      className={`truncate leading-5 font-medium text-[12px] ${
-                        ORDER_STATUS[usage.orderStatus].color
-                      }`}
+                      className={`truncate leading-5 font-medium text-[12px] ${ORDER_STATUS[
+                        usage.orderStatus
+                      ]?.color}`}
                     >
                       {usage.title}
                     </span>

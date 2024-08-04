@@ -11,11 +11,11 @@ const TooltipDate = ({ data }: { data: any }) => {
         <div className="flex flex-row items-center justify-between">
           <p className="leading-5 font-semibold text-[18px]">{data.price}</p>
           <div
-            className={`${PAYMENT_STATUS[data.paymentStatus].bgColor} ${
-              PAYMENT_STATUS[data.paymentStatus].color
-            } font-medium leading-5 text-[14px] py-[6px] px-2 rounded-lg`}
+            className={`${PAYMENT_STATUS[data.paymentStatus]
+              ?.bgColor} ${PAYMENT_STATUS[data.paymentStatus]
+              ?.color} font-medium leading-5 text-[14px] py-[6px] px-2 rounded-lg`}
           >
-            {PAYMENT_STATUS[data.paymentStatus].text}
+            {PAYMENT_STATUS[data.paymentStatus]?.text}
           </div>
         </div>
 
@@ -23,12 +23,12 @@ const TooltipDate = ({ data }: { data: any }) => {
           <p className="text-[14px] leading-5 font-medium">{data.title}</p>
           <div className="flex flex-row items-center gap-[4px]">
             <div
-              className={`size-[12px] rounded-full ${
-                ORDER_STATUS[data.orderStatus].bgColorDarker
-              }`}
+              className={`size-[12px] rounded-full ${ORDER_STATUS[
+                data.orderStatus
+              ]?.bgColorDarker}`}
             />
             <p className="text-[14px] leading-5 font-normal">
-              {ORDER_STATUS[data.orderStatus].text}
+              {ORDER_STATUS[data.orderStatus]?.text}
             </p>
           </div>
         </div>
