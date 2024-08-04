@@ -3,18 +3,25 @@
 import React, { useEffect, useRef } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
+import useCalendarViewStore from "@/hooks/components/useCalendarViewStore";
+
 import LeftColumn from "./left-column";
 import Header from "./header";
-
-import "dayjs/locale/id";
 import Tooltip from "./tooltip";
 
 const Calendar = () => {
+  const { calendarData } = useCalendarViewStore({
+    month: "08",
+    year: "2024",
+  });
+
   const now = dayjs();
   const start = now.startOf("month");
   const end = now.endOf("month");
   const dates: Dayjs[] = [];
   const today = dayjs().format("YYYY-MM-DD");
+
+  console.log("🚀 ~ Calendar ~ calendarData:", calendarData);
 
   for (
     let date = start;
@@ -23,53 +30,6 @@ const Calendar = () => {
   ) {
     dates.push(date);
   }
-
-  const vehicles = [
-    {
-      name: "Mobil A",
-      location: "Jakarta",
-      usage: [],
-    },
-    {
-      name: "Mobil B",
-      location: "Surabaya",
-      usage: [
-        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
-        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
-      ],
-    },
-    {
-      name: "Mobil C",
-      location: "Bandung",
-      usage: [],
-    },
-    {
-      name: "Mobil D",
-      location: "Medan",
-      usage: [],
-    },
-    {
-      name: "Mobil E",
-      location: "Jakarta",
-      usage: [],
-    },
-    {
-      name: "Mobil F",
-      location: "Makasar",
-      usage: [
-        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
-        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
-      ],
-    },
-    {
-      name: "Mobil G",
-      location: "Aceh",
-      usage: [
-        { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
-        { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
-      ],
-    },
-  ];
 
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -89,9 +49,9 @@ const Calendar = () => {
     return dates.findIndex((d) => d.format("YYYY-MM-DD") === date);
   };
 
-  const getTimeOffset = (startTime: Dayjs, endTime: Dayjs) => {
-    const start = dayjs(startTime);
-    const end = dayjs(endTime);
+  const getTimeOffset = (startTime, endTime) => {
+    const start = startTime;
+    const end = endTime;
     const totalHours = end.diff(start, "hour", true);
     return totalHours;
   };
@@ -103,16 +63,16 @@ const Calendar = () => {
     >
       <div className="min-w-max">
         <div className="flex max-h-[400px]">
-          <LeftColumn vehicles={vehicles} />
+          <LeftColumn vehicles={calendarData} />
 
           <div className="flex-1">
             <Header dates={dates} />
             <div>
-              {vehicles.map((vehicle, rowIndex) => (
+              {calendarData.map((vehicle, rowIndex) => (
                 <div key={rowIndex} className="flex relative">
                   {dates.map((date) => {
                     const isCurrentDate = date.format("YYYY-MM-DD") === today;
-                    const isLast = rowIndex === vehicles.length - 1;
+                    const isLast = rowIndex === calendarData.length - 1;
 
                     return (
                       <div
@@ -131,10 +91,14 @@ const Calendar = () => {
                     );
                   })}
                   {vehicle.usage.map((usage, usageIndex) => {
-                    const startOffset = getDayOffset(usage.start.split("T")[0]);
-                    const endOffset = getDayOffset(usage.end.split("T")[0]);
-                    const startTime = dayjs(usage.start);
-                    const endTime = dayjs(usage.end);
+                    const startTime = usage.start;
+                    const endTime = usage.end;
+                    const startOffset = getDayOffset(
+                      startTime.format("YYYY-MM-DD"),
+                    );
+                    const endOffset = getDayOffset(
+                      endTime.format("YYYY-MM-DD"),
+                    );
                     const totalHours = getTimeOffset(startTime, endTime);
                     const dayWidth = 64;
                     const boxHeight = 40;
@@ -144,7 +108,7 @@ const Calendar = () => {
 
                     return (
                       <div
-                        className="absolute bg-green-200 rounded-lg"
+                        className="absolute hover:border hover:border-green-900 bg-green-200 rounded-lg"
                         key={usageIndex}
                         style={{
                           top: 12,
