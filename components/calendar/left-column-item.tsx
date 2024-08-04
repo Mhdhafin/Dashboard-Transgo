@@ -4,7 +4,7 @@ const LeftColumnItem = ({
   vehicle,
   isLast,
 }: {
-  vehicle: { name: string };
+  vehicle: { name: string; location: string };
   isLast: boolean;
 }) => {
   return (
@@ -18,7 +18,7 @@ const LeftColumnItem = ({
           {vehicle.name}
         </p>
         <p className="text-neutral-700 font-medium text-[14px] leading-[14px]">
-          Garasi TransGo
+          {vehicle.location}
         </p>
       </div>
     </div>

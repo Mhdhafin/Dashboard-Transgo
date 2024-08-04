@@ -26,10 +26,12 @@ const Calendar = () => {
   const vehicles = [
     {
       name: "Mobil A",
+      location: "Jakarta",
       usage: [],
     },
     {
       name: "Mobil B",
+      location: "Surabaya",
       usage: [
         { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
         { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
@@ -37,25 +39,30 @@ const Calendar = () => {
     },
     {
       name: "Mobil C",
+      location: "Bandung",
       usage: [],
     },
     {
       name: "Mobil D",
+      location: "Medan",
       usage: [],
     },
     {
       name: "Mobil E",
+      location: "Jakarta",
       usage: [],
     },
     {
-      name: "Mobil E",
+      name: "Mobil F",
+      location: "Makasar",
       usage: [
         { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
         { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },
       ],
     },
     {
-      name: "Mobil E",
+      name: "Mobil G",
+      location: "Aceh",
       usage: [
         { start: "2024-08-04T08:00", end: "2024-08-05T12:30" },
         { start: "2024-08-07T09:00", end: "2024-08-08T14:00" },

@@ -1,7 +1,11 @@
 import React from "react";
 import LeftColumnItem from "./left-column-item";
 
-const LeftColumn = ({ vehicles }) => {
+const LeftColumn = ({
+  vehicles,
+}: {
+  vehicles: { name: string; location: string }[];
+}) => {
   return (
     <div className="left-0 sticky z-50 bg-white">
       <div className="sticky left-0 bg-white w-[180px]">
