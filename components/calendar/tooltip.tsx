@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "../ui/hover-card";
-import { formatRupiah } from "@/lib/utils";
-import { Separator } from "../ui/separator";
+import { HoverCard, HoverCardTrigger } from "../ui/hover-card";
 import TooltipDate from "./tooltip-date";
 import TooltipFleet from "./tooltip-fleet";
 
