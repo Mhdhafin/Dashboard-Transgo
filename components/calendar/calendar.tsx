@@ -9,11 +9,14 @@ import LeftColumn from "./left-column";
 import Header from "./header";
 import Spinner from "../spinner";
 import Grid from "./grid";
+import { useMonthYearState } from "@/hooks/useMonthYearState";
 
 const Calendar = () => {
+  const { month, year } = useMonthYearState();
+
   const { calendarData, isFetching } = useCalendarViewStore({
-    month: "08",
-    year: "2024",
+    month: month.toString(),
+    year: year.toString(),
   });
 
   const now = dayjs();
@@ -21,8 +24,6 @@ const Calendar = () => {
   const end = now.endOf("month");
   const dates: Dayjs[] = [];
   const today = dayjs().format("YYYY-MM-DD");
-
-  // console.log("🚀 ~ Calendar ~ calendarData:", calendarData);
 
   for (
     let date = start;
