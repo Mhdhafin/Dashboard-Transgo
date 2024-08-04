@@ -143,23 +143,24 @@ const Calendar = () => {
                       (totalDays - 1) * dayWidth + (totalHours / 24) * dayWidth;
 
                     return (
-                      <Tooltip key={usageIndex} type="date">
-                        <div
-                          className="absolute bg-green-200 rounded-lg"
-                          style={{
-                            top: 12,
-                            left:
-                              startOffset * dayWidth +
-                              (startTime.hour() / 24) * dayWidth,
-                            width: width,
-                            height: boxHeight,
-                          }}
-                        >
+                      <div
+                        className="absolute bg-green-200 rounded-lg"
+                        key={usageIndex}
+                        style={{
+                          top: 12,
+                          left:
+                            startOffset * dayWidth +
+                            (startTime.hour() / 24) * dayWidth,
+                          width: width,
+                          height: boxHeight,
+                        }}
+                      >
+                        <Tooltip type="date">
                           <div className="flex items-center justify-center h-full">
                             {vehicle.name}
                           </div>
-                        </div>
-                      </Tooltip>
+                        </Tooltip>
+                      </div>
                     );
                   })}
                 </div>
