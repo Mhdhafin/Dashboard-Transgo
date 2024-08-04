@@ -96,16 +96,14 @@ const Calendar = () => {
                     const startOffset = getDayOffset(
                       startTime.format("YYYY-MM-DD"),
                     );
-                    const endOffset = getDayOffset(
-                      endTime.format("YYYY-MM-DD"),
-                    );
+                    // const endOffset = getDayOffset(
+                    //   endTime.format("YYYY-MM-DD"),
+                    // );
                     const totalHours = getTimeOffset(startTime, endTime);
                     const dayWidth = 64;
                     const boxHeight = 40;
-                    const totalDays = endOffset - startOffset + 1;
+                    // const totalDays = endOffset - startOffset + 1;
                     const width = (totalHours / 24) * dayWidth;
-
-                    console.log(totalDays, dayWidth, totalHours);
 
                     return (
                       <div
@@ -121,11 +119,10 @@ const Calendar = () => {
                         }}
                       >
                         <Tooltip type="date">
-                          <div
-                            className="flex p-[10px] items-center justify-center h-full truncate"
-                            style={{ maxWidth: width + "px" }}
-                          >
-                            {vehicle.name}
+                          <div className="flex p-[10px] items-center justify-center h-full w-full">
+                            <span className="truncate leading-5 font-medium text-[12px] text-green-900">
+                              {vehicle.name}
+                            </span>
                           </div>
                         </Tooltip>
                       </div>
