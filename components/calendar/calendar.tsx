@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import { useInView } from "react-intersection-observer";
 
 import useCalendarViewStore from "@/hooks/components/useCalendarViewStore";
 
@@ -14,10 +15,19 @@ import { useMonthYearState } from "@/hooks/useMonthYearState";
 const Calendar = () => {
   const { month, year } = useMonthYearState();
 
-  const { calendarData, isFetching } = useCalendarViewStore({
-    month: month.toString(),
-    year: year.toString(),
-  });
+  const { calendarData, isFetching, hasNextPage, fetchNextPage } =
+    useCalendarViewStore({
+      month: month.toString(),
+      year: year.toString(),
+    });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
 
   const now = dayjs(`${year}-${month}-01`);
   const start = now.startOf("month");
@@ -48,22 +58,19 @@ const Calendar = () => {
     }
   }, [today]);
 
-  if (isFetching) {
-    return <Spinner className="w-6 h-6" />;
-  }
-
   return (
     <div
       className="overflow-auto border border-neutral-200 rounded-lg"
       ref={tableRef}
     >
       <div className="min-w-max">
-        <div className="flex max-h-[400px]">
+        <div className="flex max-h-screen">
           <LeftColumn vehicles={calendarData} />
 
           <div className="flex-1">
             <Header dates={dates} />
             <Grid dates={dates} data={calendarData} />
+            {/* <div ref={ref} className="h-1"></div> */}
           </div>
         </div>
       </div>
