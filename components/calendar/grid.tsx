@@ -25,6 +25,14 @@ const Grid = ({
     return totalHours;
   };
 
+  const handleOrderClick = (orderStatus: string, orderId: string | number) => {
+    const url = ["pending", "waiting"].includes(orderStatus)
+      ? `/dashboard/orders/${orderId}/preview`
+      : `/dashboard/orders/${orderId}/detail`;
+
+    window.open(url);
+  };
+
   return (
     <>
       {data.map((vehicle, rowIndex) => (
@@ -95,7 +103,7 @@ const Grid = ({
                   <div
                     className="flex p-[10px] cursor-pointer items-center justify-center h-full w-full"
                     onClick={() =>
-                      window.open(`/dashboard/orders/${usage.id}/detail`)
+                      handleOrderClick(usage.orderStatus, usage.id)
                     }
                   >
                     <span
