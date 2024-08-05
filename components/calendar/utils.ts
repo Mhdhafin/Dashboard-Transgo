@@ -18,14 +18,14 @@ export const PAYMENT_STATUS = {
 
 export const ORDER_STATUS = {
   pending: {
-    text: "Belum Diterima",
+    text: "Menunggu Persetujuan",
     color: "text-red-900",
     bgColor: "bg-red-100",
     bgColorDarker: "bg-red-500",
     border: "hover:border hover:border-red-500",
   },
   done: {
-    text: "Selesai Sewa",
+    text: "Selesai",
     color: "text-green-900",
     bgColor: "bg-green-100",
     bgColorDarker: "bg-green-500",
@@ -39,7 +39,7 @@ export const ORDER_STATUS = {
     border: "hover:border hover:border-blue-500",
   },
   waiting: {
-    text: "Belum Kembali",
+    text: "Menunggu PIC",
     color: "text-neutral-900",
     bgColor: "bg-yellow-100",
     bgColorDarker: "bg-yellow-500",
