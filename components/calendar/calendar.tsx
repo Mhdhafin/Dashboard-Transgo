@@ -85,10 +85,10 @@ const Calendar = () => {
 
   return (
     <div
-      className="border overflow-auto border-neutral-200 rounded-lg h-[calc(100vh-200px)]"
+      className="border overflow-auto border-neutral-200 rounded-lg max-h-[calc(100vh-200px)]"
       ref={tableRef}
     >
-      <div className="flex max-h-screen">
+      <div className="flex max-h-max">
         <LeftColumn vehicles={calendarData} isFetching={isFetching} />
 
         <div className="flex-1">
