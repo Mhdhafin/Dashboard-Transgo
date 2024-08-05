@@ -9,17 +9,23 @@ import LeftColumn from "./left-column";
 import Header from "./header";
 import Grid from "./grid";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
+import { Skeleton } from "../ui/skeleton";
 
 const Calendar = () => {
   const { month, year } = useMonthYearState();
   const [pageParam, setPageParam] = useState("1");
 
-  const { calendarData, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useCalendarViewStore({
-      month: month.toString(),
-      year: year.toString(),
-      page: pageParam,
-    });
+  const {
+    calendarData,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isFetching,
+  } = useCalendarViewStore({
+    month: month.toString(),
+    year: year.toString(),
+    page: pageParam,
+  });
 
   useEffect(() => {
     setPageParam("1");
@@ -83,11 +89,18 @@ const Calendar = () => {
       ref={tableRef}
     >
       <div className="flex max-h-screen">
-        <LeftColumn vehicles={calendarData} />
+        <LeftColumn vehicles={calendarData} isFetching={isFetching} />
 
         <div className="flex-1">
           <Header dates={dates} />
-          <Grid dates={dates} data={calendarData} />
+          <Grid dates={dates} data={calendarData} isFetching={isFetching} />
+          {isFetching && (
+            <div className="flex flex-col space-y-2">
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <Skeleton key={idx} className="h-[40px] w-full rounded-md" />
+              ))}
+            </div>
+          )}
           <div ref={lastItemRef} className="h-1" />
         </div>
       </div>

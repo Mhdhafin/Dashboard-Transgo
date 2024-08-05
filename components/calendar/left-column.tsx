@@ -1,10 +1,13 @@
 import React from "react";
 import LeftColumnItem from "./left-column-item";
+import { Skeleton } from "../ui/skeleton";
 
 const LeftColumn = ({
   vehicles,
+  isFetching,
 }: {
   vehicles: { name: string; location: string }[];
+  isFetching: boolean;
 }) => {
   return (
     <div className="left-0 sticky z-50 bg-white">
@@ -22,6 +25,17 @@ const LeftColumn = ({
             isLast={index === vehicles.length - 1}
           />
         ))}
+
+        {isFetching && (
+          <div className="flex flex-col space-y-2">
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <Skeleton
+                key={idx}
+                className="h-[40px] w-[calc(100%-2px)] rounded-md"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

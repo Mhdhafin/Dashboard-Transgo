@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import Tooltip from "./tooltip";
 import { ORDER_STATUS } from "./utils";
 
-const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
+const Grid = ({ dates, data }: { dates: dayjs.Dayjs[]; data: any[] }) => {
   const today = dayjs().format("YYYY-MM-DD");
 
   const getDayOffset = (date: string) => {
