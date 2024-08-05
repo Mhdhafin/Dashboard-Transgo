@@ -436,7 +436,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
 
     const createPayload = (data: OrderFormValues) => ({
       start_request: {
-        is_self_pickup: data.start_request.is_self_pickup,
+        is_self_pickup: data.start_request.is_self_pickup == "1" ? true : false,
         driver_id: +data.start_request.driver_id,
         ...(!startSelfPickUpField && {
           address: data.start_request.address,
@@ -444,7 +444,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         }),
       },
       end_request: {
-        is_self_pickup: data.end_request.is_self_pickup,
+        is_self_pickup: data.end_request.is_self_pickup == "1" ? true : false,
         driver_id: +data.end_request.driver_id,
         ...(!endSelfPickUpField && {
           distance: +data.end_request.distance,
@@ -581,7 +581,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       is_with_driver: isWithDriverField,
       insurance_id: +(insuranceField ?? 0),
       start_request: {
-        is_self_pickup: startSelfPickUpField,
+        is_self_pickup: startSelfPickUpField == "1" ? true : false,
         driver_id: +(startDriverField ?? 0),
         ...(!startSelfPickUpField && {
           distance: +(startDistanceField ?? 0),
@@ -589,7 +589,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         }),
       },
       end_request: {
-        is_self_pickup: endSelfPickUpField,
+        is_self_pickup: endSelfPickUpField == "1" ? true : false,
         driver_id: +(endDriverField ?? 0),
         ...(!endSelfPickUpField && {
           distance: +(endDistanceField ?? 0),
