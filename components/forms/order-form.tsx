@@ -73,6 +73,7 @@ import {
 } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
 import { PreviewImage } from "../modal/preview-image";
+import { getPaymentStatusLabel, getStatusVariant, OrderStatus } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
 
 export const IMG_MAX_LIMIT = 3;
 const formSchema = z.object({
@@ -844,8 +845,20 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                   Edit Pesanan
                 </Link>
               )}
-              <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
-                Belum kembali
+              <div className='flex justify-between gap-3.5'>
+                {(initialData?.order_status != OrderStatus.PENDING && initialData?.order_status != OrderStatus.WAITING) && (
+                  <div
+                    className={cn(
+                      getStatusVariant(initialData?.payment_status),
+                      'text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center',
+                    )}
+                  >
+                    {getPaymentStatusLabel(initialData?.payment_status)}
+                  </div>
+                )}
+                <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
+                  Belum kembali
+                </div>
               </div>
             </div>
           )}
@@ -885,13 +898,24 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 Edit Pesanan
               </Link>
             )}
+            <div className='flex justify-between gap-3.5'>
 
-            <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
-              Selesai
+              {(initialData?.order_status != OrderStatus.PENDING && initialData?.order_status != OrderStatus.WAITING) && (
+                <div
+                  className={cn(
+                    getStatusVariant(initialData?.payment_status),
+                    'text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center',
+                  )}
+                >
+                  {getPaymentStatusLabel(initialData?.payment_status)}
+                </div>
+              )}
+              <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
+                Selesai
+              </div>
             </div>
           </div>
         )}
-
         {initialData?.status === "pending" && lastPath === "preview" && (
           <Button
             onClick={handleReset}
