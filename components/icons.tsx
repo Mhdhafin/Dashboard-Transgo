@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowRight,
+  CalendarDays,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -66,6 +67,7 @@ const PDFIcon = () => (
 
 export const Icons = {
   dashboard: LayoutDashboardIcon,
+  calendar: CalendarDays,
   logo: Command,
   login: LogIn,
   close: X,

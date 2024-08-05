@@ -143,6 +143,12 @@ export const navItems: NavItem[] = [
     label: "Dashboard",
   },
   {
+    title: "Calendar",
+    href: "/dashboard/calendar",
+    icon: "calendar",
+    label: "calendar",
+  },
+  {
     title: "Request Tasks",
     href: "/dashboard/requests",
     icon: "clipboardList",
