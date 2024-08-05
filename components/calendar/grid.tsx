@@ -63,7 +63,9 @@ const Grid = ({
             const boxHeight = 40;
 
             let width;
-            if (endOffset === -1) {
+            if (startOffset === -1) {
+              return;
+            } else if (endOffset === -1) {
               const endOfMonth = startTime.endOf("month");
               const hoursInCurrentMonth = endOfMonth.diff(
                 startTime,
