@@ -42,7 +42,7 @@ const TooltipDate = ({ data }: { data: any }) => {
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
             {data.name}
           </p>
-          <div className="flex flex-row gap-[8px]">
+          <div className="flex flex-row h-4 gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
               {data.start.format("dddd, DD MMMM YYYY")}
             </p>
@@ -62,7 +62,7 @@ const TooltipDate = ({ data }: { data: any }) => {
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
             {data.name}
           </p>
-          <div className="flex flex-row gap-[8px]">
+          <div className="flex flex-row h-4 items-center gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
               {data.end.format("dddd, DD MMMM YYYY")}
             </p>
