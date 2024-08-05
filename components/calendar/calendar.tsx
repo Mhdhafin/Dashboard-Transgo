@@ -85,7 +85,7 @@ const Calendar = () => {
 
   return (
     <div
-      className="border overflow-auto border-neutral-200 rounded-lg h-[calc(100vh-220px)]"
+      className="border overflow-auto border-neutral-200 rounded-lg h-[calc(100vh-200px)]"
       ref={tableRef}
     >
       <div className="flex max-h-screen">
