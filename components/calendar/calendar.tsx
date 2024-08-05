@@ -31,14 +31,6 @@ const Calendar = () => {
     setPageParam("1");
   }, [month, year]);
 
-  // const { ref, inView } = useInView();
-
-  // useEffect(() => {
-  //   if (inView && hasNextPage) {
-  //     fetchNextPage();
-  //   }
-  // }, [inView, hasNextPage, fetchNextPage]);
-
   const observer = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useCallback(
     (node: HTMLDivElement | null) => {
