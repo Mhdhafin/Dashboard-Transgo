@@ -31,7 +31,7 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[] }) => {
                 key={date.format("YYYY-MM-DD")}
                 className={`relative border-r last:border-r-0 border-b border-gray-300 first:border-l-0 h-[64px] p-[12px] w-16 ${
                   isLast ? "border-b-0" : ""
-                }`}
+                } ${isCurrentDate ? "bg-neutral-50" : ""}`}
                 data-date={date.format("YYYY-MM-DD")}
               >
                 {isCurrentDate && (
