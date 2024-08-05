@@ -40,7 +40,7 @@ const TooltipDate = ({ data }: { data: any }) => {
             PIC & Tanggal Pengambilan
           </p>
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
-            {data.name}
+            {data.startDriver}
           </p>
           <div className="flex flex-row h-4 gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
@@ -60,7 +60,7 @@ const TooltipDate = ({ data }: { data: any }) => {
             PIC & Tanggal Pengambalian
           </p>
           <p className="text-[14px] leading-5 font-medium mb-[2px]">
-            {data.name}
+            {data.endDriver}
           </p>
           <div className="flex flex-row h-4 items-center gap-[8px]">
             <p className="text-[12px] leading-4 font-[500]">
