@@ -8,7 +8,10 @@ import { IUsage } from "./types";
 
 const TooltipDate = ({ data }: { data: IUsage }) => {
   return (
-    <HoverCardContent className="w-full h-full p-[12px] flex flex-col gap-[10px]">
+    <HoverCardContent
+      align="start"
+      className="w-full h-full p-[12px] flex flex-col gap-[10px]"
+    >
       <div className="pl-[16px] pt-[6px] flex flex-col gap-[6px]">
         <div className="flex flex-row items-center justify-between">
           <p className="leading-5 font-semibold text-[18px]">{data.price}</p>

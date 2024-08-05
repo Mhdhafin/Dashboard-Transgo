@@ -6,7 +6,7 @@ import { ICalendarData } from "./types";
 
 const TooltipFleet = ({ data }: { data: ICalendarData }) => {
   return (
-    <HoverCardContent className="w-full h-full p-0">
+    <HoverCardContent align="start" className="w-full h-full p-0">
       <div className="flex flex-row items-center gap-[12px]">
         <div className="size-[100px] p-[4px]">
           <img
