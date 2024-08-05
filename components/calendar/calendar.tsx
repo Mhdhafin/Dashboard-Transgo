@@ -39,9 +39,9 @@ const Calendar = () => {
   //   }
   // }, [inView, hasNextPage, fetchNextPage]);
 
-  const observer = useRef();
+  const observer = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useCallback(
-    (node) => {
+    (node: HTMLDivElement | null) => {
       if (isFetchingNextPage) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
@@ -49,11 +49,10 @@ const Calendar = () => {
           fetchNextPage();
         }
       });
-      if (node) observer && observer.current && observer.current.observe(node);
+      if (node) observer.current.observe(node);
     },
     [isFetchingNextPage, fetchNextPage, hasNextPage],
   );
-
   const now = dayjs(`${year}-${month}-01`);
   const start = now.startOf("month");
   const end = now.endOf("month");
@@ -93,7 +92,7 @@ const Calendar = () => {
 
         <div className="flex-1">
           <Header dates={dates} />
-          <Grid dates={dates} data={calendarData} isFetching={isFetching} />
+          <Grid dates={dates} data={calendarData} />
           {isFetching && (
             <div className="flex flex-col space-y-2">
               {Array.from({ length: 5 }).map((_, idx) => (

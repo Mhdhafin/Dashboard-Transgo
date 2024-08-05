@@ -4,6 +4,7 @@ import utc from "dayjs/plugin/utc";
 
 import { useGetCalendar } from "@/hooks/api/useCalendar";
 import { formatRupiah } from "@/lib/utils";
+import { ICalendarData } from "@/components/calendar/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,7 +23,7 @@ const useCalendarViewStore = (filter?: any) => {
 
   const data = calendar?.pages?.flatMap((page) => page?.data?.items) || [];
 
-  const mappedData = data.map((item) => ({
+  const mappedData: ICalendarData[] = data.map((item) => ({
     id: item.id,
     name: item.name,
     location: item.location.location,

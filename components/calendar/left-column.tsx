@@ -1,12 +1,15 @@
 import React from "react";
+
 import LeftColumnItem from "./left-column-item";
 import { Skeleton } from "../ui/skeleton";
+
+import { ICalendarData } from "./types";
 
 const LeftColumn = ({
   vehicles,
   isFetching,
 }: {
-  vehicles: { name: string; location: string }[];
+  vehicles: ICalendarData[];
   isFetching: boolean;
 }) => {
   return (

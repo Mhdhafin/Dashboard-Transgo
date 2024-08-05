@@ -4,7 +4,9 @@ import { HoverCardContent } from "../ui/hover-card";
 import { Separator } from "../ui/separator";
 import { ORDER_STATUS, PAYMENT_STATUS } from "./utils";
 
-const TooltipDate = ({ data }: { data: any }) => {
+import { IUsage } from "./types";
+
+const TooltipDate = ({ data }: { data: IUsage }) => {
   return (
     <HoverCardContent className="w-full h-full p-[12px] flex flex-col gap-[10px]">
       <div className="pl-[16px] pt-[6px] flex flex-col gap-[6px]">

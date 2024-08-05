@@ -1,11 +1,14 @@
 import React from "react";
+
 import Tooltip from "./tooltip";
+
+import { ICalendarData } from "./types";
 
 const LeftColumnItem = ({
   vehicle,
   isLast,
 }: {
-  vehicle: { name: string; location: string };
+  vehicle: ICalendarData;
   isLast: boolean;
 }) => {
   return (

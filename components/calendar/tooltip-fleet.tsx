@@ -1,7 +1,10 @@
 import React from "react";
+
 import { HoverCardContent } from "../ui/hover-card";
 
-const TooltipFleet = ({ data }: { data: any }) => {
+import { ICalendarData } from "./types";
+
+const TooltipFleet = ({ data }: { data: ICalendarData }) => {
   return (
     <HoverCardContent className="w-full h-full p-0">
       <div className="flex flex-row items-center gap-[12px]">

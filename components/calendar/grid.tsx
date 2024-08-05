@@ -1,17 +1,24 @@
 import React from "react";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 import Tooltip from "./tooltip";
 import { ORDER_STATUS } from "./utils";
+import { ICalendarData } from "./types";
 
-const Grid = ({ dates, data }: { dates: dayjs.Dayjs[]; data: any[] }) => {
+const Grid = ({
+  dates,
+  data,
+}: {
+  dates: dayjs.Dayjs[];
+  data: ICalendarData[];
+}) => {
   const today = dayjs().format("YYYY-MM-DD");
 
   const getDayOffset = (date: string) => {
     return dates.findIndex((d) => d.format("YYYY-MM-DD") === date);
   };
 
-  const getTimeOffset = (startTime, endTime) => {
+  const getTimeOffset = (startTime: Dayjs, endTime: Dayjs) => {
     const start = startTime;
     const end = endTime;
     const totalHours = end.diff(start, "hour", true);
@@ -42,7 +49,7 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[]; data: any[] }) => {
               </div>
             );
           })}
-          {vehicle.usage.map((usage, usageIndex) => {
+          {vehicle.usage.map((usage, usageIndex: number) => {
             const startTime = usage.start;
             const endTime = usage.end;
             const startOffset = getDayOffset(startTime.format("YYYY-MM-DD"));
@@ -78,7 +85,7 @@ const Grid = ({ dates, data }: { dates: dayjs.Dayjs[]; data: any[] }) => {
                   >
                     <span
                       className={`truncate leading-5 font-medium text-[12px] ${ORDER_STATUS[
-                        usage.orderStatus
+                        usage.orderStatus || "pending"
                       ]?.color}`}
                     >
                       {usage.title}
