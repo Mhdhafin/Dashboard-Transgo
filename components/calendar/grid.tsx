@@ -29,16 +29,19 @@ const Grid = ({
     <>
       {data.map((vehicle, rowIndex) => (
         <div key={rowIndex} className="flex relative">
-          {dates.map((date) => {
+          {dates.map((date, colIndex) => {
             const isCurrentDate = date.format("YYYY-MM-DD") === today;
-            const isLast = rowIndex === data.length - 1;
+            const isLastRow = rowIndex === data.length - 1;
+            const isLastColumn = colIndex === dates.length - 1;
 
             return (
               <div
                 key={date.format("YYYY-MM-DD")}
-                className={`relative border-r last:border-r-0 border-b border-gray-300 first:border-l-0 h-[64px] p-[12px] w-16 ${
-                  isLast ? "border-b-0" : ""
-                } ${isCurrentDate ? "bg-neutral-50" : ""}`}
+                className={`relative border-gray-300 first:border-l-0 h-[64px] p-[12px] w-16 ${
+                  isLastRow ? "border-b-0" : "border-b"
+                } ${isCurrentDate ? "bg-neutral-50" : ""} ${
+                  isLastColumn ? "border-r-0" : "border-r"
+                }`}
                 data-date={date.format("YYYY-MM-DD")}
               >
                 {isCurrentDate && (
@@ -53,14 +56,24 @@ const Grid = ({
             const startTime = usage.start;
             const endTime = usage.end;
             const startOffset = getDayOffset(startTime.format("YYYY-MM-DD"));
-            // const endOffset = getDayOffset(
-            //   endTime.format("YYYY-MM-DD"),
-            // );
+            const endOffset = getDayOffset(endTime.format("YYYY-MM-DD"));
+
             const totalHours = getTimeOffset(startTime, endTime);
             const dayWidth = 64;
             const boxHeight = 40;
-            // const totalDays = endOffset - startOffset + 1;
-            const width = (totalHours / 24) * dayWidth;
+
+            let width;
+            if (endOffset === -1) {
+              const endOfMonth = startTime.endOf("month");
+              const hoursInCurrentMonth = endOfMonth.diff(
+                startTime,
+                "hour",
+                true,
+              );
+              width = (hoursInCurrentMonth / 24) * dayWidth;
+            } else {
+              width = (totalHours / 24) * dayWidth;
+            }
 
             return (
               <div
