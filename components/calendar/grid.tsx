@@ -63,7 +63,7 @@ const Grid = ({
           {vehicle.usage.map((usage, usageIndex: number) => {
             const startTime = usage.start;
             const endTime = usage.end;
-            const startOffset = getDayOffset(startTime.format("YYYY-MM-DD"));
+            let startOffset = getDayOffset(startTime.format("YYYY-MM-DD"));
             const endOffset = getDayOffset(endTime.format("YYYY-MM-DD"));
 
             const totalHours = getTimeOffset(startTime, endTime);
@@ -71,7 +71,8 @@ const Grid = ({
             const boxHeight = 40;
 
             let width;
-            if (startOffset === -1) {
+
+            if (startOffset === -1 && endOffset === -1) {
               return;
             } else if (endOffset === -1) {
               const endOfMonth = startTime.endOf("month");
@@ -81,6 +82,9 @@ const Grid = ({
                 true,
               );
               width = (hoursInCurrentMonth / 24) * dayWidth;
+            } else if (startOffset === -1) {
+              startOffset = 0;
+              width = (totalHours / 24) * dayWidth;
             } else {
               width = (totalHours / 24) * dayWidth;
             }
