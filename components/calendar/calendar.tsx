@@ -97,7 +97,14 @@ const Calendar = () => {
           {isFetching && (
             <div className="flex flex-col space-y-2">
               {Array.from({ length: 5 }).map((_, idx) => (
-                <Skeleton key={idx} className="h-[40px] w-full rounded-md" />
+                <div key={idx} className="flex flex-row gap-[2px]">
+                  {dates.map((date) => (
+                    <Skeleton
+                      key={date.format("YYYY-MM-DD")}
+                      className="h-[40px] w-[62px] rounded-md"
+                    />
+                  ))}
+                </div>
               ))}
             </div>
           )}
