@@ -70,7 +70,7 @@ const Grid = ({
             const dayWidth = 64;
             const boxHeight = 40;
 
-            let width;
+            let width = 0;
 
             if (startOffset === -1 && endOffset === -1) {
               return;
@@ -84,7 +84,13 @@ const Grid = ({
               width = (hoursInCurrentMonth / 24) * dayWidth;
             } else if (startOffset === -1) {
               startOffset = 0;
-              width = (totalHours / 24) * dayWidth;
+              const startOfMonth = endTime.startOf("month");
+              const hoursInCurrentMonth = endTime.diff(
+                startOfMonth,
+                "hour",
+                true,
+              );
+              width = (hoursInCurrentMonth / 24) * dayWidth;
             } else {
               width = (totalHours / 24) * dayWidth;
             }
@@ -98,7 +104,8 @@ const Grid = ({
                 style={{
                   top: 12,
                   left:
-                    startOffset * dayWidth + (startTime.hour() / 24) * dayWidth,
+                    startOffset * dayWidth +
+                    (!startOffset ? 0 : startTime.hour() / 24) * dayWidth,
                   width: width,
                   height: boxHeight,
                 }}
