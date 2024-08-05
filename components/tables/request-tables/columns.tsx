@@ -154,11 +154,9 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       return (
         <span>
-          {convertTime(
-            row?.original?.progress_duration_second
-              ? row?.original?.progress_duration_second
-              : "-",
-          )}
+          {row?.original?.progress_duration_second
+            ? convertTime(row?.original?.progress_duration_second)
+            : "-"}
         </span>
       );
     },
