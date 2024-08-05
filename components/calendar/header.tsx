@@ -7,7 +7,7 @@ const Header = ({ dates }: { dates: dayjs.Dayjs[] }) => {
   const today = dayjs().format("YYYY-MM-DD");
 
   return (
-    <div className="sticky top-0 h-[50px] z-10 flex">
+    <div className="sticky top-0 h-[50px] z-30 flex">
       {dates.map((date) => {
         const isCurrentDate = date.format("YYYY-MM-DD") === today;
 

@@ -2,32 +2,24 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { useInView } from "react-intersection-observer";
 
 import useCalendarViewStore from "@/hooks/components/useCalendarViewStore";
 
 import LeftColumn from "./left-column";
 import Header from "./header";
-import Spinner from "../spinner";
 import Grid from "./grid";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
-import { ScrollArea } from "../ui/scroll-area";
 
 const Calendar = () => {
   const { month, year } = useMonthYearState();
   const [pageParam, setPageParam] = useState("1");
 
-  const {
-    calendarData,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useCalendarViewStore({
-    month: month.toString(),
-    year: year.toString(),
-    page: pageParam,
-  });
+  const { calendarData, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useCalendarViewStore({
+      month: month.toString(),
+      year: year.toString(),
+      page: pageParam,
+    });
 
   useEffect(() => {
     setPageParam("1");
@@ -86,8 +78,8 @@ const Calendar = () => {
   }, [today]);
 
   return (
-    <ScrollArea
-      className="border border-neutral-200 rounded-lg h-[calc(100vh-220px)]"
+    <div
+      className="border overflow-auto border-neutral-200 rounded-lg h-[calc(100vh-220px)]"
       ref={tableRef}
     >
       <div className="flex max-h-screen">
@@ -99,7 +91,7 @@ const Calendar = () => {
           <div ref={lastItemRef} className="h-1" />
         </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 
