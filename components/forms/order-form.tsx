@@ -454,7 +454,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       },
       customer_id: +data.customer,
       fleet_id: +data.fleet,
-      description: "",
+      description: data.description,
       is_with_driver: data.is_with_driver,
       is_out_of_town: data.is_out_of_town,
       date: data.date.toISOString(),
