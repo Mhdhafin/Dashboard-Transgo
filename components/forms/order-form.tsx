@@ -75,8 +75,11 @@ import { PreviewImage } from "../modal/preview-image";
 import { Trash2 } from "lucide-react";
 import { DetailPrice, OrderFormProps, OrderFormValues } from "./types/order";
 import { generateSchema } from "./validation/orderSchema";
-import { getPaymentStatusLabel, getStatusVariant, OrderStatus } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
-
+import {
+  getPaymentStatusLabel,
+  getStatusVariant,
+  OrderStatus,
+} from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -140,7 +143,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     fetchNextPage: fetchNextCustomers,
     hasNextPage: hasNextCustomers,
     isFetchingNextPage: isFetchingNextCustomers,
-  } = useGetInfinityCustomers(searchCustomerDebounce);
+  } = useGetInfinityCustomers(searchCustomerDebounce, "verified");
 
   const {
     data: fleets,
@@ -725,17 +728,18 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   Edit Pesanan
                 </Link>
               )}
-              <div className='flex justify-between gap-3.5'>
-                {(initialData?.order_status != OrderStatus.PENDING && initialData?.order_status != OrderStatus.WAITING) && (
-                  <div
-                    className={cn(
-                      getStatusVariant(initialData?.payment_status),
-                      'text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center',
-                    )}
-                  >
-                    {getPaymentStatusLabel(initialData?.payment_status)}
-                  </div>
-                )}
+              <div className="flex justify-between gap-3.5">
+                {initialData?.order_status != OrderStatus.PENDING &&
+                  initialData?.order_status != OrderStatus.WAITING && (
+                    <div
+                      className={cn(
+                        getStatusVariant(initialData?.payment_status),
+                        "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+                      )}
+                    >
+                      {getPaymentStatusLabel(initialData?.payment_status)}
+                    </div>
+                  )}
                 <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
                   Belum kembali
                 </div>
@@ -778,18 +782,18 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 Edit Pesanan
               </Link>
             )}
-            <div className='flex justify-between gap-3.5'>
-
-              {(initialData?.order_status != OrderStatus.PENDING && initialData?.order_status != OrderStatus.WAITING) && (
-                <div
-                  className={cn(
-                    getStatusVariant(initialData?.payment_status),
-                    'text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center',
-                  )}
-                >
-                  {getPaymentStatusLabel(initialData?.payment_status)}
-                </div>
-              )}
+            <div className="flex justify-between gap-3.5">
+              {initialData?.order_status != OrderStatus.PENDING &&
+                initialData?.order_status != OrderStatus.WAITING && (
+                  <div
+                    className={cn(
+                      getStatusVariant(initialData?.payment_status),
+                      "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+                    )}
+                  >
+                    {getPaymentStatusLabel(initialData?.payment_status)}
+                  </div>
+                )}
               <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
                 Selesai
               </div>
