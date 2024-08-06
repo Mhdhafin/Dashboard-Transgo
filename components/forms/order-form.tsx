@@ -1,8 +1,7 @@
 "use client";
-import * as z from "zod";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -71,168 +70,17 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
-import { Card, CardContent } from "../ui/card";
 import { PreviewImage } from "../modal/preview-image";
+
+import { Trash2 } from "lucide-react";
+import { DetailPrice, OrderFormProps, OrderFormValues } from "./types/order";
+import { generateSchema } from "./validation/orderSchema";
 import { getPaymentStatusLabel, getStatusVariant, OrderStatus } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
 
+
 export const IMG_MAX_LIMIT = 3;
-const formSchema = z.object({
-  start_request: z.object({
-    is_self_pickup: z.any(),
-    // address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-    // distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
-    driver_id: z.string().min(1, { message: "Tolong pilih Penanggung Jawab" }),
-  }),
-  end_request: z.object({
-    is_self_pickup: z.any(),
-    // address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-    // distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
-    driver_id: z.string().min(1, { message: "Tolong pilih Penanggung Jawab" }),
-  }),
-  customer: z.string().min(1, { message: "Tolong pilih pelanggan" }),
-  fleet: z.string().min(1, { message: "Tolong pilih armada" }),
-  description: z.string().optional().nullable(),
-  is_with_driver: z.any(),
-  is_out_of_town: z.any(),
-  // imgUrl: z.array(ImgSchema),
-  date: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
-  duration: z.coerce.string().min(1, { message: "tolong masukkan durasi" }),
-  discount: z.coerce.string().min(1, { message: "tolong masukkan diskon" }),
-  insurance_id: z.string().min(1, { message: "tolong pilih asuransi" }),
-});
 
-const generateSchema = (startSelfPickUp?: boolean, endSelfPickup?: boolean) => {
-  let schema = formSchema;
-
-  if (!startSelfPickUp) {
-    console.log("start");
-
-    schema = schema.extend({
-      service_price: z.coerce
-        .string()
-        .min(1, { message: "tolong masukkan harga layanan" }),
-
-      start_request: schema.shape.start_request.extend({
-        address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-        distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
-      }),
-    });
-  }
-
-  if (!endSelfPickup) {
-    console.log("end");
-
-    schema = schema.extend({
-      service_price: z.coerce
-        .string()
-        .min(1, { message: "tolong masukkan harga layanan" }),
-
-      end_request: schema.shape.end_request.extend({
-        address: z.string().min(1, { message: "Tolong masukkan alamat" }),
-        distance: z.coerce.number().gte(0, "Jarak minimal 0 KM"),
-      }),
-    });
-  }
-
-  return schema;
-};
-
-const editFormSchema = z.object({
-  name: z
-    .string({
-      required_error: "Name is required",
-      invalid_type_error: "Name must be a string",
-    })
-    .min(3, { message: "Name must be at least 3 characters" }),
-  color: z
-    .string({
-      required_error: "Color is required",
-      invalid_type_error: "Color must be a string",
-    })
-    .optional()
-    .nullable(),
-  plate_number: z
-    .string({
-      required_error: "plate number is required",
-      invalid_type_error: "plate number must be a string",
-    })
-    .min(1, { message: "plate number is required" }),
-  type: z.string({ required_error: "type is required" }).min(1, {
-    message: "type is required",
-  }),
-  price: z.string({ required_error: "price is required" }).min(1, {
-    message: "price is required",
-  }),
-  location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
-});
-
-type OrderFormValues = z.infer<typeof formSchema> & {
-  service_price: string;
-  start_request: {
-    distance: number;
-    address: string;
-  };
-  end_request: {
-    distance: number;
-    address: string;
-  };
-};
-
-interface FleetFormProps {
-  initialData: any | null;
-  isEdit?: boolean | null;
-}
-
-interface DetailFleet {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  type: string;
-  color: string | null;
-  plate_number: string;
-  price: number;
-}
-
-interface DetailInsurance {
-  id: number;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  description: string;
-  price: number;
-}
-interface DetailPrice {
-  discount: number;
-  driver_price: number;
-  fleet: DetailFleet;
-  grand_total: number;
-  insurance: DetailInsurance;
-  insurance_price: number;
-  rent_price: number;
-  service_price: number;
-  sub_total: number;
-  tax: number;
-  total: number;
-  total_driver_price: number;
-  total_rent_price: number;
-  total_weekend_price: number;
-  weekend_days: any[];
-  weekend_price: number;
-}
-
-type Messages = {
-  [key in keyof OrderFormValues]?: string;
-} & {
-  start_request?: {
-    [key in keyof OrderFormValues["start_request"]]?: string | undefined;
-  };
-  end_request?: {
-    [key in keyof OrderFormValues["end_request"]]?: string | undefined;
-  };
-};
-
-export const OrderForm: React.FC<FleetFormProps> = ({
+export const OrderForm: React.FC<OrderFormProps> = ({
   initialData,
   isEdit,
 }) => {
@@ -356,6 +204,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           ? initialData?.insurance?.id.toString()
           : "0",
         service_price: initialData?.service_price.toString(),
+        additionals: initialData?.additional_services,
       }
     : {
         start_request: {
@@ -380,11 +229,17 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         discount: "0",
         insurance_id: "0",
         service_price: "",
+        additionals: [],
       };
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(schema),
     defaultValues,
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "additionals",
   });
 
   const customerField = form.watch("customer");
@@ -405,6 +260,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   const discountField = form.watch("discount");
   const descriptionField = form.watch("description");
   const serviceField = form.watch("service_price");
+  const additionalField = form.watch("additionals");
 
   const watchServicePrice = !(startSelfPickUpField && endSelfPickUpField);
   const servicePrice = serviceField ?? 0;
@@ -422,6 +278,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
   );
 
   const [end, setEnd] = useState("");
+  console.log("additionalField", additionalField);
   const now = dayjs(form.getValues("date"));
   useEffect(() => {
     const end = now
@@ -465,6 +322,16 @@ export const OrderForm: React.FC<FleetFormProps> = ({
         data?.service_price && {
           service_price: +data.service_price.replace(/,/g, ""),
         }),
+      ...(fields.length !== 0 && {
+        additional_services: additionalField.map((field) => {
+          return {
+            name: field.name,
+            price: isString(field.price)
+              ? +field.price.replace(/,/g, "")
+              : field.price,
+          };
+        }),
+      }),
     });
 
     const handleSuccess = () => {
@@ -608,9 +475,20 @@ export const OrderForm: React.FC<FleetFormProps> = ({
           ? +serviceField.replace(/,/g, "")
           : serviceField,
       }),
+      ...(fields.length !== 0 && {
+        additional_services: additionalField.map((field) => {
+          return {
+            name: field.name,
+            price: isString(field.price)
+              ? +field.price.replace(/,/g, "")
+              : field.price,
+          };
+        }),
+      }),
     };
 
     console.log("pay", payload);
+    console.log("field", fields, additionalField);
     if (fleetField) {
       calculatePrice(payload, {
         onSuccess: (data) => {
@@ -619,6 +497,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
       });
     }
   }, [
+    additionalField,
     customerField,
     fleetField,
     dateField,
@@ -638,6 +517,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
     descriptionField,
     showServicePrice,
     servicePrice,
+    JSON.stringify(additionalField),
   ]);
 
   // disable date for past dates
@@ -1631,6 +1511,115 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                     )}
                   />
                 )}
+
+                <div className="flex flex-col">
+                  {fields.map((field_item, index) => (
+                    <div key={index} className="flex gap-4 items-end mb-4">
+                      <FormField
+                        name={`additionals.${index}.name`}
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              className={cn(
+                                isMinimized
+                                  ? "min-[1920px]:w-[548px] w-[428px]"
+                                  : "min-[1920px]:w-[940px] w-[700px]",
+                              )}
+                            >
+                              <FormLabel className="relative label-required">
+                                Deskripsi Layanan
+                              </FormLabel>
+                              <FormControl className="disabled:opacity-100 h-[40px]">
+                                <Input
+                                  key={field_item.id}
+                                  disabled={!isEdit || loading}
+                                  placeholder="Deskripsi Layanan"
+                                  value={field.value ?? ""}
+                                  onChange={field.onChange}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      <FormField
+                        key={field_item.id}
+                        name={`additionals.${index}.price`}
+                        control={form.control}
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              className={cn(
+                                isMinimized
+                                  ? "min-[1920px]:w-[548px] w-[428px]"
+                                  : "min-[1920px]:w-[940px] w-[700px]",
+                              )}
+                            >
+                              <FormLabel className="relative label-required">
+                                Harga Layanan
+                              </FormLabel>
+                              <FormControl className="disabled:opacity-100">
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                                    Rp.
+                                  </span>
+                                  <NumericFormat
+                                    key={field_item.id}
+                                    disabled={!isEdit || loading}
+                                    customInput={Input}
+                                    type="text"
+                                    className="h-[40px] pl-9 disabled:opacity-90"
+                                    allowLeadingZeros
+                                    thousandSeparator=","
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    onBlur={field.onBlur}
+                                  />
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                      {isEdit && (
+                        <Button
+                          type="button"
+                          className={cn(
+                            buttonVariants({
+                              variant: "destructive",
+                              size: "icon",
+                            }),
+                            "p-0 h-10 w-10 flex-none bg-red-50",
+                          )}
+                          onClick={() => {
+                            remove(index);
+
+                            const updatedAdditionals = [...additionalField];
+                            updatedAdditionals.splice(index, 1);
+                            form.setValue("additionals", updatedAdditionals);
+                          }}
+                        >
+                          <Trash2 className="w-5 h-5 text-red-500" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {isEdit && (
+                    <div className="justify-end flex">
+                      <Button
+                        type="button"
+                        className={cn(buttonVariants({ variant: "secondary" }))}
+                        onClick={() => append({ name: "", price: "0" })}
+                      >
+                        + Add Item
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 {!isEdit ? (
                   <FormItem>
                     <FormLabel>Permintaan Khusus</FormLabel>
@@ -1721,6 +1710,7 @@ export const OrderForm: React.FC<FleetFormProps> = ({
                 initialData={initialData}
                 isEdit={isEdit ?? false}
                 showServicePrice={showServicePrice}
+                showAdditional={additionalField.length !== 0}
                 form={form}
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
@@ -2323,59 +2313,3 @@ const DetailSection: React.FC<DetailSectionProps> = ({
     </>
   );
 };
-
-// export const Carousel = ({ images }: any) => {
-//   const [currentIndex, setCurrentIndex] = useState(0);
-
-//   const prevSlide = () => {
-//     setCurrentIndex((prevIndex) =>
-//       prevIndex === 0 ? images.length - 1 : prevIndex - 1,
-//     );
-//   };
-
-//   const nextSlide = () => {
-//     setCurrentIndex((prevIndex) =>
-//       prevIndex === images.length - 1 ? 0 : prevIndex + 1,
-//     );
-//   };
-
-//   return (
-//     <div className="relative w-full  h-[300px] overflow-hidden">
-//       <div
-//         className="absolute top-0 left-0 w-full h-full flex transition-transform duration-300"
-//         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-//       >
-//         {!images && <p>Driver Tidak memilik foto</p>}
-//         {images.map((image: any, index: any) => (
-//           <div key={index} className="w-full h-[300px] flex-shrink-0">
-//             <img
-//               src={image.photo}
-//               alt={`Slide ${index}`}
-//               className="w-full h-full object-contain"
-//             />
-//           </div>
-//         ))}
-//       </div>
-//       {images.length > 1 && (
-//         <>
-//           <Button
-//             onClick={prevSlide}
-//             className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
-//             type="button"
-//           >
-//             {"<"}
-//           </Button>
-//           {images.length > 1 && currentIndex < images.length - 1 && (
-//             <Button
-//               onClick={nextSlide}
-//               className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2"
-//               type="button"
-//             >
-//               {">"}
-//             </Button>
-//           )}
-//         </>
-//       )}
-//     </div>
-//   );
-// };

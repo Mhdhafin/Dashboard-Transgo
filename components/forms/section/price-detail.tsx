@@ -25,6 +25,7 @@ interface PriceDetailProps {
   handleOpenApprovalModal: () => void;
   handleOpenRejectModal: () => void;
   showServicePrice: boolean;
+  showAdditional: boolean;
   isEdit: boolean;
   initialData: any;
   confirmLoading: boolean;
@@ -38,12 +39,14 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   handleOpenApprovalModal,
   handleOpenRejectModal,
   showServicePrice,
+  showAdditional,
   isEdit,
   initialData,
   confirmLoading,
   type,
   messages,
 }) => {
+  console.log("detail", detail, form.getValues("additionals"));
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l"
@@ -117,11 +120,14 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   <Separator className="mb-1" />
                 </>
               )}
-              {showServicePrice && (
-                <>
-                  <p className="font-medium text-sm text-neutral-700 mb-1">
-                    Harga Layanan Driver
-                  </p>
+              {(showServicePrice || showAdditional) && (
+                <p className="font-medium text-sm text-neutral-700 mb-1">
+                  Biaya Layanan
+                </p>
+              )}
+              {showServicePrice &&
+                (!form.getValues("start_request.is_self_pickup") ||
+                  !form.getValues("end_request.is_self_pickup")) && (
                   <div className="flex justify-between mb-1">
                     <p className="font-medium text-sm text-neutral-700">
                       {!form.getValues("start_request.is_self_pickup") &&
@@ -135,8 +141,38 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                       {formatRupiah(detail?.service_price ?? 0)}
                     </p>
                   </div>
-                  <Separator className="mb-1" />
-                </>
+                )}
+              {showAdditional && isEdit
+                ? detail?.additional_services?.length !== 0 &&
+                  detail?.additional_services?.map((item: any, index: any) => {
+                    return (
+                      <div className="flex justify-between mb-1" key={index}>
+                        <p className="font-medium text-sm text-neutral-700">
+                          {item.name}
+                        </p>
+                        <p className="font-semibold text-base">
+                          {formatRupiah(item.price)}
+                        </p>
+                      </div>
+                    );
+                  })
+                : initialData?.additional_services?.length !== 0 &&
+                  initialData?.additional_services?.map(
+                    (item: any, index: any) => {
+                      return (
+                        <div className="flex justify-between mb-1" key={index}>
+                          <p className="font-medium text-sm text-neutral-700">
+                            {item.name}
+                          </p>
+                          <p className="font-semibold text-base">
+                            {formatRupiah(item.price)}
+                          </p>
+                        </div>
+                      );
+                    },
+                  )}
+              {(showAdditional || showServicePrice) && (
+                <Separator className="mb-1" />
               )}
               <p className="font-medium text-sm text-neutral-700 mb-1">
                 Biaya Asuransi
