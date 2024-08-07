@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
-import { cn, makeUrlsClickable } from "@/lib/utils";
+import { cn, convertTime, makeUrlsClickable } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGetDetailFleet, useGetInfinityFleets } from "@/hooks/api/useFleet";
 import { isEmpty, isNull, isString } from "lodash";
@@ -2229,7 +2229,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                         ),
                       )}
                   </CarouselContent>
-                  {typeRequestLog?.[0]?.photos?.length < 2 && (
+                  {typeRequestLog?.[0]?.photos?.length > 2 && (
                     <>
                       <CarouselPrevious
                         type="button"
@@ -2263,7 +2263,11 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                         : "min-[1920px]:w-[940px] w-[700px]",
                     )}
                     placeholder="Tanggal dan waktu selesai"
-                    value={typeRequest?.progress_duration_second ?? "--"}
+                    value={
+                      typeRequest?.progress_duration_second
+                        ? convertTime(typeRequest?.progress_duration_second)
+                        : "--"
+                    }
                     readOnly
                     disabled
                   />
@@ -2289,7 +2293,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                         : "min-[1920px]:w-[940px] w-[700px]",
                     )}
                     placeholder="Tanggal dan waktu selesai"
-                    value={typeRequest?.description ?? "-"}
+                    value={typeRequestLog?.[0]?.description ?? "-"}
                     readOnly
                     disabled
                   />
