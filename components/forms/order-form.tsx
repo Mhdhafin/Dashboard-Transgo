@@ -1606,7 +1606,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             form.setValue("additionals", updatedAdditionals);
                           }}
                         >
-                          <Trash2 className="w-5 h-5 text-red-500" />
+                          <Trash2 className="w-5 h-5 text-red-500 hover:text-white" />
                         </Button>
                       )}
                     </div>
