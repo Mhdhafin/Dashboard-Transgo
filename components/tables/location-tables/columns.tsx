@@ -27,6 +27,10 @@ export const columns: ColumnDef<any>[] = [
     header: "Nama",
   },
   {
+    accessorKey: "location",
+    header: "Nama Tempat",
+  },
+  {
     accessorKey: "description",
     header: "Deskripsi Alamat",
     cell: ({ row }) => <span>{row.original.address ?? "-"}</span>,
