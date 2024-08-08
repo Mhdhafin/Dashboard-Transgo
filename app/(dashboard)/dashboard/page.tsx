@@ -1,3 +1,4 @@
+import CustomerStatusCard from "@/components/customer-status-card";
 import OrderStatusCard from "@/components/order-status-card";
 import RequestStatusCard from "@/components/request-status-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,6 +19,9 @@ export default function page() {
         <h3 className="text-2xl font-bold tracking-tight">Order</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <OrderStatusCard />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <CustomerStatusCard />
         </div>
       </div>
     </ScrollArea>
