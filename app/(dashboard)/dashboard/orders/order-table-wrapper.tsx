@@ -11,6 +11,7 @@ import {
 import { OrderTable } from "@/components/tables/order-tables/order-table";
 import { TabsContent } from "@/components/ui/tabs";
 import { useGetOrders } from "@/hooks/api/useOrder";
+import { SortingState } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
@@ -32,6 +33,9 @@ const OrderTableWrapper = () => {
   const q = searchParams.get("q");
   const startDate = searchParams.get("start_date") || "";
   const endDate = searchParams.get("end_date") || "";
+  const orderColumn = searchParams.get("order_column") || "";
+  const orderBy = searchParams.get("order_by") || "";
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [searchQuery, setSearchQuery] = React.useState<string>(q ?? "");
   const [searchDebounce] = useDebounce(searchQuery, 500);
@@ -44,6 +48,8 @@ const OrderTableWrapper = () => {
       status: "pending",
       start_date: startDate,
       end_date: endDate,
+      order_by: orderBy,
+      order_column: orderColumn,
     },
     {
       enabled: defaultTab === "pending",
@@ -60,6 +66,8 @@ const OrderTableWrapper = () => {
         status: "on_progress",
         start_date: startDate,
         end_date: endDate,
+        order_by: orderBy,
+        order_column: orderColumn,
       },
       { enabled: defaultTab === "on_progress" },
       "on_progress",
@@ -74,6 +82,8 @@ const OrderTableWrapper = () => {
         status: "done",
         start_date: startDate,
         end_date: endDate,
+        order_by: orderBy,
+        order_column: orderColumn,
       },
       { enabled: defaultTab === "done" },
       "done",
@@ -168,6 +178,40 @@ const OrderTableWrapper = () => {
     }
   }, [searchDebounce]);
 
+  React.useEffect(() => {
+    if (sorting.length > 0) {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          order_by: sorting[0]?.desc ? "DESC" : "ASC",
+          order_column: sorting[0]?.id,
+        })}`,
+      );
+    } else {
+      router.push(
+        `${pathname}?${createQueryString({
+          status: defaultTab,
+          order_by: null,
+          order_column: null,
+        })}`,
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sorting]);
+
+  useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        status: defaultTab,
+        page: null,
+        limit: null,
+        order_by: null,
+        order_column: null,
+      })}`,
+    );
+  }, [defaultTab]);
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -196,6 +240,8 @@ const OrderTableWrapper = () => {
             pageCount={Math.ceil(pendingData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
+            sorting={sorting}
+            setSorting={setSorting}
           />
         )}
       </TabsContent>
@@ -204,6 +250,8 @@ const OrderTableWrapper = () => {
         {!isFetchingOnProgressData && onProgressData && (
           <OrderTable
             columns={onProgressColumns}
+            sorting={sorting}
+            setSorting={setSorting}
             data={onProgressData.items}
             searchKey="name"
             totalUsers={onProgressData.meta?.total_items}
@@ -217,6 +265,8 @@ const OrderTableWrapper = () => {
         {isFetchingCompletedData && <Spinner />}
         {!isFetchingCompletedData && completedData && (
           <OrderTable
+            sorting={sorting}
+            setSorting={setSorting}
             columns={completedColumns}
             data={completedData.items}
             searchKey="name"
