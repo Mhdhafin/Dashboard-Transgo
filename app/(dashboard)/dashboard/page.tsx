@@ -20,6 +20,7 @@ export default function page() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <OrderStatusCard />
         </div>
+        <h3 className="text-2xl font-bold tracking-tight">Customer</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <CustomerStatusCard />
         </div>
