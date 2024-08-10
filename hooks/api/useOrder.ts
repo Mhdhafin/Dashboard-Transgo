@@ -10,6 +10,8 @@ interface GetOrdersParams {
   q?: string;
   start_date?: string | Date | undefined;
   end_date?: string | Date | undefined;
+  order_by?: string | undefined;
+  order_column?: string | undefined;
 }
 
 export const useGetOrders = (
