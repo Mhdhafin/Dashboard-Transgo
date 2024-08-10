@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 import React from "react";
 import { useDebounce } from "use-debounce";
@@ -31,7 +32,13 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpDown,
+  ArrowUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Spinner from "@/components/spinner";
@@ -47,6 +54,8 @@ interface DataTableProps<TData, TValue> {
   searchParams?: {
     [key: string]: string | string[] | undefined;
   };
+  sorting: any[];
+  setSorting: any;
 }
 
 export function OrderTable<TData, TValue>({
@@ -58,16 +67,20 @@ export function OrderTable<TData, TValue>({
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
   searchQuery,
+  sorting,
+  setSorting,
 }: DataTableProps<TData, TValue> & { searchQuery: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   // Search params
   const page = searchParams?.get("page") ?? "1";
-  const q = searchParams?.get("q");
   const status = searchParams?.get("status") ?? "pending";
   const start_date = searchParams?.get("start_date");
   const end_date = searchParams?.get("end_date");
+
+  const orderColumn = searchParams?.get("order_column");
+  const orderBy = searchParams?.get("order_by");
 
   const pageAsNumber = Number(page);
   const fallbackPage =
@@ -111,6 +124,8 @@ export function OrderTable<TData, TValue>({
         q: searchDebounce || undefined,
         start_date: start_date || undefined,
         end_date: end_date || undefined,
+        order_by: orderBy || undefined,
+        order_column: orderColumn || undefined,
       })}`,
       {
         scroll: false,
@@ -126,12 +141,16 @@ export function OrderTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {
+      sorting,
       pagination: { pageIndex, pageSize },
     },
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
     manualFiltering: true,
+    manualSorting: true,
+    getSortedRowModel: getSortedRowModel(),
   });
 
   // React.useEffect(() => {
@@ -194,13 +213,32 @@ export function OrderTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                    <TableHead
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className="flex items-center gap-2">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                        {header.column.getIsSorted() ? (
+                          {
+                            asc: <ArrowUpIcon className="h-4 w-4" />,
+                            desc: <ArrowDown className="h-4 w-4" />,
+                          }[(header.column.getIsSorted() as string) ?? null]
+                        ) : (
+                          <>
+                            {header.column.getCanSort() ? (
+                              <ArrowUpDown className="h-4 w-4" />
+                            ) : (
+                              ""
+                            )}
+                          </>
+                        )}
+                      </div>
                     </TableHead>
                   );
                 })}
