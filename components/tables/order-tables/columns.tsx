@@ -25,6 +25,7 @@ export const pendingColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
     cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "fleet",
@@ -32,12 +33,14 @@ export const pendingColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
     cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "duration",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Waktu</span>
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
@@ -111,6 +114,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
     cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "fleet",
@@ -118,6 +122,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
     cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "duration",
@@ -166,6 +171,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
+    enableSorting: false,
   },
   {
     accessorKey: "pic",
@@ -187,6 +193,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
       </HoverCard>
     ),
     cell: ({ row }) => <span>{row.original.end_request.driver?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "total_price",
@@ -201,6 +208,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
   {
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
+    enableSorting: false,
   },
 ];
 
@@ -211,6 +219,7 @@ export const completedColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
     cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "fleet",
@@ -218,6 +227,7 @@ export const completedColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
     cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    enableSorting: false,
   },
   {
     accessorKey: "duration",
@@ -266,6 +276,7 @@ export const completedColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
+    enableSorting: false,
   },
   {
     accessorKey: "pic",
@@ -289,6 +300,7 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => (
       <span>{row.original.end_request?.driver?.name ?? "-"}</span>
     ),
+    enableSorting: false,
   },
   {
     accessorKey: "total_price",
@@ -317,9 +329,11 @@ export const completedColumns: ColumnDef<any>[] = [
         )}
       </>
     ),
+    enableSorting: false,
   },
   {
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
+    enableSorting: false,
   },
 ];
