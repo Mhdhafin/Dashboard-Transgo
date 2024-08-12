@@ -33,7 +33,7 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import {
-  ArrowDown,
+  ArrowDownIcon,
   ArrowUpDown,
   ArrowUpIcon,
   ChevronLeftIcon,
@@ -41,7 +41,6 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import Spinner from "@/components/spinner";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -226,8 +225,8 @@ export function OrderTable<TData, TValue>({
                             )}
                         {header.column.getIsSorted() ? (
                           {
-                            asc: <ArrowUpIcon className="h-4 w-4" />,
-                            desc: <ArrowDown className="h-4 w-4" />,
+                            asc: <ArrowDownIcon className="h-4 w-4" />,
+                            desc: <ArrowUpIcon className="h-4 w-4" />,
                           }[(header.column.getIsSorted() as string) ?? null]
                         ) : (
                           <>
