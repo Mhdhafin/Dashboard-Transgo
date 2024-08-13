@@ -7,11 +7,16 @@ import { useSidebar } from "@/hooks/useSidebar";
 
 type SidebarProps = {
   className?: string;
+  role: string;
 };
 
-export default function Sidebar({ className }: SidebarProps) {
+export default function Sidebar({ className, role }: SidebarProps) {
   const { isMinimized } = useSidebar();
   const [status, setStatus] = useState(false);
+
+  const filteredNavItems = navItems.filter((item) =>
+    item.isVisible.includes(role),
+  );
 
   return (
     <nav
@@ -25,7 +30,7 @@ export default function Sidebar({ className }: SidebarProps) {
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="mt-3 space-y-1">
-            <DashboardNav items={navItems} />
+            <DashboardNav items={filteredNavItems} />
           </div>
         </div>
       </div>
