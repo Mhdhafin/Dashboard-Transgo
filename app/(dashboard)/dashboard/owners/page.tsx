@@ -26,7 +26,6 @@ export const metadata: Metadata = {
 
 const page = async ({ searchParams }: paramsProps) => {
   const session = await getServerSession(authOptions);
-  console.log("🚀 ~ page ~ session:", session);
   const page = Number(searchParams.page) || 1;
   const pageLimit = Number(searchParams.limit) || 10;
   const q = searchParams.q || null;
@@ -41,7 +40,6 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const ownerRes = await res.json();
-  console.log("🚀 ~ page ~ ownerRes:", ownerRes);
 
   return (
     <>
