@@ -1714,7 +1714,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 initialData={initialData}
                 isEdit={isEdit ?? false}
                 showServicePrice={showServicePrice}
-                showAdditional={!!additionalField}
+                showAdditional={additionalField?.length !== 0}
                 form={form}
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
