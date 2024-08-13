@@ -1862,7 +1862,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
             render={({ field }) => {
               return (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="relative label-required w-[56px]">
+                  <FormLabel className="relative label-required w-fit">
                     Layanan
                   </FormLabel>
                   <FormControl>
