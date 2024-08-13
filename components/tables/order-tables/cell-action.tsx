@@ -43,7 +43,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         toast({
           variant: "destructive",
           title: "Oops! Ada error.",
-          description: `Something went wrong: ${error.message}`,
+          //@ts-ignore
+          description: `Something went wrong: ${error?.response?.data?.message}`,
         });
         queryClient.invalidateQueries({ queryKey: ["orders"] });
       },
