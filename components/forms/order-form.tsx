@@ -868,9 +868,9 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 }}
               />
 
-              {/* 
+              {/*
               perhitungan lebar content
-              di figma dengan lebar 1440px:  
+              di figma dengan lebar 1440px:
                 lebar 936px ====> ketika sidebar menu minimize
                 lebar 700px ====> ketika sidebar menu tidak minimize
 
@@ -1714,7 +1714,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 initialData={initialData}
                 isEdit={isEdit ?? false}
                 showServicePrice={showServicePrice}
-                showAdditional={additionalField.length !== 0}
+                showAdditional={!!additionalField}
                 form={form}
                 detail={detail}
                 handleOpenApprovalModal={() => setOpenApprovalModal(true)}
