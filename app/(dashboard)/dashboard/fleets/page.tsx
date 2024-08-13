@@ -40,6 +40,7 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const fleetRes = await res.json();
+
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">
@@ -58,7 +59,7 @@ const page = async ({ searchParams }: paramsProps) => {
         <Separator />
         <FleetTable
           columns={columns}
-          data={fleetRes.items}
+          data={fleetRes.items || []}
           searchKey="name"
           totalUsers={fleetRes.meta?.total_items}
           pageCount={Math.ceil(fleetRes.meta?.total_items / pageLimit)}
