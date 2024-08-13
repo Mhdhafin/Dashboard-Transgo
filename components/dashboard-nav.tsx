@@ -71,6 +71,7 @@ export function DashboardNav({
             "/dashboard/customers",
             "/dashboard/drivers",
             "/dashboard/location",
+            "/dashboard/owners",
           ];
 
           if (item.href === "/dashboard") {
