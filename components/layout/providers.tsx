@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import ThemeProvider from "./ThemeToggle/theme-provider";
 import { SessionProvider, SessionProviderProps } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { UserProvider } from "@/context/UserContext";
 
 export default function Providers({
   session,
@@ -23,9 +23,13 @@ export default function Providers({
       }),
   );
 
+  const initialUser = session?.user || null;
+
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider session={session}>{children}</SessionProvider>
+      <SessionProvider session={session}>
+        <UserProvider initialUser={initialUser}>{children}</UserProvider>
+      </SessionProvider>
     </QueryClientProvider>
   );
 }
