@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/drivers";
 export const useGetDrivers = (params: any) => {
@@ -23,6 +24,7 @@ export const useGetDrivers = (params: any) => {
 };
 
 export const useGetInfinityDrivers = (query?: string) => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getDrivers = ({
     pageParam = 1,
@@ -45,10 +47,12 @@ export const useGetInfinityDrivers = (query?: string) => {
     queryFn: ({ pageParam }) => getDrivers({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
+    enabled: user?.role !== "owner",
   });
 };
 
 export const useGetDetailDriver = (id: string | number) => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
 
   const getDetailDriver = () => {
@@ -58,6 +62,7 @@ export const useGetDetailDriver = (id: string | number) => {
   return useQuery({
     queryKey: ["drivers", id],
     queryFn: getDetailDriver,
+    enabled: user?.role !== "owner",
   });
 };
 

@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/owners";
 export const useGetOwners = (params: any) => {
@@ -23,6 +24,7 @@ export const useGetOwners = (params: any) => {
 };
 
 export const useGetInfinityOwners = (query?: string) => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getOwners = ({
     pageParam = 1,
@@ -45,6 +47,7 @@ export const useGetInfinityOwners = (query?: string) => {
     queryFn: ({ pageParam }) => getOwners({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
+    enabled: user?.role !== "owner",
   });
 };
 

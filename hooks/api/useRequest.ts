@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/requests";
 export const useGetRequests = (params: any, options = {}, type: string) => {
@@ -90,6 +91,7 @@ export const useDeleteRequest = (id: string | number) => {
 };
 
 export const useRequestsStatusCount = () => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getStatusCountFn = () => {
     return axiosAuth.get(`${baseEndpoint}/status/count`);
@@ -97,5 +99,6 @@ export const useRequestsStatusCount = () => {
   return useQuery({
     queryKey: ["requests"],
     queryFn: getStatusCountFn,
+    enabled: user?.role !== "owner",
   });
 };

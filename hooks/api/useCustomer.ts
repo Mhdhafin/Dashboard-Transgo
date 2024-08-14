@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/customers";
 
@@ -24,6 +25,7 @@ export const useGetCustomers = (params: any, options = {}, type: string) => {
 };
 
 export const useGetInfinityCustomers = (query?: string, status?: string) => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
 
   const getCustomers = ({
@@ -50,10 +52,12 @@ export const useGetInfinityCustomers = (query?: string, status?: string) => {
     queryFn: ({ pageParam }) => getCustomers({ pageParam, query, status }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
+    enabled: user?.role !== "owner",
   });
 };
 
 export const useGetDetailCustomer = (id: string | number) => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
 
   const getDetailCustomer = () => {
@@ -63,6 +67,7 @@ export const useGetDetailCustomer = (id: string | number) => {
   return useQuery({
     queryKey: ["customers", id],
     queryFn: getDetailCustomer,
+    enabled: user?.role !== "owner",
   });
 };
 
@@ -143,6 +148,7 @@ export const useRejectCustomer = () => {
 };
 
 export const useCustomersStatusCount = () => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getStatusCountFn = () => {
     return axiosAuth.get(`${baseEndpoint}/status/count`);
@@ -150,5 +156,6 @@ export const useCustomersStatusCount = () => {
   return useQuery({
     queryKey: ["customers"],
     queryFn: getStatusCountFn,
+    enabled: user?.role !== "owner",
   });
 };
