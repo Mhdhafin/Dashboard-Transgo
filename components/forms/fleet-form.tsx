@@ -171,15 +171,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const axiosAuth = useAxiosAuth();
   const [searchLocation, setSearchLocation] = useState("");
   const [searchOwner, setSearchOwner] = useState("");
-  const [searchLocaionDebounce] = useDebounce(searchLocation, 500);
+  const [searchLocationDebounce] = useDebounce(searchLocation, 500);
   const [searchOwnerDebounce] = useDebounce(searchOwner, 500);
 
   const {
     data: locations,
     fetchNextPage: fetchNextLocations,
-    hasNextPage: hasNextLocations,
     isFetchingNextPage: isFetchingNextLocations,
-  } = useGetInfinityLocation(searchOwnerDebounce);
+  } = useGetInfinityLocation(searchLocationDebounce);
 
   const {
     data: owners,
