@@ -183,6 +183,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         photos: initialData?.photos,
         price: initialData?.price,
         location_id: initialData?.location?.id?.toString(),
+        color: initialData?.color,
       }
     : {
         name: "",
@@ -191,6 +192,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         photos: [],
         price: "",
         location_id: "",
+        color: "",
       };
 
   const form = useForm<CustomerFormValues>({
