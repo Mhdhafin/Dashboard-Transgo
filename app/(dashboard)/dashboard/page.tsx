@@ -1,10 +1,20 @@
+"use client";
+
 import CustomerStatusCard from "@/components/customer-status-card";
 import OrderStatusCard from "@/components/order-status-card";
 import RequestStatusCard from "@/components/request-status-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Welcome from "@/components/welcome-text";
+import { useUser } from "@/context/UserContext";
+import { redirect } from "next/navigation";
 
-export default function page() {
+export default function Page() {
+  const { user } = useUser();
+
+  if (user?.role === "owner") {
+    redirect("/dashboard/calendar");
+  }
+
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

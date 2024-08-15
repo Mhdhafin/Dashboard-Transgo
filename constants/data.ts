@@ -140,7 +140,7 @@ export const navItems: NavItem[] = [
     href: "/dashboard",
     icon: "dashboard",
     label: "Dashboard",
-    isVisible: ["admin", "owner"],
+    isVisible: ["admin"],
   },
   {
     title: "Calendar",
