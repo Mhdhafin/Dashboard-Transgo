@@ -239,7 +239,6 @@ export function FleetTable<TData, TValue>({
                             : ""
                         }
                       >
-                        s
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
