@@ -43,6 +43,20 @@ const useCalendarViewStore = (filter?: any) => {
     })),
   }));
 
+  if (mappedData.length < 5) {
+    const emptyDataCount = 5;
+    for (let i = 0; i < emptyDataCount; i++) {
+      mappedData.push({
+        id: "",
+        name: "",
+        location: "",
+        price: "",
+        image: "",
+        usage: [],
+      });
+    }
+  }
+
   return {
     calendarData: mappedData,
     isFetching,
