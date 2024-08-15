@@ -202,7 +202,9 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                         <p className="font-medium text-sm text-neutral-700 mr-4">
                           {detail?.weekend_days.length} Hari
                         </p>
-                        <DropdownWeekend days={detail?.weekend_days} />
+                        <DropdownWeekend 
+                          days={detail?.weekend_days} 
+                          weekendPrice={detail?.weekend_price}/>
                       </div>
                     )}
                     <p className="font-semibold text-base">
@@ -397,9 +399,10 @@ export default PriceDetail;
 
 interface DropdownWeekendProps {
   days: string[];
+  weekendPrice?: number;
 }
 
-const DropdownWeekend: React.FC<DropdownWeekendProps> = ({ days }) => {
+const DropdownWeekend: React.FC<DropdownWeekendProps> = ({ days, weekendPrice }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -409,7 +412,7 @@ const DropdownWeekend: React.FC<DropdownWeekendProps> = ({ days }) => {
         {days?.map((day, index) => (
           <DropdownMenuItem key={index} className="justify-between w-[224px]">
             <p>{dayjs(day).locale("id").format("D MMMM YYYY")}</p>
-            <span className="text-slate-500">Rp. 50.000</span>
+            <span className="text-slate-500">{formatRupiah(weekendPrice as number)}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
