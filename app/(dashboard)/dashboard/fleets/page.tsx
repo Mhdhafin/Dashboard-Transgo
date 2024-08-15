@@ -10,7 +10,6 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { FleetTable } from "@/components/tables/fleet-tables/fleet-table";
-import { columns } from "@/components/tables/fleet-tables/columns";
 
 const breadcrumbItems = [{ title: "Fleets", link: "/dashboard/fleets" }];
 type paramsProps = {
@@ -26,6 +25,7 @@ export const metadata: Metadata = {
 
 const page = async ({ searchParams }: paramsProps) => {
   const session = await getServerSession(authOptions);
+  const userRole = session?.user?.role || "admin";
   const page = Number(searchParams.page) || 1;
   const pageLimit = Number(searchParams.limit) || 10;
   const q = searchParams.q || null;
@@ -49,16 +49,17 @@ const page = async ({ searchParams }: paramsProps) => {
         <div className="flex items-start justify-between">
           <Heading title="Fleets" />
 
-          <Link
-            href={"/dashboard/fleets/create"}
-            className={cn(buttonVariants({ variant: "main" }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link>
+          {userRole !== "owner" && (
+            <Link
+              href={"/dashboard/fleets/create"}
+              className={cn(buttonVariants({ variant: "main" }))}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add New
+            </Link>
+          )}
         </div>
         <Separator />
         <FleetTable
-          columns={columns}
           data={fleetRes.items || []}
           searchKey="name"
           totalUsers={fleetRes.meta?.total_items}
