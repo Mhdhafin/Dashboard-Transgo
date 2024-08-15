@@ -80,6 +80,7 @@ import {
   getStatusVariant,
   OrderStatus,
 } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
+import { useUser } from "@/context/UserContext";
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -87,6 +88,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   initialData,
   isEdit,
 }) => {
+  const { user } = useUser();
   const { orderId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -714,9 +716,16 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               {lastPath !== "edit" && (
                 <Link
                   href={`/dashboard/orders/${orderId}/edit`}
+                  onClick={(e) => {
+                    if (user?.role !== "admin") {
+                      e.preventDefault();
+                    }
+                  }}
                   className={cn(
                     buttonVariants({ variant: "outline" }),
                     "text-black",
+                    user?.role !== "admin" &&
+                      "cursor-not-allowed pointer-events-none opacity-50",
                   )}
                 >
                   Edit Pesanan
