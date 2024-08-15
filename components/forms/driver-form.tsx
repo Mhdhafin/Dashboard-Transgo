@@ -44,7 +44,7 @@ const fileSchema = z.custom<File>(
   },
   {
     message:
-      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB.",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG.",
   },
 );
 const editFileSchema = z.custom<File>(
@@ -59,7 +59,7 @@ const editFileSchema = z.custom<File>(
   },
   {
     message:
-      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB.",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG.",
   },
 );
 const formSchema = z.object({

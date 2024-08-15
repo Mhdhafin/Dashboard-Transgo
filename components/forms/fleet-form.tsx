@@ -51,7 +51,7 @@ const fileSchema = z.custom<any>(
   },
   {
     message:
-      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG.",
   },
 );
 const editFileSchema = z.custom<any>(
@@ -62,7 +62,7 @@ const editFileSchema = z.custom<any>(
   },
   {
     message:
-      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG dan ukurannya kurang dari 2MB",
+      "Foto kosong. Pastikan file yang kamu pilih adalah tipe JPEG, PNG.",
   },
 );
 export const IMG_MAX_LIMIT = 3;
