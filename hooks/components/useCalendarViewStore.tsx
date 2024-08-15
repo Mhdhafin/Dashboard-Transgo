@@ -43,7 +43,7 @@ const useCalendarViewStore = (filter?: any) => {
     })),
   }));
 
-  if (mappedData.length < 5) {
+  if (!isFetching && mappedData.length < 5) {
     const emptyDataCount = 5;
     for (let i = 0; i < emptyDataCount; i++) {
       mappedData.push({
