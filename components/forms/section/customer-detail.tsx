@@ -132,8 +132,6 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
     );
   };
 
-  console.log("data", data);
-
   return (
     <>
       {openApprovalModal && (
@@ -270,7 +268,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                       <div className="p-1">
                         <Card className="w-[310px] h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative ">
                           {/* <CardContent className="flex aspect-square items-center justify-center p-6">
-                       
+
                       </CardContent> */}
                           <img
                             src={photo.photo}

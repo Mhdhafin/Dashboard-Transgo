@@ -79,7 +79,7 @@ export const PreviewImage: React.FC<PreviewImageProps> = ({
           const imageDimension = await getDimensionImage(content);
           setDimension(imageDimension);
         } catch (error) {
-          console.log("error to fetch dimension image:", error);
+          // console.log("error to fetch dimension image:", error);
         }
       };
 

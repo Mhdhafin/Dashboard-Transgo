@@ -40,7 +40,6 @@ const page = async ({ searchParams }: paramsProps) => {
     },
   );
   const locationRes = await res.json();
-  console.log("locationRes", locationRes);
   return (
     <>
       <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">

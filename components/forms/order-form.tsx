@@ -180,7 +180,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   });
 
   const { isMinimized } = useSidebar();
-  console.log(initialData);
   const defaultValues = initialData
     ? {
         start_request: {
@@ -281,7 +280,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   );
 
   const [end, setEnd] = useState("");
-  console.log("additionalField", additionalField);
   const now = dayjs(form.getValues("date"));
   useEffect(() => {
     const end = now
@@ -293,7 +291,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   const onSubmit = async (data: OrderFormValues) => {
     setLoading(true);
-    console.log("submit", data);
 
     const createPayload = (data: OrderFormValues) => ({
       start_request: {
@@ -490,8 +487,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       }),
     };
 
-    console.log("pay", payload);
-    console.log("field", fields, additionalField);
     if (fleetField) {
       calculatePrice(payload, {
         onSuccess: (data) => {
@@ -657,7 +652,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     descriptionField,
     serviceField,
   ]);
-  console.log("message", messages);
   const approvalModalTitle =
     lastPath === "edit"
       ? "Apakah Anda Yakin Ingin Mengedit Pesanan ini?"
@@ -821,7 +815,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 name="is_with_driver"
                 control={form.control}
                 render={({ field }) => {
-                  console.log("field", field.value, initialData?.customer);
                   return (
                     <FormItem>
                       <FormControl>
@@ -1822,12 +1815,6 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       form.setValue("end_request.address", watchedFields[3]);
     }
   }, [...watchedFields, switchValue]);
-
-  console.log(
-    "watch",
-    watchedFields[0],
-    form.getValues(`${type}_request.is_self_pickup`),
-  );
 
   return (
     <>
