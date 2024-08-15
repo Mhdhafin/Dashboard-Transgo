@@ -192,7 +192,9 @@ export const onProgressColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
-    cell: ({ row }) => <span>{row.original.end_request.driver?.name}</span>,
+    cell: ({ row }) => (
+      <span>{row.original.end_request?.driver?.name ?? "-"}</span>
+    ),
     enableSorting: false,
   },
   {
