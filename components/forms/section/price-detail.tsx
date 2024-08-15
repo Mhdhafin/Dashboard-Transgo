@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn, formatRupiah } from "@/lib/utils";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import dayjs from "dayjs";
-import { ChevronDown, EyeIcon, Info } from "lucide-react";
+import { ChevronDown, EyeIcon, Info, Link2 } from "lucide-react";
 
 interface PriceDetailProps {
   form: any;
@@ -352,7 +352,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           )}
           {(type === "detail" || type === "edit") &&
             initialData?.status !== "pending" &&
-            initialData?.payment_pdf_url && (
+            initialData?.payment_pdf_url && initialData?.payment_link && (
               <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1 sticky bottom-1">
                 <div className="flex gap-4">
                   <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
@@ -367,6 +367,15 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                     </span>
                   </div>
                 </div>
+                <div className="rounded-lg border border-slate-200 p-2">
+                    <a
+                      href={`https://${initialData?.payment_link}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Link2 className='text-[#1F61D9]'/>
+                    </a>
+                  </div>
                 <div className="p-2 border border-slate-200 rounded-lg">
                   <a
                     href={`https://${initialData?.payment_pdf_url}`}
