@@ -1,3 +1,6 @@
+"use client";
+
+import { useUser } from "@/context/UserContext";
 import { cn } from "@/lib/utils";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -13,6 +16,12 @@ type BreadCrumbPropsType = {
 };
 
 export default function BreadCrumb({ items }: BreadCrumbPropsType) {
+  const { user } = useUser();
+
+  if (user?.role === "owner") {
+    return null;
+  }
+
   return (
     <div className="mb-4 flex items-center space-x-1 text-sm text-muted-foreground">
       <Link
