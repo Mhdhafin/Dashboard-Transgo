@@ -26,16 +26,16 @@ const useCalendarViewStore = (filter?: any) => {
   const mappedData: ICalendarData[] = data.map((item) => ({
     id: item.id,
     name: item.name,
-    location: item.location.location,
+    location: item?.location?.location,
     price: formatRupiah(item.price),
-    image: item.photo?.photo,
-    usage: item.orders.map((order: any) => ({
+    image: item?.photo?.photo,
+    usage: item?.orders?.map((order: any) => ({
       id: order.id,
       start: dayjs(order.start_date).tz("Asia/Jakarta"),
       end: dayjs(order.end_date).tz("Asia/Jakarta"),
       startDriver: order?.start_request?.driver?.name || "-",
       endDriver: order?.end_request?.driver?.name || "-",
-      duration: order.duration + " hari",
+      duration: order?.duration + " hari",
       paymentStatus: order.payment_status,
       orderStatus: order.order_status,
       title: order.customer.name,
