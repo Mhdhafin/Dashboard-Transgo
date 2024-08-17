@@ -17,7 +17,7 @@ export default function Sidebar({ className }: SidebarProps) {
   const { user } = useUser();
 
   const filteredNavItems = navItems.filter((item) =>
-    item.isVisible.includes(user?.role || "admin"),
+    item.roles.includes(user?.role || "admin"),
   );
 
   return (
