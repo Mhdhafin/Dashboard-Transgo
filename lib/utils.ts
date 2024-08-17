@@ -6,6 +6,7 @@ import { TaskDragData } from "@/components/kanban/task-card";
 import { isObject, transform } from "lodash";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { navItems } from "@/constants/data";
 dayjs.extend(duration);
 
 type DraggableData = ColumnDragData | TaskDragData;
@@ -87,4 +88,12 @@ export function makeUrlsClickable(str: string) {
     (url: any) =>
       `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue">${url}</a>`,
   );
+}
+
+export function getNavItemsByRole(role?: string) {
+  const filteredNavItems = navItems.filter((item) =>
+    item.roles.includes(role || "admin"),
+  );
+
+  return filteredNavItems;
 }
