@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/orders";
 
@@ -97,6 +98,7 @@ export const useOrderCalculate = () => {
 };
 
 export const useOrdersStatusCount = () => {
+  const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getStatusCountFn = () => {
     return axiosAuth.get(`${baseEndpoint}/status/count`);
@@ -104,6 +106,7 @@ export const useOrdersStatusCount = () => {
   return useQuery({
     queryKey: ["orders"],
     queryFn: getStatusCountFn,
+    enabled: user?.role !== "owner",
   });
 };
 

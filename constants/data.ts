@@ -1,5 +1,4 @@
-import { Icons } from "@/components/icons";
-import { NavItem, SidebarNavItem } from "@/types";
+import { NavItem } from "@/types";
 
 export type User = {
   id: number;
@@ -141,47 +140,62 @@ export const navItems: NavItem[] = [
     href: "/dashboard",
     icon: "dashboard",
     label: "Dashboard",
+    isVisible: ["admin"],
   },
   {
     title: "Calendar",
     href: "/dashboard/calendar",
     icon: "calendar",
     label: "calendar",
+    isVisible: ["admin", "owner"],
   },
   {
     title: "Request Tasks",
     href: "/dashboard/requests",
     icon: "clipboardList",
     label: "task",
+    isVisible: ["admin"],
   },
   {
     title: "Pesanan",
     href: "/dashboard/orders",
     icon: "ticket",
     label: "orders",
+    isVisible: ["admin"],
   },
   {
     title: "Fleets",
     href: "/dashboard/fleets",
     icon: "car",
     label: "Fleet",
+    isVisible: ["admin", "owner"],
   },
   {
     title: "Drivers",
     href: "/dashboard/drivers",
     icon: "profile",
     label: "profile",
+    isVisible: ["admin"],
   },
   {
     title: "Customers",
     href: "/dashboard/customers",
     icon: "users",
     label: "customer",
+    isVisible: ["admin"],
   },
   {
     title: "Location",
     href: "/dashboard/location",
     icon: "maps",
     label: "Location",
+    isVisible: ["admin"],
+  },
+  {
+    title: "Owners",
+    href: "/dashboard/owners",
+    icon: "users",
+    label: "owners",
+    isVisible: ["admin"],
   },
 ];

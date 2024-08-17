@@ -4,6 +4,7 @@ import { DashboardNav } from "@/components/dashboard-nav";
 import { navItems } from "@/constants/data";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/hooks/useSidebar";
+import { useUser } from "@/context/UserContext";
 
 type SidebarProps = {
   className?: string;
@@ -12,6 +13,12 @@ type SidebarProps = {
 export default function Sidebar({ className }: SidebarProps) {
   const { isMinimized } = useSidebar();
   const [status, setStatus] = useState(false);
+
+  const { user } = useUser();
+
+  const filteredNavItems = navItems.filter((item) =>
+    item.isVisible.includes(user?.role || "admin"),
+  );
 
   return (
     <nav
@@ -25,7 +32,7 @@ export default function Sidebar({ className }: SidebarProps) {
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="mt-3 space-y-1">
-            <DashboardNav items={navItems} />
+            <DashboardNav items={filteredNavItems} />
           </div>
         </div>
       </div>

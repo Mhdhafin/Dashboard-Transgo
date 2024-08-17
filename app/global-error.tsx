@@ -13,10 +13,9 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error(error);
     Sentry.captureException(error);
 
-    throw new Error("eror");
+    throw new Error("error");
   }, [error]);
 
   return (

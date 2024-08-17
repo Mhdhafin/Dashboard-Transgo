@@ -46,7 +46,6 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   type,
   messages,
 }) => {
-  console.log("detail", detail, form.getValues("additionals"));
   return (
     <div
       className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l"

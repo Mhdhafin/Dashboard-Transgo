@@ -26,12 +26,10 @@ export const CalendarDateRangePicker: React.FC<
   const [date, setDate] = React.useState<DateRange>(dateRange);
 
   React.useEffect(() => {
-    console.log("init", dateRange);
     setDate(dateRange);
   }, [dateRange]);
 
   const handleDateChange = (range: any) => {
-    console.log("raange", range);
     setDate(range);
     onDateRangeChange(range);
   };

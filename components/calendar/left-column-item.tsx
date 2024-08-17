@@ -4,6 +4,24 @@ import Tooltip from "./tooltip";
 
 import { ICalendarData } from "./types";
 
+const WrapperColumnItem = ({
+  children,
+  isLast,
+}: {
+  children?: React.ReactNode;
+  isLast: boolean;
+}) => {
+  return (
+    <div
+      className={`w-full h-[64px] border-r border-b border-neutral-200 ${
+        isLast ? "border-b-0" : ""
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
+
 const LeftColumnItem = ({
   vehicle,
   isLast,
@@ -11,13 +29,13 @@ const LeftColumnItem = ({
   vehicle: ICalendarData;
   isLast: boolean;
 }) => {
+  if (vehicle.id === "") {
+    return <WrapperColumnItem isLast={isLast} />;
+  }
+
   return (
     <Tooltip type="fleet" data={vehicle}>
-      <div
-        className={`w-full h-[64px] border-r border-b border-neutral-200 ${
-          isLast ? "border-b-0" : ""
-        }`}
-      >
+      <WrapperColumnItem isLast={isLast}>
         <div className="flex flex-col gap-1 py-[11px] px-[20px]">
           <p className="text-neutral-900 font-medium truncate text-[16px] leading-6">
             {vehicle.name}
@@ -26,7 +44,7 @@ const LeftColumnItem = ({
             {vehicle.location}
           </p>
         </div>
-      </div>
+      </WrapperColumnItem>
     </Tooltip>
   );
 };

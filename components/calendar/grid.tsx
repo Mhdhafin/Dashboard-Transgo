@@ -4,6 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import Tooltip from "./tooltip";
 import { ORDER_STATUS } from "./utils";
 import { ICalendarData } from "./types";
+import { useUser } from "@/context/UserContext";
 
 const Grid = ({
   dates,
@@ -12,6 +13,8 @@ const Grid = ({
   dates: dayjs.Dayjs[];
   data: ICalendarData[];
 }) => {
+  const { user } = useUser();
+
   const today = dayjs().format("YYYY-MM-DD");
 
   const getDayOffset = (date: string) => {
@@ -26,9 +29,10 @@ const Grid = ({
   };
 
   const handleOrderClick = (orderStatus: string, orderId: string | number) => {
-    const url = ["pending", "waiting"].includes(orderStatus)
-      ? `/dashboard/orders/${orderId}/preview`
-      : `/dashboard/orders/${orderId}/detail`;
+    const url =
+      user?.role !== "owner" && ["pending", "waiting"].includes(orderStatus)
+        ? `/dashboard/orders/${orderId}/preview`
+        : `/dashboard/orders/${orderId}/detail`;
 
     window.open(url);
   };

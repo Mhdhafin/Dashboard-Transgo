@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ColumnDef,
   PaginationState,
   flexRender,
   getCoreRowModel,
@@ -10,6 +9,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { columns } from "@/components/tables/fleet-tables/columns";
+
 import { useDebounce } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
@@ -36,9 +37,9 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useUser } from "@/context/UserContext";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey: string;
   pageNo: number;
@@ -51,7 +52,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function FleetTable<TData, TValue>({
-  columns,
   data,
   pageNo,
   searchKey,
@@ -71,6 +71,7 @@ export function FleetTable<TData, TValue>({
   const per_page = searchParams?.get("limit") ?? "10";
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
+  const { user } = useUser();
 
   const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
     q ?? "",
@@ -95,6 +96,14 @@ export function FleetTable<TData, TValue>({
     [],
   );
 
+  const filteredColumns = columns.filter((column) => {
+    if (column.id === "actions" && user?.role === "owner") {
+      return false;
+    }
+
+    return true;
+  });
+
   // Handle server-side pagination
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
@@ -118,7 +127,7 @@ export function FleetTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns,
     pageCount: pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -224,7 +233,11 @@ export function FleetTable<TData, TValue>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className="last:flex last:justify-end"
+                        className={
+                          user?.role !== "owner"
+                            ? "last:flex last:justify-end"
+                            : ""
+                        }
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

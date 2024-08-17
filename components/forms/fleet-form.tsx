@@ -37,6 +37,7 @@ import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
 import { NumericFormat } from "react-number-format";
+import { useGetInfinityOwners } from "@/hooks/api/useOwner";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -94,6 +95,7 @@ const formSchema = z.object({
     message: "price is required",
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
+  owner_id: z.number().nullable(),
 });
 
 const editFormSchema = z.object({
@@ -124,6 +126,7 @@ const editFormSchema = z.object({
     message: "price is required",
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
+  owner_id: z.number().nullable(),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -167,13 +170,21 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const { mutate: editFleet } = useEditFleet(fleetId as string);
   const axiosAuth = useAxiosAuth();
   const [searchLocation, setSearchLocation] = useState("");
-  const [searchLocaionDebounce] = useDebounce(searchLocation, 500);
+  const [searchOwner, setSearchOwner] = useState("");
+  const [searchLocationDebounce] = useDebounce(searchLocation, 500);
+  const [searchOwnerDebounce] = useDebounce(searchOwner, 500);
+
   const {
     data: locations,
     fetchNextPage: fetchNextLocations,
-    hasNextPage: hasNextLocations,
     isFetchingNextPage: isFetchingNextLocations,
-  } = useGetInfinityLocation(searchLocaionDebounce);
+  } = useGetInfinityLocation(searchLocationDebounce);
+
+  const {
+    data: owners,
+    fetchNextPage: fetchNextOwners,
+    isFetchingNextPage: isFetchingNextOwners,
+  } = useGetInfinityOwners(searchOwnerDebounce);
 
   const defaultValues = initialData
     ? {
@@ -184,6 +195,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         price: initialData?.price,
         location_id: initialData?.location?.id?.toString(),
         color: initialData?.color,
+        owner_id: initialData?.owner?.id,
       }
     : {
         name: "",
@@ -193,6 +205,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         price: "",
         location_id: "",
         color: "",
+        owner_id: null,
       };
 
   const form = useForm<CustomerFormValues>({
@@ -251,6 +264,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         photos: filteredURL,
         price: Number(data.price.replace(/,/g, "")),
         location_id: Number(data?.location_id),
+        owner_id: data?.owner_id,
       });
 
       editFleet(newPayload, {
@@ -287,6 +301,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           photos: filteredURL,
           price: Number(data.price.replace(/,/g, "")),
           location_id: Number(data.location_id),
+          owner_id: data.owner_id,
         },
         (value) => value == "" || value == null,
       );
@@ -315,12 +330,16 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   };
 
   const Option = AntdSelect;
-  const handleScrollLocation = (event: React.UIEvent<HTMLDivElement>) => {
+  const handleScroll = (
+    event: React.UIEvent<HTMLDivElement>,
+    type: "location" | "owner",
+  ) => {
     const target = event.target as HTMLDivElement;
     if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-      fetchNextLocations();
+      type === "location" ? fetchNextLocations() : fetchNextOwners();
     }
   };
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -519,7 +538,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           style={{ width: "100%" }}
                           onSearch={setSearchLocation}
                           onChange={field.onChange}
-                          onPopupScroll={handleScrollLocation}
+                          onPopupScroll={(event) =>
+                            handleScroll(event, "location")
+                          }
                           filterOption={false}
                           notFoundContent={
                             isFetchingNextLocations ? (
@@ -548,6 +569,77 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           )}
 
                           {isFetchingNextLocations && (
+                            <Option disabled>
+                              <p className="px-3 text-sm">loading</p>
+                            </Option>
+                          )}
+                        </AntdSelect>
+                      </FormControl>
+                      <FormMessage />
+                    </Space>
+                  );
+                }}
+              />
+            )}
+            {!isEdit ? (
+              <FormItem>
+                <FormLabel>Owner</FormLabel>
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    disabled={!isEdit || loading}
+                    value={initialData?.owner?.name}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <FormField
+                name="owner_id"
+                control={form.control}
+                render={({ field }) => {
+                  return (
+                    <Space size={12} direction="vertical">
+                      <FormLabel>Owner</FormLabel>
+                      <FormControl>
+                        <AntdSelect
+                          showSearch
+                          value={field.value}
+                          placeholder="Pilih Owner"
+                          style={{ width: "100%" }}
+                          onSearch={setSearchOwner}
+                          onChange={(value) => {
+                            if (value === undefined) {
+                              field.onChange(null);
+                            } else {
+                              field.onChange(value);
+                            }
+                          }}
+                          onPopupScroll={(event) =>
+                            handleScroll(event, "owner")
+                          }
+                          filterOption={false}
+                          notFoundContent={
+                            isFetchingNextLocations ? (
+                              <p className="px-3 text-sm">loading</p>
+                            ) : null
+                          }
+                        >
+                          {isEdit && (
+                            <Option value={initialData?.owner?.id}>
+                              {initialData?.owner?.name}
+                            </Option>
+                          )}
+                          {owners?.pages.map((page: any) =>
+                            page.data.items.map((item: any) => {
+                              return (
+                                <Option key={item.id} value={item.id}>
+                                  {item.name}
+                                </Option>
+                              );
+                            }),
+                          )}
+
+                          {isFetchingNextOwners && (
                             <Option disabled>
                               <p className="px-3 text-sm">loading</p>
                             </Option>

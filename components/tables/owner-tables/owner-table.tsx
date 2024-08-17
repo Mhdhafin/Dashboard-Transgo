@@ -9,6 +9,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
+import { useDebounce } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ interface DataTableProps<TData, TValue> {
   };
 }
 
-export function EmployeeTable<TData, TValue>({
+export function OwnerTable<TData, TValue>({
   columns,
   data,
   pageNo,
@@ -62,6 +63,7 @@ export function EmployeeTable<TData, TValue>({
   const searchParams = useSearchParams();
   // Search params
   const page = searchParams?.get("page") ?? "1";
+  const q = searchParams?.get("q");
   const pageAsNumber = Number(page);
   const fallbackPage =
     isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
@@ -69,13 +71,18 @@ export function EmployeeTable<TData, TValue>({
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
 
+  const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
+    q ?? "",
+  );
+  const [searchDebounce] = useDebounce(searchQuery, 500);
+
   // Create query string
   const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString());
+    (params: Record<string, string | number | null | undefined>) => {
+      const newSearchParams = new URLSearchParams();
 
       for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
+        if (value === null || value === undefined) {
           newSearchParams.delete(key);
         } else {
           newSearchParams.set(key, String(value));
@@ -84,9 +91,8 @@ export function EmployeeTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [],
   );
-
   // Handle server-side pagination
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
@@ -99,14 +105,14 @@ export function EmployeeTable<TData, TValue>({
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
         limit: pageSize,
+        q: searchDebounce || undefined,
       })}`,
       {
         scroll: false,
       },
     );
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, searchDebounce]);
 
   const table = useReactTable({
     data,
@@ -123,74 +129,60 @@ export function EmployeeTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  const searchValue = table.getColumn(searchKey)?.getFilterValue() as string;
-
-  // React.useEffect(() => {
-  //   if (debounceValue.length > 0) {
-  //     router.push(
-  //       `${pathname}?${createQueryString({
-  //         [selectedOption.value]: `${debounceValue}${
-  //           debounceValue.length > 0 ? `.${filterVariety}` : ""
-  //         }`,
-  //       })}`,
-  //       {
-  //         scroll: false,
-  //       }
-  //     )
-  //   }
-
-  //   if (debounceValue.length === 0) {
-  //     router.push(
-  //       `${pathname}?${createQueryString({
-  //         [selectedOption.value]: null,
-  //       })}`,
-  //       {
-  //         scroll: false,
-  //       }
-  //     )
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [debounceValue, filterVariety, selectedOption.value])
+  // Handle search input change
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value = event.target.value;
+    setSearchQuery(value);
+  };
 
   React.useEffect(() => {
-    if (searchValue?.length > 0) {
+    if (searchDebounce !== undefined) {
       router.push(
         `${pathname}?${createQueryString({
           page: null,
           limit: null,
-          search: searchValue,
+          q: searchDebounce,
         })}`,
         {
           scroll: false,
         },
       );
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    } else {
+      // Handle case when search is cleared or undefined
+      if (pageIndex !== 0) {
+        // Reset page to 0 only if pageIndex is not 0
+        router.push(
+          `${pathname}?${createQueryString({
+            page: null,
+            limit: null,
+            q: null,
+          })}`,
+          {
+            scroll: false,
+          },
+        );
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      }
     }
-    if (searchValue?.length === 0 || searchValue === undefined) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          search: null,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-    }
-
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchValue]);
+  }, [searchDebounce]);
+
+  // Reset search query when URL q parameter is null or undefined
+  React.useEffect(() => {
+    if (!q) {
+      setSearchQuery("");
+    }
+  }, [q]);
   return (
     <>
       <Input
-        placeholder={`Search ${searchKey}...`}
-        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-        onChange={(event) =>
-          table.getColumn(searchKey)?.setFilterValue(event.target.value)
-        }
-        className="w-full md:max-w-sm"
+        placeholder={`Cari owners...`}
+        value={searchQuery}
+        onChange={handleSearchInputChange}
+        className="w-full md:max-w-sm mb-5"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
         <Table className="relative">
@@ -216,17 +208,28 @@ export function EmployeeTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/owners/${(row.original as any).id}/detail`,
+                    )
+                  }
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className="last:flex last:justify-end"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -235,7 +238,7 @@ export function EmployeeTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Tidak ada data yang dapat ditampilkan.
                 </TableCell>
               </TableRow>
             )}
@@ -246,14 +249,14 @@ export function EmployeeTable<TData, TValue>({
 
       <div className="flex flex-col gap-2 sm:flex-row items-center justify-end space-x-2 py-4">
         <div className="flex items-center justify-between w-full">
-          <div className="flex-1 text-sm text-muted-foreground">
+          {/* <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
+          </div> */}
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
             <div className="flex items-center space-x-2">
               <p className="whitespace-nowrap text-sm font-medium">
-                Rows per page
+                Data per halaman
               </p>
               <Select
                 value={`${table.getState().pagination.pageSize}`}
@@ -278,8 +281,8 @@ export function EmployeeTable<TData, TValue>({
           </div>
         </div>
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
+          <div className="flex w-[120px] items-center justify-center text-sm font-medium">
+            Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
             {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">

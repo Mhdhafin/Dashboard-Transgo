@@ -7,26 +7,26 @@ import {
 import useAxiosAuth from "../axios/use-axios-auth";
 import { useUser } from "@/context/UserContext";
 
-const baseEndpoint = "/drivers";
-export const useGetDrivers = (params: any) => {
+const baseEndpoint = "/owners";
+export const useGetOwners = (params: any) => {
   const axiosAuth = useAxiosAuth();
 
-  const getDrivers = () => {
+  const getOwners = () => {
     return axiosAuth.get(baseEndpoint, {
       params,
     });
   };
 
   return useQuery({
-    queryKey: ["drivers", params],
-    queryFn: getDrivers,
+    queryKey: ["owners", params],
+    queryFn: getOwners,
   });
 };
 
-export const useGetInfinityDrivers = (query?: string) => {
+export const useGetInfinityOwners = (query?: string) => {
   const { user } = useUser();
   const axiosAuth = useAxiosAuth();
-  const getDrivers = ({
+  const getOwners = ({
     pageParam = 1,
     query,
   }: {
@@ -43,26 +43,24 @@ export const useGetInfinityDrivers = (query?: string) => {
   };
 
   return useInfiniteQuery({
-    queryKey: ["drivers", query],
-    queryFn: ({ pageParam }) => getDrivers({ pageParam, query }),
+    queryKey: ["owners", query],
+    queryFn: ({ pageParam }) => getOwners({ pageParam, query }),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
     enabled: user?.role !== "owner",
   });
 };
 
-export const useGetDetailDriver = (id: string | number) => {
-  const { user } = useUser();
+export const useGetDetailOwner = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
 
-  const getDetailDriver = () => {
+  const getDetailOwner = () => {
     return axiosAuth.get(`${baseEndpoint}/${id}`);
   };
 
   return useQuery({
-    queryKey: ["drivers", id],
-    queryFn: getDetailDriver,
-    enabled: user?.role !== "owner",
+    queryKey: ["owners", id],
+    queryFn: getDetailOwner,
   });
 };
 
@@ -77,50 +75,50 @@ type Body = {
   id_photo: string;
 };
 
-export const usePostDriver = () => {
+export const usePostOwner = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postDriver = (body: any) => {
+  const postOwner = (body: any) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
   return useMutation({
-    mutationFn: postDriver,
+    mutationFn: postOwner,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["drivers"] });
+      await queryClient.cancelQueries({ queryKey: ["owners"] });
     },
   });
 };
 
-export const useEditDriver = (id: number | string) => {
+export const useEditOwner = (id: number | string) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const editDriverFn = (body: any) => {
+  const editOwnerFn = (body: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
   return useMutation({
-    mutationFn: editDriverFn,
+    mutationFn: editOwnerFn,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["drivers"] });
+      await queryClient.cancelQueries({ queryKey: ["owners"] });
     },
   });
 };
 
-export const useDeleteDriver = (id: number) => {
+export const useDeleteOwner = (id: number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const deleteDriverFn = (id: number) => {
+  const deleteOwnerFn = (id: number) => {
     return axiosAuth.delete(`${baseEndpoint}/${id}`);
   };
 
   return useMutation({
-    mutationFn: deleteDriverFn,
+    mutationFn: deleteOwnerFn,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["drivers"] });
+      await queryClient.cancelQueries({ queryKey: ["owners"] });
     },
   });
 };
