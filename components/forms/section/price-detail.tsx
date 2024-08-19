@@ -48,7 +48,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
 }) => {
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 mt-[-140px] fixed right-0 border-l"
+      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 top-10 fixed right-0 border-l"
       id="detail-sidebar"
     >
       <div className="">
