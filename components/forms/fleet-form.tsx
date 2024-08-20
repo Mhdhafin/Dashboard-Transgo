@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
-import { convertEmptyStringsToNull } from "@/lib/utils";
+import { cn, convertEmptyStringsToNull } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
 import MulitpleImageUpload, {
@@ -32,7 +32,7 @@ import MulitpleImageUpload, {
 } from "../multiple-image-upload";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
-import { omitBy } from "lodash";
+import { isEmpty, omitBy } from "lodash";
 import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
@@ -581,31 +581,49 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 }}
               />
             )}
-            {!isEdit ? (
-              <FormItem>
-                <FormLabel>Owner</FormLabel>
+          </div>
+
+          {!isEdit ? (
+            <FormItem>
+              <FormLabel>Owner</FormLabel>
+              <div className="flex items-center gap-2">
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
                     value={initialData?.owner?.name}
                   />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            ) : (
-              <FormField
-                name="owner_id"
-                control={form.control}
-                render={({ field }) => {
-                  return (
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Owner</FormLabel>
+                <Button
+                  className={cn(
+                    buttonVariants({ variant: "main" }),
+                    "w-[65px] h-[36px] !py-1.5",
+                  )}
+                  disabled={
+                    !form.getFieldState("owner_id").isDirty &&
+                    isEmpty(form.getValues("owner_id")?.toString())
+                  }
+                  type="button"
+                >
+                  Lihat
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          ) : (
+            <FormField
+              name="owner_id"
+              control={form.control}
+              render={({ field }) => {
+                return (
+                  <Space size={12} direction="vertical" className="w-full">
+                    <FormLabel>Owner</FormLabel>
+                    <div className="flex items-center gap-2">
                       <FormControl>
                         <AntdSelect
                           showSearch
                           value={field.value}
                           placeholder="Pilih Owner"
-                          style={{ width: "100%" }}
+                          style={{ width: "100%", height: "36px" }}
                           onSearch={setSearchOwner}
                           onChange={(value) => {
                             if (value === undefined) {
@@ -646,13 +664,184 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           )}
                         </AntdSelect>
                       </FormControl>
+                      <Button
+                        className={cn(
+                          buttonVariants({ variant: "main" }),
+                          "w-[65px] h-[36px] !py-1.5",
+                        )}
+                        disabled={
+                          !form.getFieldState("owner_id").isDirty &&
+                          isEmpty(form.getValues("owner_id")?.toString())
+                        }
+                        type="button"
+                      >
+                        Lihat
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </Space>
+                );
+              }}
+            />
+          )}
+
+          {!isEmpty(form.getValues("owner_id")?.toString()) && (
+            <div className="md:grid md:grid-cols-3 gap-5">
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Owner %</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      className="disabled:opacity-90"
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      value={initialData?.price}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Komisi Owner %
+                      </FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          placeholder="Masukkan Komisi (contoh: 70 %)"
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
                       <FormMessage />
-                    </Space>
-                  );
-                }}
-              />
-            )}
-          </div>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Partner %</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      className="disabled:opacity-90"
+                      value={initialData?.price}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Komisi Partner %</FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          placeholder="Masukkan Komisi (contoh: 70 %)"
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Transgo % (Otomatis)</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      className="disabled:opacity-90"
+                      value={initialData?.price}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Komisi Transgo % (Otomatis)
+                      </FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          )}
+
           <FormField
             control={form.control}
             name="photos"
