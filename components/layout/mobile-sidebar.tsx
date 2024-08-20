@@ -1,19 +1,22 @@
 "use client";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { navItems } from "@/constants/data";
-import { cn } from "@/lib/utils";
-import { ChevronLast, MenuIcon } from "lucide-react";
+import { useUser } from "@/context/UserContext";
+import { getNavItemsByRole } from "@/lib/utils";
+import { MenuIcon } from "lucide-react";
 import { useState } from "react";
-
-// import { Playlist } from "../data/playlists";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   // playlists: Playlist[];
 }
 
 export function MobileSidebar({ className }: SidebarProps) {
+  const { user } = useUser();
+
   const [open, setOpen] = useState(false);
+
+  const navItems = getNavItemsByRole(user?.role || "admin");
+
   return (
     <>
       <Sheet open={open} onOpenChange={setOpen}>

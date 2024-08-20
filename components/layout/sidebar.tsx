@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { navItems } from "@/constants/data";
-import { cn } from "@/lib/utils";
+import { cn, getNavItemsByRole } from "@/lib/utils";
 import { useSidebar } from "@/hooks/useSidebar";
 import { useUser } from "@/context/UserContext";
 
@@ -16,9 +15,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
   const { user } = useUser();
 
-  const filteredNavItems = navItems.filter((item) =>
-    item.isVisible.includes(user?.role || "admin"),
-  );
+  const navItems = getNavItemsByRole(user?.role || "admin");
 
   return (
     <nav
@@ -32,7 +29,7 @@ export default function Sidebar({ className }: SidebarProps) {
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="mt-3 space-y-1">
-            <DashboardNav items={filteredNavItems} />
+            <DashboardNav items={navItems} />
           </div>
         </div>
       </div>

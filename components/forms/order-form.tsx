@@ -1672,62 +1672,63 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 )}
               </div>
             </div>
-            {/* sidebar */}
-
-            {openCustomerDetail && isFetchingCustomer && (
-              <div className="flex justify-center items-center h-[100px] w-full">
-                <Spinner />
-              </div>
-            )}
-            {openCustomerDetail && !isFetchingCustomer && (
-              <CustomerDetail
-                data={customerData?.data}
-                onClose={() => setOpenCustomerDetail(false)}
-              />
-            )}
-            {openFleetDetail && isFetchingFleet && (
-              <div className="flex justify-center items-center h-[100px] w-full">
-                <Spinner />
-              </div>
-            )}
-
-            {openFleetDetail && !isFetchingFleet && (
-              <FleetDetail
-                data={fleetData?.data}
-                onClose={() => setOpenFleetDetail(false)}
-              />
-            )}
-
-            {openDriverDetail && isFetchingDriver && (
-              <div className="flex justify-center items-center h-[100px] w-full">
-                <Spinner />
-              </div>
-            )}
-
-            {openDriverDetail && !isFetchingDriver && (
-              <DriverDetail
-                data={driver?.data}
-                onClose={() => setOpenDriverDetail(false)}
-              />
-            )}
-
-            {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
-              <PriceDetail
-                initialData={initialData}
-                isEdit={isEdit ?? false}
-                showServicePrice={showServicePrice}
-                showAdditional={additionalField?.length !== 0}
-                form={form}
-                detail={detail}
-                handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-                handleOpenRejectModal={() => setOpenRejectModal(true)}
-                confirmLoading={loading}
-                type={lastPath}
-                messages={messages}
-              />
-            )}
           </div>
         </form>
+
+        {/* sidebar */}
+
+        {openCustomerDetail && isFetchingCustomer && (
+          <div className="flex justify-center items-center h-[100px] w-full">
+            <Spinner />
+          </div>
+        )}
+        {openCustomerDetail && !isFetchingCustomer && (
+          <CustomerDetail
+            data={customerData?.data}
+            onClose={() => setOpenCustomerDetail(false)}
+          />
+        )}
+        {openFleetDetail && isFetchingFleet && (
+          <div className="flex justify-center items-center h-[100px] w-full">
+            <Spinner />
+          </div>
+        )}
+
+        {openFleetDetail && !isFetchingFleet && (
+          <FleetDetail
+            data={fleetData?.data}
+            onClose={() => setOpenFleetDetail(false)}
+          />
+        )}
+
+        {openDriverDetail && isFetchingDriver && (
+          <div className="flex justify-center items-center h-[100px] w-full">
+            <Spinner />
+          </div>
+        )}
+
+        {openDriverDetail && !isFetchingDriver && (
+          <DriverDetail
+            data={driver?.data}
+            onClose={() => setOpenDriverDetail(false)}
+          />
+        )}
+
+        {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
+          <PriceDetail
+            initialData={initialData}
+            isEdit={isEdit ?? false}
+            showServicePrice={showServicePrice}
+            showAdditional={additionalField?.length !== 0}
+            form={form}
+            detail={detail}
+            handleOpenApprovalModal={() => setOpenApprovalModal(true)}
+            handleOpenRejectModal={() => setOpenRejectModal(true)}
+            confirmLoading={loading}
+            type={lastPath}
+            messages={messages}
+          />
+        )}
       </Form>
     </>
   );

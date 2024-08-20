@@ -37,7 +37,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
 
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 mt-[-140px] fixed right-0 border-l border-neutral-400"
+      className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 top-10 fixed right-0 border-l border-neutral-400"
       id="detail-sidebar"
     >
       <div className="flex justify-between items-center mb-4">
@@ -151,7 +151,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                     <div className="p-1">
                       <Card className="w-[310px] h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative ">
                         {/* <CardContent className="flex aspect-square items-center justify-center p-6">
-                       
+
                       </CardContent> */}
                         <img
                           src={photo.photo}

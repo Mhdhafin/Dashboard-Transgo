@@ -3,7 +3,7 @@ import { PreviewImage } from "@/components/modal/preview-image";
 import { RejectCustomerModal } from "@/components/modal/reject-customer-modal";
 import Spinner from "@/components/spinner";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -152,7 +152,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
         />
       )}
       <div
-        className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 mt-[-140px] fixed right-0 border-l "
+        className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 top-10 fixed right-0 border-l"
         id="detail-sidebar"
       >
         <div className="flex justify-between items-center mb-4">

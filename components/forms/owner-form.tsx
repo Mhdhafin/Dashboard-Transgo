@@ -225,7 +225,8 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            // @ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
           });
         },
       });
@@ -259,7 +260,8 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            //@ts-ignore
+            description: `error: ${error?.response?.data?.message}`,
           });
         },
       });
