@@ -1,4 +1,12 @@
-"use client";
+import React, { useState } from "react";
+import { Plus } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import AddEditCashFlowModal from "./add-edit-cash-flow-modal";
+
 import {
   ColumnDef,
   PaginationState,
@@ -8,11 +16,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
 import { useDebounce } from "use-debounce";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -39,25 +44,18 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
-  pageNo: number;
-  totalUsers: number;
-  pageSizeOptions?: number[];
   pageCount: number;
-  searchParams?: {
-    [key: string]: string | string[] | undefined;
-  };
+  pageSizeOptions?: number[];
 }
 
-export function OwnerTable<TData, TValue>({
+export default function CashFlowTable<TData, TValue>({
   columns,
   data,
-  pageNo,
-  searchKey,
-  totalUsers,
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTableProps<TData, TValue>) {
+  const [showModalCashFlow, setShowModalCashFlow] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -129,62 +127,22 @@ export function OwnerTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  // Handle search input change
-  const handleSearchInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = event.target.value;
-    setSearchQuery(value);
-  };
-
-  React.useEffect(() => {
-    if (searchDebounce !== undefined) {
-      router.push(
-        `${pathname}?${createQueryString({
-          page: null,
-          limit: null,
-          q: searchDebounce,
-        })}`,
-        {
-          scroll: false,
-        },
-      );
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    } else {
-      // Handle case when search is cleared or undefined
-      if (pageIndex !== 0) {
-        // Reset page to 0 only if pageIndex is not 0
-        router.push(
-          `${pathname}?${createQueryString({
-            page: null,
-            limit: null,
-            q: null,
-          })}`,
-          {
-            scroll: false,
-          },
-        );
-        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce]);
-
-  // Reset search query when URL q parameter is null or undefined
-  React.useEffect(() => {
-    if (!q) {
-      setSearchQuery("");
-    }
-  }, [q]);
-
   return (
     <>
-      <Input
-        placeholder={`Cari owners...`}
-        value={searchQuery}
-        onChange={handleSearchInputChange}
-        className="w-full md:max-w-sm mb-5"
-      />
+      <div className="flex items-center justify-between">
+        <Heading title="Arus Pemasukan/Pengeluaran" />
+        <Button
+          className={cn(
+            buttonVariants({ variant: "main" }),
+            "w-max h-[40px] !py-2",
+          )}
+          type="button"
+          onClick={() => setShowModalCashFlow((prev) => !prev)}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Tambah Arus Pencatatan
+        </Button>
+      </div>
+
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
         <Table className="relative">
           <TableHeader>
@@ -210,11 +168,6 @@ export function OwnerTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
-                  onClick={() =>
-                    router.push(
-                      `/dashboard/owners/${(row.original as any).id}/detail`,
-                    )
-                  }
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
@@ -250,10 +203,6 @@ export function OwnerTable<TData, TValue>({
 
       <div className="flex flex-col gap-2 sm:flex-row items-center justify-end space-x-2 py-4">
         <div className="flex items-center justify-between w-full">
-          {/* <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div> */}
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
             <div className="flex items-center space-x-2">
               <p className="whitespace-nowrap text-sm font-medium">
@@ -281,6 +230,7 @@ export function OwnerTable<TData, TValue>({
             </div>
           </div>
         </div>
+
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full">
           <div className="flex w-[120px] items-center justify-center text-sm font-medium">
             Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
@@ -326,6 +276,12 @@ export function OwnerTable<TData, TValue>({
           </div>
         </div>
       </div>
+
+      <AddEditCashFlowModal
+        isOpen={showModalCashFlow}
+        onClose={() => setShowModalCashFlow(false)}
+        onConfirm={() => null}
+      />
     </>
   );
 }
