@@ -48,6 +48,8 @@ export const useGetInfinityDrivers = (query?: string) => {
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
     enabled: user?.role !== "owner",
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 };
 
