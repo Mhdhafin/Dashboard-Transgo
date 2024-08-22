@@ -65,6 +65,47 @@ const PDFIcon = () => (
   </svg>
 );
 
+const NotebookText = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M2 6h4" />
+    <path d="M2 10h4" />
+    <path d="M2 14h4" />
+    <path d="M2 18h4" />
+    <rect width="16" height="20" x="4" y="2" rx="2" />
+    <path d="M9.5 8h5" />
+    <path d="M9.5 12H16" />
+    <path d="M9.5 16H14" />
+  </svg>
+);
+
+const UsersRound = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M18 21a8 8 0 0 0-16 0" />
+    <circle cx="10" cy="8" r="5" />
+    <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" />
+  </svg>
+);
+
 export const Icons = {
   dashboard: LayoutDashboardIcon,
   calendar: CalendarDays,
@@ -99,6 +140,8 @@ export const Icons = {
   maps: MapPinned,
   ticket: Ticket,
   pdf: PDFIcon,
+  usersRound: UsersRound,
+  notebookText: NotebookText,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
