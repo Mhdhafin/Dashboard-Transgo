@@ -37,7 +37,8 @@ import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
 import { NumericFormat } from "react-number-format";
-import { useGetInfinityOwners } from "@/hooks/api/useOwner";
+import { useGetDetailOwner, useGetInfinityOwners } from "@/hooks/api/useOwner";
+import CustomerDetail from "./section/customer-detail";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -151,6 +152,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showDetailOwner, setShowDetailOwner] = useState(false);
   const title = !isEdit
     ? "Detail Fleet"
     : initialData
@@ -212,6 +214,10 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     resolver: zodResolver(!initialData ? formSchema : editFormSchema),
     defaultValues,
   });
+
+  const { data: ownerData, isFetching: isFetchingOwner } = useGetDetailOwner(
+    form.getValues("owner_id") || 0,
+  );
 
   const uploadImage = async (file: any) => {
     const file_names = [];
@@ -603,6 +609,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     isEmpty(form.getValues("owner_id")?.toString())
                   }
                   type="button"
+                  onClick={() => setShowDetailOwner(true)}
                 >
                   Lihat
                 </Button>
@@ -674,6 +681,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           isEmpty(form.getValues("owner_id")?.toString())
                         }
                         type="button"
+                        onClick={() => setShowDetailOwner(true)}
                       >
                         Lihat
                       </Button>
@@ -873,6 +881,13 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           )}
         </form>
       </Form>
+
+      {showDetailOwner && !isFetchingOwner && (
+        <CustomerDetail
+          data={ownerData?.data}
+          onClose={() => setShowDetailOwner(false)}
+        />
+      )}
     </>
   );
 };
