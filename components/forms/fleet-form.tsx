@@ -38,7 +38,7 @@ import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
 import { NumericFormat } from "react-number-format";
 import { useGetDetailOwner, useGetInfinityOwners } from "@/hooks/api/useOwner";
-import CustomerDetail from "./section/customer-detail";
+import OwnerDetail from "./section/owner-detail";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -883,7 +883,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       </Form>
 
       {showDetailOwner && !isFetchingOwner && (
-        <CustomerDetail
+        <OwnerDetail
           data={ownerData?.data}
           onClose={() => setShowDetailOwner(false)}
         />

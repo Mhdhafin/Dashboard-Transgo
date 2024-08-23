@@ -52,12 +52,12 @@ interface User {
   id_cards: IDCard[];
 }
 
-interface CustomerDetailProps {
+interface OwnerDetailProps {
   onClose: () => void;
   data?: User;
 }
 
-const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
+const OwnerDetail: React.FC<OwnerDetailProps> = ({ onClose, data }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
 
@@ -156,9 +156,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
         id="detail-sidebar"
       >
         <div className="flex justify-between items-center mb-4">
-          <h4 className="text-center font-semibold text-xl">
-            Pelanggan Detail
-          </h4>
+          <h4 className="text-center font-semibold text-xl">Owner Detail</h4>
           <Button
             type="button"
             className={cn(
@@ -331,4 +329,4 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
     </>
   );
 };
-export default CustomerDetail;
+export default OwnerDetail;
