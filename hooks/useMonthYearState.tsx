@@ -13,6 +13,7 @@ interface MonthYearStore {
   handlePrevYear: () => void;
   handleNextYear: () => void;
   handleClearDate: () => void;
+  currentMonth: () => Date;
 }
 
 export const useMonthYearState = create<MonthYearStore>((set) => ({
@@ -22,6 +23,8 @@ export const useMonthYearState = create<MonthYearStore>((set) => ({
   setYear: (year) => set({ year }),
   dateRange: { from: undefined, to: undefined },
   setDateRange: (dateRange) => set({ dateRange }),
+
+  // function
   handleClearDate: () => set({ dateRange: { from: undefined, to: undefined } }),
   handlePrevMonth: () =>
     set((state) => {
@@ -43,4 +46,9 @@ export const useMonthYearState = create<MonthYearStore>((set) => ({
       state.handleClearDate();
       return { year: state.year + 1 };
     }),
+  currentMonth: (): Date => {
+    const { month, year } = useMonthYearState.getState();
+    const monthIndex = month - 1;
+    return new Date(year, monthIndex, 1);
+  },
 }));
