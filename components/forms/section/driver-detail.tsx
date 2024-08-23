@@ -136,7 +136,9 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data }) => {
                   Tanggal Ulang tahun
                 </span>
                 <span className="font-medium text-sm text-black">
-                  {dayjs(data?.date_of_birth).format("D MMMM YYYY")}
+                  {data?.date_of_birth
+                    ? dayjs(data?.date_of_birth).format("D MMMM YYYY")
+                    : "-"}
                 </span>
               </div>
             </div>
