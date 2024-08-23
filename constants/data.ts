@@ -198,4 +198,11 @@ export const navItems: NavItem[] = [
     label: "owners",
     roles: ["admin"],
   },
+  {
+    title: "Rekap Pencatatan",
+    href: "/dashboard/recap",
+    icon: "notebookText",
+    label: "recap",
+    roles: ["owner"],
+  },
 ];
