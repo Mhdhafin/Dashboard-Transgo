@@ -163,6 +163,7 @@ export default function CashFlowTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       className={
+                        // @ts-ignore
                         header.column.columnDef.meta?.centerHeader
                           ? "text-center"
                           : ""
@@ -193,6 +194,7 @@ export default function CashFlowTable<TData, TValue>({
                       <TableCell
                         key={cell.id}
                         className={
+                          // @ts-ignore
                           cell.column.columnDef.meta?.centerHeader
                             ? "text-center"
                             : ""

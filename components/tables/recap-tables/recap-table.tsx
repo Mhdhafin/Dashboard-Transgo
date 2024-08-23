@@ -49,10 +49,12 @@ export default function RecapTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       className={`${
+                        // @ts-ignore
                         header.column.columnDef.meta?.centerHeader
                           ? "!text-center"
                           : ""
                       } ${
+                        // @ts-ignore
                         header.column.columnDef.meta?.stickyColumn
                           ? "sticky right-0 z-50"
                           : ""
@@ -83,10 +85,12 @@ export default function RecapTable<TData, TValue>({
                       <TableCell
                         key={cell.id}
                         className={`h-[48px] ${
+                          // @ts-ignore
                           cell.column.columnDef.meta?.centerHeader
                             ? "!text-center"
                             : ""
                         } ${
+                          // @ts-ignore
                           cell.column.columnDef.meta?.stickyColumn
                             ? "sticky right-0 z-50"
                             : ""
