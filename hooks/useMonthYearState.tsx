@@ -24,9 +24,23 @@ export const useMonthYearState = create<MonthYearStore>((set) => ({
   setDateRange: (dateRange) => set({ dateRange }),
   handleClearDate: () => set({ dateRange: { from: undefined, to: undefined } }),
   handlePrevMonth: () =>
-    set((state) => ({ month: state.month === 1 ? 12 : state.month - 1 })),
+    set((state) => {
+      state.handleClearDate();
+      return { month: state.month === 1 ? 12 : state.month - 1 };
+    }),
   handleNextMonth: () =>
-    set((state) => ({ month: state.month === 12 ? 1 : state.month + 1 })),
-  handlePrevYear: () => set((state) => ({ year: state.year - 1 })),
-  handleNextYear: () => set((state) => ({ year: state.year + 1 })),
+    set((state) => {
+      state.handleClearDate();
+      return { month: state.month === 12 ? 1 : state.month + 1 };
+    }),
+  handlePrevYear: () =>
+    set((state) => {
+      state.handleClearDate();
+      return { year: state.year - 1 };
+    }),
+  handleNextYear: () =>
+    set((state) => {
+      state.handleClearDate();
+      return { year: state.year + 1 };
+    }),
 }));
