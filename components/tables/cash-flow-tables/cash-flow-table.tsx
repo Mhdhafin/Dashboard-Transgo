@@ -40,6 +40,7 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useUser } from "@/context/UserContext";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -54,6 +55,7 @@ export default function CashFlowTable<TData, TValue>({
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
 }: DataTableProps<TData, TValue>) {
+  const { user } = useUser();
   const [showModalCashFlow, setShowModalCashFlow] = useState(false);
 
   const router = useRouter();
@@ -112,9 +114,15 @@ export default function CashFlowTable<TData, TValue>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize, searchDebounce]);
 
+  const filteredColumns = columns.filter((item) => {
+    if (user?.role === "owner" && item.id === "actions") return false;
+
+    return true;
+  });
+
   const table = useReactTable({
     data,
-    columns,
+    columns: filteredColumns,
     pageCount: pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -131,16 +139,18 @@ export default function CashFlowTable<TData, TValue>({
     <>
       <div className="flex items-center justify-between">
         <Heading title="Arus Pemasukan/Pengeluaran" />
-        <Button
-          className={cn(
-            buttonVariants({ variant: "main" }),
-            "w-max h-[40px] !py-2",
-          )}
-          type="button"
-          onClick={() => setShowModalCashFlow((prev) => !prev)}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Tambah Arus Pencatatan
-        </Button>
+        {user?.role !== "owner" && (
+          <Button
+            className={cn(
+              buttonVariants({ variant: "main" }),
+              "w-max h-[40px] !py-2",
+            )}
+            type="button"
+            onClick={() => setShowModalCashFlow((prev) => !prev)}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Tambah Arus Pencatatan
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
@@ -150,7 +160,14 @@ export default function CashFlowTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={
+                        header.column.columnDef.meta?.centerHeader
+                          ? "text-center"
+                          : ""
+                      }
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -175,7 +192,11 @@ export default function CashFlowTable<TData, TValue>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className="last:flex last:justify-end"
+                        className={
+                          cell.column.columnDef.meta?.centerHeader
+                            ? "text-center"
+                            : ""
+                        }
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

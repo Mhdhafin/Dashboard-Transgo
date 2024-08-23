@@ -39,6 +39,9 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "amount_min",
     header: "Kredit (-)",
+    meta: {
+      centerHeader: true,
+    },
     cell: ({ row }) => (
       <span className="text-sm font-medium">{formatRupiah(700000)}</span>
     ),
@@ -46,6 +49,9 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "amount_plus",
     header: "Debit (+)",
+    meta: {
+      centerHeader: true,
+    },
     cell: ({ row }) => (
       <span className="text-sm font-medium">{formatRupiah(700000)}</span>
     ),
@@ -53,6 +59,9 @@ export const columns: ColumnDef<Drivers>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    meta: {
+      centerHeader: true,
+    },
     cell: ({ row }) => (
       <span className="text-red-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-red-50">
         Belum Diproses
