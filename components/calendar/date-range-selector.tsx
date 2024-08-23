@@ -14,6 +14,9 @@ const DateRangeSelector = () => {
       onDateRangeChange={setDateRange}
       onClearDate={handleClearDate}
       dateRange={dateRange}
+      numberOfMonths={1}
+      showOutsideDays={false}
+      disableNavigation
     />
   );
 };

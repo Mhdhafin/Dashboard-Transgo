@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon, X } from "lucide-react";
 
+import { useMonthYearState } from "@/hooks/useMonthYearState";
 import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -13,17 +15,32 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { DateRange } from "react-day-picker";
+
 interface CalendarDateRangePickerProps
   extends React.HTMLAttributes<HTMLDivElement> {
   onDateRangeChange: (range: any) => void;
   onClearDate: () => void;
   dateRange: any;
+  numberOfMonths?: number;
+  disableNavigation?: boolean;
+  showOutsideDays?: boolean;
+  useDefaultMonth?: boolean;
 }
 
 export const CalendarDateRangePicker: React.FC<
   CalendarDateRangePickerProps
-> = ({ className, onDateRangeChange, dateRange, onClearDate }) => {
+> = ({
+  className,
+  onDateRangeChange,
+  dateRange,
+  onClearDate,
+  numberOfMonths = 2,
+  disableNavigation = false,
+  showOutsideDays = true,
+}) => {
   const [date, setDate] = React.useState<DateRange>(dateRange);
+
+  const { currentMonth } = useMonthYearState();
 
   React.useEffect(() => {
     setDate(dateRange);
@@ -77,10 +94,12 @@ export const CalendarDateRangePicker: React.FC<
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
+            defaultMonth={date?.from || currentMonth()}
             selected={date}
             onSelect={handleDateChange}
-            numberOfMonths={2}
+            numberOfMonths={numberOfMonths}
+            disableNavigation={disableNavigation}
+            showOutsideDays={showOutsideDays}
           />
         </PopoverContent>
       </Popover>
