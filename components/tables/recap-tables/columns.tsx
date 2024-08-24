@@ -18,7 +18,9 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
-        {dayjs(row.original.date).locale("id").format("DD - dddd")}
+        {row.original.date
+          ? dayjs(row.original.date).locale("id").format("DD - dddd")
+          : ""}
       </span>
     ),
   },
@@ -79,7 +81,7 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
-        {row.original.description || "-"}
+        {row.original.description || ""}
       </span>
     ),
   },
@@ -147,7 +149,7 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-bold">
-        {formatRupiah(row.original.commission)}
+        {row.original.commission ? formatRupiah(row.original.commission) : ""}
       </span>
     ),
   },
