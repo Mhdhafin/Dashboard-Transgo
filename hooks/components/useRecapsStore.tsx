@@ -7,7 +7,7 @@ interface IFleet {
 }
 
 export interface IItems {
-  id: number;
+  id: number | string;
   status: string;
   update_at: string;
   created_at: string;
@@ -43,6 +43,29 @@ const useRecapsStore = (params?: any) => {
           recaps?.data?.total?.debit || 0 - recaps?.data?.total?.credit || 0,
       }
     : { debit: 0, credit: 0, duration: 0, commission: 0 };
+
+  if (!isFetching && items.length < 5) {
+    const emptyDataCount = 5;
+    for (let i = 0; i < emptyDataCount; i++) {
+      items.push({
+        id: "",
+        status: "",
+        update_at: "",
+        created_at: "",
+        date: "",
+        duration: 0,
+        credit_amount: 0,
+        debit_amount: 0,
+        commission: 0,
+        description: "",
+        fleet: {
+          color: "",
+          id: 0,
+          name: "",
+        },
+      });
+    }
+  }
 
   return {
     items,
