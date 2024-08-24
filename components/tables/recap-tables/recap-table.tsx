@@ -21,15 +21,18 @@ import {
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { formatRupiah } from "@/lib/utils";
+import { ITotal } from "@/hooks/components/useRecapsStore";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  total: ITotal;
 }
 
 export default function RecapTable<TData, TValue>({
   columns,
   data,
+  total,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -128,25 +131,25 @@ export default function RecapTable<TData, TValue>({
                 colSpan={1}
                 className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold"
               >
-                0 Hari
+                {total.duration} Hari
               </TableCell>
               <TableCell
                 colSpan={1}
                 className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold"
               >
-                {formatRupiah(0)}
+                {formatRupiah(total.debit)}
               </TableCell>
               <TableCell
                 colSpan={1}
                 className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold"
               >
-                {formatRupiah(0)}
+                {formatRupiah(total.credit)}
               </TableCell>
               <TableCell
                 colSpan={1}
                 className="text-center border-solid  h-[64px] bg-white text-neutral-700 text-sm font-bold"
               >
-                {formatRupiah(0)}
+                {formatRupiah(total.commission)}
               </TableCell>
             </TableRow>
           </TableFooter>
