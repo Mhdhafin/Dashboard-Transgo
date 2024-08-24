@@ -10,6 +10,7 @@ export interface IItems {
   id: number | string;
   status: string;
   update_at: string;
+  category: { name: string };
   created_at: string;
   date: string;
   duration: number;
@@ -52,6 +53,7 @@ const useRecapsStore = (params?: any) => {
         status: "",
         update_at: "",
         created_at: "",
+        category: { name: "" },
         date: "",
         duration: 0,
         credit_amount: 0,
