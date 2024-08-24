@@ -114,7 +114,7 @@ export const columns: ColumnDef<IItems>[] = [
     cell: ({ row }) => (
       <span className="text-sm font-medium">
         {row.original.debit_amount
-          ? formatRupiah(row.original.debit_amount)
+          ? "+ " + formatRupiah(row.original.debit_amount)
           : ""}
       </span>
     ),
@@ -131,7 +131,7 @@ export const columns: ColumnDef<IItems>[] = [
     cell: ({ row }) => (
       <span className="text-sm font-medium">
         {row.original.credit_amount
-          ? formatRupiah(row.original.credit_amount)
+          ? "- " + formatRupiah(row.original.credit_amount)
           : ""}
       </span>
     ),
@@ -148,8 +148,11 @@ export const columns: ColumnDef<IItems>[] = [
       </span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-bold">
-        {row.original.commission ? formatRupiah(row.original.commission) : ""}
+      <span className="text-sm font-medium">
+        {row.original.commission
+          ? `${row.original.commission < 0 ? "-" : "+"} ` +
+            formatRupiah(row.original.commission)
+          : ""}
       </span>
     ),
   },
