@@ -3,10 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
-import { formatRupiah } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 
 import "dayjs/locale/id";
 import { IItems } from "@/hooks/components/useRecapsStore";
+import {
+  getPaymentStatusLabel,
+  getStatusVariant,
+} from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
@@ -44,9 +48,15 @@ export const columns: ColumnDef<IItems>[] = [
       </span>
     ),
     cell: ({ row }) =>
-      !row.original.email ? null : (
-        <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50">
-          Pemasukan Tambahan
+      !row.original.category ? null : (
+        <span
+          className={cn(
+            row.original.debit_amount ? "text-green-500" : "text-red-500",
+            row.original.debit_amount ? "bg-green-50" : "bg-red-50",
+            "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full",
+          )}
+        >
+          {row.original.category.name}
         </span>
       ),
   },
@@ -60,8 +70,13 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) =>
       !row.original.status ? null : (
-        <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50 capitalize">
-          {row.original.status}
+        <span
+          className={cn(
+            getStatusVariant(row.original.status),
+            "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full capitalize",
+          )}
+        >
+          {getPaymentStatusLabel(row.original.status)}
         </span>
       ),
   },
