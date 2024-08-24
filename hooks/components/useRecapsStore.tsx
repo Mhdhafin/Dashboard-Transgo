@@ -6,7 +6,7 @@ interface IFleet {
   name: string;
 }
 
-interface IItems {
+export interface IItems {
   id: number;
   status: string;
   update_at: string;
@@ -15,6 +15,7 @@ interface IItems {
   duration: number;
   credit_amount: number | null;
   debit_amount: number | null;
+  commission: number;
   description: string | null;
   fleet: IFleet;
 }
@@ -29,7 +30,12 @@ export interface ITotal {
 const useRecapsStore = (params?: any) => {
   const { data: recaps, isFetching } = useGetRecaps({ ...params });
 
-  const items: IItems[] = recaps?.data?.items || [];
+  const items: IItems[] =
+    recaps?.data?.items.map((item: IItems) => ({
+      ...item,
+      commission: (item.debit_amount || 0) - (item.credit_amount || 0),
+    })) || [];
+
   const total: ITotal = recaps?.data?.total
     ? {
         ...recaps?.data?.total,
