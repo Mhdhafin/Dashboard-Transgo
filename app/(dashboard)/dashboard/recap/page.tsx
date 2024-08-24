@@ -8,13 +8,13 @@ import YearAndMonthSelector from "@/components/calendar/year-and-month-selector"
 import { Heading } from "@/components/ui/heading";
 import RecapTable from "@/components/tables/recap-tables/recap-table";
 import { columns } from "@/components/tables/recap-tables/columns";
-import useRecapStore from "@/hooks/components/useRecapStore";
+import useRecapsStore from "@/hooks/components/useRecapsStore";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
 
 const Page = () => {
   const { month, year, dateRange } = useMonthYearState();
 
-  useRecapStore({
+  useRecapsStore({
     month: month,
     year: year,
     ...(dateRange?.from && { startDate: dateRange.from }),
