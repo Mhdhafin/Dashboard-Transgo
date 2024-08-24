@@ -11,6 +11,7 @@ import { columns } from "@/components/tables/recap-tables/columns";
 import useRecapsStore, { ITotal } from "@/hooks/components/useRecapsStore";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
 import Spinner from "@/components/spinner";
+import dayjs from "dayjs";
 
 const Page = () => {
   const { month, year, dateRange } = useMonthYearState();
@@ -18,8 +19,11 @@ const Page = () => {
   const { items, total, isFetching } = useRecapsStore({
     month: month,
     year: year,
-    ...(dateRange?.from && { startDate: dateRange.from }),
-    ...(dateRange?.to && { endDate: dateRange.to }),
+    ...(dateRange?.from &&
+      dateRange?.to && {
+        start_date: dayjs(dateRange.from).format("YYYY-MM-DD"),
+        end_date: dayjs(dateRange.to).format("YYYY-MM-DD"),
+      }),
   });
 
   if (isFetching) {
