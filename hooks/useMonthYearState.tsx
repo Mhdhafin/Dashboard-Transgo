@@ -1,3 +1,4 @@
+import { DateRange } from "react-day-picker";
 import { create } from "zustand";
 
 interface MonthYearStore {
@@ -5,10 +6,14 @@ interface MonthYearStore {
   year: number;
   setMonth: (month: number) => void;
   setYear: (year: number) => void;
+  dateRange: DateRange;
+  setDateRange: (dateRange: DateRange) => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   handlePrevYear: () => void;
   handleNextYear: () => void;
+  handleClearDate: () => void;
+  currentMonth: () => Date;
 }
 
 export const useMonthYearState = create<MonthYearStore>((set) => ({
@@ -16,10 +21,34 @@ export const useMonthYearState = create<MonthYearStore>((set) => ({
   year: new Date().getFullYear(),
   setMonth: (month) => set({ month }),
   setYear: (year) => set({ year }),
+  dateRange: { from: undefined, to: undefined },
+  setDateRange: (dateRange) => set({ dateRange }),
+
+  // function
+  handleClearDate: () => set({ dateRange: { from: undefined, to: undefined } }),
   handlePrevMonth: () =>
-    set((state) => ({ month: state.month === 1 ? 12 : state.month - 1 })),
+    set((state) => {
+      state.handleClearDate();
+      return { month: state.month === 1 ? 12 : state.month - 1 };
+    }),
   handleNextMonth: () =>
-    set((state) => ({ month: state.month === 12 ? 1 : state.month + 1 })),
-  handlePrevYear: () => set((state) => ({ year: state.year - 1 })),
-  handleNextYear: () => set((state) => ({ year: state.year + 1 })),
+    set((state) => {
+      state.handleClearDate();
+      return { month: state.month === 12 ? 1 : state.month + 1 };
+    }),
+  handlePrevYear: () =>
+    set((state) => {
+      state.handleClearDate();
+      return { year: state.year - 1 };
+    }),
+  handleNextYear: () =>
+    set((state) => {
+      state.handleClearDate();
+      return { year: state.year + 1 };
+    }),
+  currentMonth: (): Date => {
+    const { month, year } = useMonthYearState.getState();
+    const monthIndex = month - 1;
+    return new Date(year, monthIndex, 1);
+  },
 }));

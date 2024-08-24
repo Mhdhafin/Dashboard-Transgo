@@ -194,8 +194,15 @@ export const navItems: NavItem[] = [
   {
     title: "Owners",
     href: "/dashboard/owners",
-    icon: "users",
+    icon: "usersRound",
     label: "owners",
     roles: ["admin"],
+  },
+  {
+    title: "Rekap Pencatatan",
+    href: "/dashboard/recap",
+    icon: "notebookText",
+    label: "recap",
+    roles: ["owner"],
   },
 ];

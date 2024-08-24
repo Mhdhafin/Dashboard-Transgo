@@ -19,6 +19,7 @@ export async function middleware(req: NextRequest) {
   const ownerRoutes = [
     "/dashboard/calendar",
     "/dashboard/fleets",
+    "/dashboard/recap",
     { path: "/dashboard/orders/:orderId/detail", exact: true },
   ];
 
