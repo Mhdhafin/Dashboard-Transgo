@@ -3,15 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
-import { Drivers } from "@/constants/data";
-
 import { formatRupiah } from "@/lib/utils";
 
 import "dayjs/locale/id";
+import { IItems } from "@/hooks/components/useRecapsStore";
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
-export const columns: ColumnDef<Drivers>[] = [
+export const columns: ColumnDef<IItems>[] = [
   {
     accessorKey: "date",
     header: () => (
@@ -19,8 +18,7 @@ export const columns: ColumnDef<Drivers>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
-        {/* {dayjs().locale("id").format("DD - dddd")} */}
-        {row.original.email}
+        {dayjs(row.original.date).locale("id").format("DD - dddd")}
       </span>
     ),
   },
@@ -30,10 +28,7 @@ export const columns: ColumnDef<Drivers>[] = [
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium">
-        {/* Veloz Matic Hitam 2020 ( B 2025 PVC ) */}
-        {row.original.email}
-      </span>
+      <span className="text-sm font-medium">{row.original.fleet?.name}</span>
     ),
   },
   {
@@ -62,9 +57,9 @@ export const columns: ColumnDef<Drivers>[] = [
       <span className="text-sm font-semibold text-neutral-700">Status</span>
     ),
     cell: ({ row }) =>
-      !row.original.email ? null : (
-        <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50">
-          Lunas
+      !row.original.status ? null : (
+        <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50 capitalize">
+          {row.original.status}
         </span>
       ),
   },
@@ -83,7 +78,9 @@ export const columns: ColumnDef<Drivers>[] = [
       <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium">{row.original.email}</span>
+      <span className="text-sm font-medium">
+        {row.original.description || "-"}
+      </span>
     ),
   },
   {
@@ -97,9 +94,9 @@ export const columns: ColumnDef<Drivers>[] = [
     ),
     enableSorting: false,
     cell: ({ row }) =>
-      !row.original.email ? null : (
+      !row.original.duration ? null : (
         <span className="bg-[#f5f5f5] font-medium text-[12px] leading-5 rounded-full py-1 px-2.5">
-          1 Hari
+          {row.original.duration} Hari
         </span>
       ),
   },
@@ -113,7 +110,11 @@ export const columns: ColumnDef<Drivers>[] = [
       <span className="text-sm font-semibold text-neutral-700">Debit (+)</span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium">{row.original.email}</span>
+      <span className="text-sm font-medium">
+        {row.original.debit_amount
+          ? formatRupiah(row.original.debit_amount)
+          : ""}
+      </span>
     ),
   },
   {
@@ -126,7 +127,11 @@ export const columns: ColumnDef<Drivers>[] = [
       <span className="text-sm font-semibold text-neutral-700">Kredit (-)</span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-medium">{row.original.email}</span>
+      <span className="text-sm font-medium">
+        {row.original.credit_amount
+          ? formatRupiah(row.original.credit_amount)
+          : ""}
+      </span>
     ),
   },
   {
@@ -141,7 +146,9 @@ export const columns: ColumnDef<Drivers>[] = [
       </span>
     ),
     cell: ({ row }) => (
-      <span className="text-sm font-bold">{row.original.email}</span>
+      <span className="text-sm font-bold">
+        {formatRupiah(row.original.commission)}
+      </span>
     ),
   },
 ];
