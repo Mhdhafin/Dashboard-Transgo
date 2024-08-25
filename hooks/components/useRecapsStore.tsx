@@ -1,4 +1,4 @@
-import { useGetRecaps } from "../api/useRecaps";
+import { useGetRecaps } from "../api/useLedgers";
 
 interface IFleet {
   color: string | null;
