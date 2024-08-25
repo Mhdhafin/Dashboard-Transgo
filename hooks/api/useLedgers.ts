@@ -15,7 +15,7 @@ export const useGetRecaps = (params?: Record<string, any>) => {
   };
 
   return useQuery({
-    queryKey: compact(["fleets", "calendar", params]),
+    queryKey: compact(["ledgers", "recaps", params]),
     queryFn: getRecaps,
   });
 };
