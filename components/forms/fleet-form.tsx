@@ -1,6 +1,6 @@
 "use client";
 import * as z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
@@ -97,6 +97,11 @@ const formSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
+  commission: z.object({
+    transgo: z.number(),
+    owner: z.number(),
+    partner: z.number(),
+  }),
 });
 
 const editFormSchema = z.object({
@@ -128,6 +133,11 @@ const editFormSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
+  commission: z.object({
+    transgo: z.number(),
+    owner: z.number(),
+    partner: z.number(),
+  }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -198,6 +208,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         location_id: initialData?.location?.id?.toString(),
         color: initialData?.color,
         owner_id: initialData?.owner?.id,
+        commission: initialData?.commission,
       }
     : {
         name: "",
@@ -208,6 +219,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         location_id: "",
         color: "",
         owner_id: null,
+        commission: { transgo: 0, owner: 0, partner: 0 },
       };
 
   const form = useForm<CustomerFormValues>({
@@ -287,10 +299,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
+          console.log("🚀 ~ onSubmit ~ error:", error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            description: `error: ${
+              // @ts-ignore
+              error?.response?.data?.message || error?.message
+            }`,
           });
         },
       });
@@ -325,10 +341,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
+          console.log(error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            description: `error: ${
+              // @ts-ignore
+              error?.response?.data?.message || error?.message
+            }`,
           });
         },
       });
@@ -345,6 +365,27 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       type === "location" ? fetchNextLocations() : fetchNextOwners();
     }
   };
+
+  const [commission, setCommission] = useState({
+    owner: initialData?.commission?.owner || 0,
+    partner: initialData?.commission?.partner || 0,
+    transgo: initialData?.commission?.transgo || 100,
+  });
+
+  const watchOwner = form.watch("commission.owner");
+  const watchPartner = form.watch("commission.partner");
+
+  useEffect(() => {
+    const ownerValue = parseFloat(watchOwner?.toString()) || 0;
+    const partnerValue = parseFloat(watchPartner?.toString()) || 0;
+
+    const remaining = 100 - ownerValue - partnerValue;
+    const transgoValue = remaining >= 0 ? remaining : 0;
+
+    form.setValue("commission.transgo", transgoValue);
+  }, [watchOwner, watchPartner, form.setValue]);
+
+  console.log(form.getValues());
 
   return (
     <>
@@ -710,7 +751,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       allowNegative={false}
                       className="disabled:opacity-90"
                       placeholder="Masukkan Komisi (contoh: 70 %)"
-                      value={initialData?.price}
+                      value={initialData?.commission?.owner}
                     />
                   </FormControl>
                   <FormMessage />
@@ -718,7 +759,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               ) : (
                 <FormField
                   control={form.control}
-                  name="price"
+                  name="commission.owner"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="relative label-required">
@@ -737,7 +778,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           placeholder="Masukkan Komisi (contoh: 70 %)"
                           className="disabled:opacity-90"
                           value={field.value}
-                          onChange={field.onChange}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue)
+                          }
                           onBlur={field.onBlur}
                         />
                       </FormControl>
@@ -762,7 +805,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       allowNegative={false}
                       placeholder="Masukkan Komisi (contoh: 70 %)"
                       className="disabled:opacity-90"
-                      value={initialData?.price}
+                      value={initialData?.commission?.partner}
                     />
                   </FormControl>
                   <FormMessage />
@@ -770,7 +813,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               ) : (
                 <FormField
                   control={form.control}
-                  name="price"
+                  name="commission.partner"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Komisi Partner %</FormLabel>
@@ -787,7 +830,9 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           placeholder="Masukkan Komisi (contoh: 70 %)"
                           className="disabled:opacity-90"
                           value={field.value}
-                          onChange={field.onChange}
+                          onValueChange={({ floatValue }) =>
+                            field.onChange(floatValue)
+                          }
                           onBlur={field.onBlur}
                         />
                       </FormControl>
@@ -812,7 +857,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       allowNegative={false}
                       placeholder="Masukkan Komisi (contoh: 70 %)"
                       className="disabled:opacity-90"
-                      value={initialData?.price}
+                      value={initialData?.commission?.transgo}
                     />
                   </FormControl>
                   <FormMessage />
@@ -820,7 +865,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
               ) : (
                 <FormField
                   control={form.control}
-                  name="price"
+                  name="commission.transgo"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="relative label-required">
@@ -828,7 +873,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       </FormLabel>
                       <FormControl>
                         <NumericFormat
-                          disabled={!isEdit || loading}
+                          disabled
                           customInput={Input}
                           type="text"
                           isAllowed={({ floatValue }) =>
@@ -838,7 +883,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           allowNegative={false}
                           className="disabled:opacity-90"
                           value={field.value}
-                          onChange={field.onChange}
                           onBlur={field.onBlur}
                         />
                       </FormControl>
