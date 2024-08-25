@@ -48,7 +48,7 @@ export const columns: ColumnDef<IItems>[] = [
       </span>
     ),
     cell: ({ row }) =>
-      !row.original.category ? null : (
+      row.original.category?.name ? (
         <span
           className={cn(
             row.original.debit_amount ? "text-green-500" : "text-red-500",
@@ -58,7 +58,7 @@ export const columns: ColumnDef<IItems>[] = [
         >
           {row.original.category.name}
         </span>
-      ),
+      ) : null,
   },
   {
     accessorKey: "status",
@@ -69,7 +69,7 @@ export const columns: ColumnDef<IItems>[] = [
       <span className="text-sm font-semibold text-neutral-700">Status</span>
     ),
     cell: ({ row }) =>
-      !row.original.status ? null : (
+      row.original.status ? (
         <span
           className={cn(
             getStatusVariant(row.original.status),
@@ -78,7 +78,7 @@ export const columns: ColumnDef<IItems>[] = [
         >
           {getPaymentStatusLabel(row.original.status)}
         </span>
-      ),
+      ) : null,
   },
   {
     accessorKey: "customer",
@@ -111,11 +111,11 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     enableSorting: false,
     cell: ({ row }) =>
-      !row.original.duration ? null : (
+      row.original.duration ? (
         <span className="bg-[#f5f5f5] font-medium text-[12px] leading-5 rounded-full py-1 px-2.5">
           {row.original.duration} Hari
         </span>
-      ),
+      ) : null,
   },
   {
     accessorKey: "amount_plus",
