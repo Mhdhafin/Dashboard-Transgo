@@ -24,7 +24,7 @@ export default function RecapTableV2<TData, TValue>({
   });
 
   return (
-    <div className="relative border max-h-[300px] border-solid rounded-lg overflow-auto">
+    <div className="relative border max-h-[calc(100vh-200px)] border-solid rounded-lg overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-slate-200">
           {table.getHeaderGroups().map((headerGroup) => (
