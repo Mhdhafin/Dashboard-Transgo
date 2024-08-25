@@ -7,17 +7,8 @@ import { cn, formatRupiah } from "@/lib/utils";
 
 import "dayjs/locale/id";
 import { IItems } from "@/hooks/components/useRecapsStore";
-import {
-  getPaymentStatusLabel,
-  getStatusVariant,
-} from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { CalendarDays } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+
+import { getLedgerStatusLabel, getStatusVariant } from "./utils";
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
@@ -85,7 +76,7 @@ export const columns: ColumnDef<IItems>[] = [
             "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full capitalize",
           )}
         >
-          {getPaymentStatusLabel(row.original.status)}
+          {getLedgerStatusLabel(row.original.status)}
         </span>
       ) : null,
   },
