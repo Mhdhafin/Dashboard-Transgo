@@ -49,7 +49,7 @@ export default function RecapTableV2<TData, TValue>({
                       ...(header.column.columnDef.meta?.stickyColumn && {
                         right:
                           header.column.getSize() === 154
-                            ? 554
+                            ? 600
                             : // @ts-ignore
                               header.column.columnDef.meta?.index *
                               header.column.getSize(),
@@ -98,7 +98,7 @@ export default function RecapTableV2<TData, TValue>({
                       ...(cell.column.columnDef.meta?.stickyColumn && {
                         right:
                           cell.column.getSize() === 154
-                            ? 554
+                            ? 600
                             : // @ts-ignore
                               cell.column.columnDef.meta?.index *
                               cell.column.getSize(),
@@ -122,7 +122,7 @@ export default function RecapTableV2<TData, TValue>({
             >
               Jumlah
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[554px]">
+            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[600px]">
               {total.duration || 0} hari
             </td>
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[400px]">
