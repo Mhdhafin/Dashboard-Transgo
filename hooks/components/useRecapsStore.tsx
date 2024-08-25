@@ -4,6 +4,11 @@ interface IFleet {
   color: string | null;
   id: number;
   name: string;
+  commission?: {
+    owner?: number;
+    partner?: number;
+    transgo?: number;
+  };
 }
 
 export interface IItems {
@@ -19,6 +24,7 @@ export interface IItems {
   debit_amount: number | null;
   commission: number;
   description: string | null;
+  owner_comission?: number;
   fleet: IFleet;
   user: { name: string };
 }
