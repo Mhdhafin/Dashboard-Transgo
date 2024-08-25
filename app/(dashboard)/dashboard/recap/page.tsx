@@ -6,7 +6,6 @@ import { formatRupiah } from "@/lib/utils";
 
 import YearAndMonthSelector from "@/components/calendar/year-and-month-selector";
 import { Heading } from "@/components/ui/heading";
-import RecapTable from "@/components/tables/recap-tables/recap-table";
 import { columns } from "@/components/tables/recap-tables/columns";
 import useRecapsStore, { ITotal } from "@/hooks/components/useRecapsStore";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
