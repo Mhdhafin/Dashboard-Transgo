@@ -1,3 +1,4 @@
+import header from "@/components/layout/header";
 import { ITotal } from "@/hooks/components/useRecapsStore";
 import { formatRupiah } from "@/lib/utils";
 import {
@@ -47,9 +48,11 @@ export default function RecapTableV2<TData, TValue>({
                       // @ts-ignore
                       ...(header.column.columnDef.meta?.stickyColumn && {
                         right:
-                          // @ts-ignore
-                          header.column.columnDef.meta?.index *
-                          header.column.getSize(),
+                          header.column.getSize() === 154
+                            ? 554
+                            : // @ts-ignore
+                              header.column.columnDef.meta?.index *
+                              header.column.getSize(),
                         zIndex: 40,
                         position: "sticky",
                       }),
@@ -94,9 +97,11 @@ export default function RecapTableV2<TData, TValue>({
                       // @ts-ignore
                       ...(cell.column.columnDef.meta?.stickyColumn && {
                         right:
-                          // @ts-ignore
-                          cell.column.columnDef.meta?.index *
-                          cell.column.getSize(),
+                          cell.column.getSize() === 154
+                            ? 554
+                            : // @ts-ignore
+                              cell.column.columnDef.meta?.index *
+                              cell.column.getSize(),
                         zIndex: 20,
                         position: "sticky",
                       }),
@@ -117,13 +122,13 @@ export default function RecapTableV2<TData, TValue>({
             >
               Jumlah
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[462px]">
+            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[554px]">
               {total.duration || 0} hari
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[308px]">
-              {formatRupiah(total.credit)}
+            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[400px]">
+              {formatRupiah(total.debit)}
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[154px]">
+            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[200px]">
               {formatRupiah(total.credit)}
             </td>
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[0px]">

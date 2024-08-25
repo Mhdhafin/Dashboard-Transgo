@@ -132,7 +132,7 @@ export const columns: ColumnDef<IItems>[] = [
 
       index: 2,
     },
-    size: 154,
+    size: 200,
     header: () => (
       <span className="text-sm font-bold text-neutral-700">Debit (+)</span>
     ),
@@ -152,7 +152,7 @@ export const columns: ColumnDef<IItems>[] = [
 
       index: 1,
     },
-    size: 154,
+    size: 200,
     header: () => (
       <span className="text-sm font-bold text-neutral-700">Kredit (-)</span>
     ),
@@ -171,19 +171,28 @@ export const columns: ColumnDef<IItems>[] = [
       stickyColumn: true,
       index: 0,
     },
-    size: 154,
+    size: 200,
     header: () => (
       <span className="text-sm font-bold text-neutral-700">
         Perhitungan Komisi
       </span>
     ),
-    cell: ({ row }) => (
-      <span className="text-sm font-medium">
-        {row.original.commission
-          ? `${row.original.commission < 0 ? "-" : "+"} ` +
-            formatRupiah(row.original.commission)
-          : ""}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const commission =
+        row.original?.owner_comission ||
+        row.original?.credit_amount ||
+        row.original?.debit_amount;
+      return (
+        <span className="text-sm font-medium">
+          {commission
+            ? `${commission < 0 ? "-" : "+"}` + formatRupiah(commission)
+            : ""}{" "}
+          {row.original?.owner_comission ||
+          row.original.fleet?.commission?.owner
+            ? `(${row.original.fleet?.commission?.owner}%)`
+            : ""}
+        </span>
+      );
+    },
   },
 ];
