@@ -13,12 +13,14 @@ export interface IItems {
   category: { name: string };
   created_at: string;
   date: string;
+  end_date: string;
   duration: number;
   credit_amount: number | null;
   debit_amount: number | null;
   commission: number;
   description: string | null;
   fleet: IFleet;
+  user: { name: string };
 }
 
 export interface ITotal {
@@ -55,9 +57,11 @@ const useRecapsStore = (params?: any) => {
         created_at: "",
         category: { name: "" },
         date: "",
+        end_date: "",
         duration: 0,
         credit_amount: 0,
         debit_amount: 0,
+        user: { name: "" },
         commission: 0,
         description: "",
         fleet: {
