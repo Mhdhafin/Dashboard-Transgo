@@ -64,19 +64,6 @@ export default function RecapTableV2<TData, TValue>({
                   </th>
                 );
               })}
-              {/* {columns.map((column, index) => (
-              <th
-                key={index}
-                className={`h-[48px] py-3 text-sm font-semibold text-neutral-700 ${
-                  column.isFixed ? "sticky z-10 bg-slate-200" : ""
-                } ${column.class || ""}`}
-                style={{
-                  ...(column.size && { right: column.size * column.index }),
-                }}
-              >
-                {column.Header}
-              </th>
-            ))} */}
             </tr>
           ))}
         </thead>
@@ -121,23 +108,6 @@ export default function RecapTableV2<TData, TValue>({
               })}
             </tr>
           ))}
-          {/* {data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {columns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  className={`py-[14px] text-sm font-medium text-gray-900 ${
-                    column.isFixed ? "sticky bg-white z-0" : ""
-                  } ${column.class || ""}`}
-                  style={{
-                    ...(column.size && { right: column.size * column.index }),
-                  }}
-                >
-                  ad
-                </td>
-              ))}
-            </tr>
-          ))} */}
         </tbody>
         <tfoot className="bg-gray-50 sticky bottom-0 z-50 border-t border-solid">
           <tr>
