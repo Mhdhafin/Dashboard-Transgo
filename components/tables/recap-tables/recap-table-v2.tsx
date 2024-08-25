@@ -118,7 +118,7 @@ export default function RecapTableV2<TData, TValue>({
               Jumlah
             </td>
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[462px]">
-              {formatRupiah(total.debit)}
+              {total.duration || 0} hari
             </td>
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[308px]">
               {formatRupiah(total.credit)}
