@@ -51,7 +51,7 @@ const Page = () => {
 const CommissionAmount = ({ total }: { total: ITotal }) => (
   <div className="rounded-[8px] bg-blue-500 p-[8px_12px]">
     <h4 className="text-[20px] leading-7 font-semibold text-white">
-      Komisi : {formatRupiah(total?.commission)}
+      Komisi : {formatRupiah(total?.owner_comission || 0)}
     </h4>
   </div>
 );
