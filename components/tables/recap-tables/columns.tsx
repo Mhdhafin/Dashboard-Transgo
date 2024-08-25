@@ -11,6 +11,13 @@ import {
   getPaymentStatusLabel,
   getStatusVariant,
 } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { CalendarDays } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
@@ -18,7 +25,7 @@ export const columns: ColumnDef<IItems>[] = [
   {
     accessorKey: "date",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
+      <span className="text-sm font-bold text-neutral-700">Tanggal</span>
     ),
     size: 105,
     cell: ({ row }) => (
@@ -32,7 +39,7 @@ export const columns: ColumnDef<IItems>[] = [
   {
     accessorKey: "fleet",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+      <span className="text-sm font-bold text-neutral-700">Armada</span>
     ),
     size: 300,
     cell: ({ row }) => (
@@ -46,9 +53,7 @@ export const columns: ColumnDef<IItems>[] = [
     },
     size: 154,
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Arus Pemasukan
-      </span>
+      <span className="text-sm font-bold text-neutral-700">Arus Pemasukan</span>
     ),
     cell: ({ row }) =>
       row.original.category?.name ? (
@@ -70,7 +75,7 @@ export const columns: ColumnDef<IItems>[] = [
     },
     size: 154,
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Status</span>
+      <span className="text-sm font-bold text-neutral-700">Status</span>
     ),
     cell: ({ row }) =>
       row.original.status ? (
@@ -87,15 +92,19 @@ export const columns: ColumnDef<IItems>[] = [
   {
     accessorKey: "customer",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+      <span className="text-sm font-bold text-neutral-700">Pelanggan</span>
     ),
     size: 250,
-    cell: ({ row }) => <span className="text-sm font-medium"></span>,
+    cell: ({ row }) => (
+      <span className="text-sm font-medium">
+        {row.original?.user?.name || ""}
+      </span>
+    ),
   },
   {
     accessorKey: "description",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
+      <span className="text-sm font-bold text-neutral-700">Keterangan</span>
     ),
     size: 250,
     cell: ({ row }) => (
@@ -113,7 +122,7 @@ export const columns: ColumnDef<IItems>[] = [
       index: 3,
     },
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+      <span className="text-sm font-bold text-neutral-700">Waktu</span>
     ),
     size: 154,
     enableSorting: false,
@@ -134,7 +143,7 @@ export const columns: ColumnDef<IItems>[] = [
     },
     size: 154,
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Debit (+)</span>
+      <span className="text-sm font-bold text-neutral-700">Debit (+)</span>
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
@@ -154,7 +163,7 @@ export const columns: ColumnDef<IItems>[] = [
     },
     size: 154,
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Kredit (-)</span>
+      <span className="text-sm font-bold text-neutral-700">Kredit (-)</span>
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
@@ -173,7 +182,7 @@ export const columns: ColumnDef<IItems>[] = [
     },
     size: 154,
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
+      <span className="text-sm font-bold text-neutral-700">
         Perhitungan Komisi
       </span>
     ),

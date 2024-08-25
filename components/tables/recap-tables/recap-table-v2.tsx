@@ -77,7 +77,7 @@ export default function RecapTableV2<TData, TValue>({
                 return (
                   <td
                     key={cell.id}
-                    className={`h-[48px] ${
+                    className={`h-[48px] bg-white ${
                       // @ts-ignore
                       cell.column.columnDef.meta?.centerHeader
                         ? "text-center last:pr-[10px]"
@@ -97,7 +97,7 @@ export default function RecapTableV2<TData, TValue>({
                           // @ts-ignore
                           cell.column.columnDef.meta?.index *
                           cell.column.getSize(),
-                        zIndex: 40,
+                        zIndex: 20,
                         position: "sticky",
                       }),
                     }}
