@@ -4,19 +4,11 @@ import { RejectCustomerModal } from "@/components/modal/reject-customer-modal";
 import Spinner from "@/components/spinner";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { useToast } from "@/components/ui/use-toast";
 import { useApproveCustomer, useRejectCustomer } from "@/hooks/api/useCustomer";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { isEmpty } from "lodash";
 import {
   Cake,
   Mail,
