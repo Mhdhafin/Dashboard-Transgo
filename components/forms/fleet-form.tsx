@@ -372,8 +372,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     transgo: initialData?.commission?.transgo || 100,
   });
 
-  const watchOwner = form.watch("commission.owner");
-  const watchPartner = form.watch("commission.partner");
+  const watchOwner = form.watch("commission.owner") || 0;
+  const watchPartner = form.watch("commission.partner") || 0;
 
   useEffect(() => {
     const ownerValue = parseFloat(watchOwner?.toString()) || 0;
@@ -779,7 +779,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           className="disabled:opacity-90"
                           value={field.value}
                           onValueChange={({ floatValue }) =>
-                            field.onChange(floatValue)
+                            floatValue !== undefined &&
+                            field.onChange(floatValue || 0)
                           }
                           onBlur={field.onBlur}
                         />
@@ -831,7 +832,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           className="disabled:opacity-90"
                           value={field.value}
                           onValueChange={({ floatValue }) =>
-                            field.onChange(floatValue)
+                            floatValue !== undefined &&
+                            field.onChange(floatValue || 0)
                           }
                           onBlur={field.onBlur}
                         />
