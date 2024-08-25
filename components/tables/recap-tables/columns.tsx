@@ -20,6 +20,7 @@ export const columns: ColumnDef<IItems>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
     ),
+    size: 105,
     cell: ({ row }) => (
       <span className="text-sm font-medium">
         {row.original.date
@@ -33,6 +34,7 @@ export const columns: ColumnDef<IItems>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Armada</span>
     ),
+    size: 300,
     cell: ({ row }) => (
       <span className="text-sm font-medium">{row.original.fleet?.name}</span>
     ),
@@ -42,6 +44,7 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
     },
+    size: 154,
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">
         Arus Pemasukan
@@ -65,6 +68,7 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
     },
+    size: 154,
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Status</span>
     ),
@@ -85,15 +89,17 @@ export const columns: ColumnDef<IItems>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
+    size: 250,
     cell: ({ row }) => (
       <span className="text-sm font-medium">{row.original.email}</span>
     ),
   },
   {
-    accessorKey: "explain",
+    accessorKey: "description",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
     ),
+    size: 250,
     cell: ({ row }) => (
       <span className="text-sm font-medium">
         {row.original.description || ""}
@@ -105,10 +111,13 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
+
+      index: 3,
     },
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Waktu</span>
     ),
+    size: 154,
     enableSorting: false,
     cell: ({ row }) =>
       row.original.duration ? (
@@ -122,7 +131,10 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
+
+      index: 2,
     },
+    size: 154,
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Debit (+)</span>
     ),
@@ -139,7 +151,10 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
+
+      index: 1,
     },
+    size: 154,
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Kredit (-)</span>
     ),
@@ -156,7 +171,9 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
+      index: 0,
     },
+    size: 154,
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">
         Perhitungan Komisi
