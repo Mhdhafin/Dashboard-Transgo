@@ -179,7 +179,7 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => {
       const commission =
-        row.original?.owner_comission ||
+        row.original?.owner_commission ||
         row.original?.credit_amount ||
         row.original?.debit_amount;
       return (
@@ -187,8 +187,7 @@ export const columns: ColumnDef<IItems>[] = [
           {commission
             ? `${commission < 0 ? "-" : "+"}` + formatRupiah(commission)
             : ""}{" "}
-          {row.original?.owner_comission ||
-          row.original.fleet?.commission?.owner
+          {row.original.fleet?.commission?.owner
             ? `(${row.original.fleet?.commission?.owner}%)`
             : ""}
         </span>

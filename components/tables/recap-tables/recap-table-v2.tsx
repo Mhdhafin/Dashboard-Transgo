@@ -132,7 +132,7 @@ export default function RecapTableV2<TData, TValue>({
               {formatRupiah(total.credit)}
             </td>
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[0px]">
-              {formatRupiah(total.commission)}
+              {formatRupiah(total.owner_comission)}
             </td>
           </tr>
         </tfoot>

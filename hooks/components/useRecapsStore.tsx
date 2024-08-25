@@ -24,7 +24,7 @@ export interface IItems {
   debit_amount: number | null;
   commission: number;
   description: string | null;
-  owner_comission?: number;
+  owner_commission?: number;
   fleet: IFleet;
   user: { name: string };
 }
@@ -33,7 +33,7 @@ export interface ITotal {
   debit: 0;
   credit: 0;
   duration: 0;
-  commission: 0;
+  owner_comission: 0;
 }
 
 const useRecapsStore = (params?: any) => {
@@ -42,16 +42,13 @@ const useRecapsStore = (params?: any) => {
   const items: IItems[] =
     recaps?.data?.items.map((item: IItems) => ({
       ...item,
-      commission: (item.debit_amount || 0) - (item.credit_amount || 0),
     })) || [];
 
   const total: ITotal = recaps?.data?.total
     ? {
         ...recaps?.data?.total,
-        commission:
-          recaps?.data?.total?.debit || 0 - recaps?.data?.total?.credit || 0,
       }
-    : { debit: 0, credit: 0, duration: 0, commission: 0 };
+    : { debit: 0, credit: 0, duration: 0, owner_commission: 0 };
 
   if (!isFetching && items.length < 5) {
     const emptyDataCount = 5;
