@@ -42,7 +42,7 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
     },
-    size: 154,
+    size: 250,
     header: () => (
       <span className="text-sm font-bold text-neutral-700">Arus Pemasukan</span>
     ),
@@ -52,7 +52,7 @@ export const columns: ColumnDef<IItems>[] = [
           className={cn(
             row.original.debit_amount ? "text-green-500" : "text-red-500",
             row.original.debit_amount ? "bg-green-50" : "bg-red-50",
-            "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full",
+            "font-medium text-[12px] w-fit h-[20px] leading-5 px-2.5 py-1 rounded-full",
           )}
         >
           {row.original.category.name}
