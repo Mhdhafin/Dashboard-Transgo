@@ -90,9 +90,7 @@ export const columns: ColumnDef<IItems>[] = [
       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
     ),
     size: 250,
-    cell: ({ row }) => (
-      <span className="text-sm font-medium">{row.original.email}</span>
-    ),
+    cell: ({ row }) => <span className="text-sm font-medium"></span>,
   },
   {
     accessorKey: "description",
