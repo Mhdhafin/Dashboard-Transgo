@@ -299,7 +299,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
-          console.log("🚀 ~ onSubmit ~ error:", error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
@@ -341,7 +340,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
-          console.log(error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
@@ -384,8 +382,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
 
     form.setValue("commission.transgo", transgoValue);
   }, [watchOwner, watchPartner, form.setValue]);
-
-  console.log(form.getValues());
 
   return (
     <>
