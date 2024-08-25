@@ -1,11 +1,11 @@
 "use client";
 import * as z from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "../ui/use-toast";
-import { convertEmptyStringsToNull } from "@/lib/utils";
+import { cn, convertEmptyStringsToNull } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEditFleet, usePostFleet } from "@/hooks/api/useFleet";
 import MulitpleImageUpload, {
@@ -32,12 +32,13 @@ import MulitpleImageUpload, {
 } from "../multiple-image-upload";
 import useAxiosAuth from "@/hooks/axios/use-axios-auth";
 import axios from "axios";
-import { omitBy } from "lodash";
+import { isEmpty, omitBy } from "lodash";
 import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, Space } from "antd";
 import { NumericFormat } from "react-number-format";
-import { useGetInfinityOwners } from "@/hooks/api/useOwner";
+import { useGetDetailOwner, useGetInfinityOwners } from "@/hooks/api/useOwner";
+import OwnerDetail from "./section/owner-detail";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -96,6 +97,11 @@ const formSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
+  commission: z.object({
+    transgo: z.number(),
+    owner: z.number(),
+    partner: z.number(),
+  }),
 });
 
 const editFormSchema = z.object({
@@ -127,6 +133,11 @@ const editFormSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
+  commission: z.object({
+    transgo: z.number(),
+    owner: z.number(),
+    partner: z.number(),
+  }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -151,6 +162,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [showDetailOwner, setShowDetailOwner] = useState(false);
   const title = !isEdit
     ? "Detail Fleet"
     : initialData
@@ -196,6 +208,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         location_id: initialData?.location?.id?.toString(),
         color: initialData?.color,
         owner_id: initialData?.owner?.id,
+        commission: initialData?.commission,
       }
     : {
         name: "",
@@ -206,12 +219,17 @@ export const FleetForm: React.FC<FleetFormProps> = ({
         location_id: "",
         color: "",
         owner_id: null,
+        commission: { transgo: 0, owner: 0, partner: 0 },
       };
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(!initialData ? formSchema : editFormSchema),
     defaultValues,
   });
+
+  const { data: ownerData, isFetching: isFetchingOwner } = useGetDetailOwner(
+    form.getValues("owner_id") || 0,
+  );
 
   const uploadImage = async (file: any) => {
     const file_names = [];
@@ -281,10 +299,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
+          console.log("🚀 ~ onSubmit ~ error:", error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            description: `error: ${
+              // @ts-ignore
+              error?.response?.data?.message || error?.message
+            }`,
           });
         },
       });
@@ -319,10 +341,14 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           setLoading(false);
         },
         onError: (error) => {
+          console.log(error);
           toast({
             variant: "destructive",
             title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${error.message}`,
+            description: `error: ${
+              // @ts-ignore
+              error?.response?.data?.message || error?.message
+            }`,
           });
         },
       });
@@ -339,6 +365,27 @@ export const FleetForm: React.FC<FleetFormProps> = ({
       type === "location" ? fetchNextLocations() : fetchNextOwners();
     }
   };
+
+  const [commission, setCommission] = useState({
+    owner: initialData?.commission?.owner || 0,
+    partner: initialData?.commission?.partner || 0,
+    transgo: initialData?.commission?.transgo || 100,
+  });
+
+  const watchOwner = form.watch("commission.owner") || 0;
+  const watchPartner = form.watch("commission.partner") || 0;
+
+  useEffect(() => {
+    const ownerValue = parseFloat(watchOwner?.toString()) || 0;
+    const partnerValue = parseFloat(watchPartner?.toString()) || 0;
+
+    const remaining = 100 - ownerValue - partnerValue;
+    const transgoValue = remaining >= 0 ? remaining : 0;
+
+    form.setValue("commission.transgo", transgoValue);
+  }, [watchOwner, watchPartner, form.setValue]);
+
+  console.log(form.getValues());
 
   return (
     <>
@@ -581,31 +628,50 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                 }}
               />
             )}
-            {!isEdit ? (
-              <FormItem>
-                <FormLabel>Owner</FormLabel>
+          </div>
+
+          {!isEdit ? (
+            <FormItem>
+              <FormLabel>Owner</FormLabel>
+              <div className="flex items-center gap-2">
                 <FormControl className="disabled:opacity-100">
                   <Input
                     disabled={!isEdit || loading}
                     value={initialData?.owner?.name}
                   />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            ) : (
-              <FormField
-                name="owner_id"
-                control={form.control}
-                render={({ field }) => {
-                  return (
-                    <Space size={12} direction="vertical">
-                      <FormLabel>Owner</FormLabel>
+                <Button
+                  className={cn(
+                    buttonVariants({ variant: "main" }),
+                    "w-[65px] h-[36px] !py-1.5",
+                  )}
+                  disabled={
+                    !form.getFieldState("owner_id").isDirty &&
+                    isEmpty(form.getValues("owner_id")?.toString())
+                  }
+                  type="button"
+                  onClick={() => setShowDetailOwner(true)}
+                >
+                  Lihat
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          ) : (
+            <FormField
+              name="owner_id"
+              control={form.control}
+              render={({ field }) => {
+                return (
+                  <Space size={12} direction="vertical" className="w-full">
+                    <FormLabel>Owner</FormLabel>
+                    <div className="flex items-center gap-2">
                       <FormControl>
                         <AntdSelect
                           showSearch
                           value={field.value}
                           placeholder="Pilih Owner"
-                          style={{ width: "100%" }}
+                          style={{ width: "100%", height: "36px" }}
                           onSearch={setSearchOwner}
                           onChange={(value) => {
                             if (value === undefined) {
@@ -646,13 +712,190 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           )}
                         </AntdSelect>
                       </FormControl>
+                      <Button
+                        className={cn(
+                          buttonVariants({ variant: "main" }),
+                          "w-[65px] h-[36px] !py-1.5",
+                        )}
+                        disabled={
+                          !form.getFieldState("owner_id").isDirty &&
+                          isEmpty(form.getValues("owner_id")?.toString())
+                        }
+                        type="button"
+                        onClick={() => setShowDetailOwner(true)}
+                      >
+                        Lihat
+                      </Button>
+                    </div>
+                    <FormMessage />
+                  </Space>
+                );
+              }}
+            />
+          )}
+
+          {!isEmpty(form.getValues("owner_id")?.toString()) && (
+            <div className="md:grid md:grid-cols-3 gap-5">
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Owner %</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      className="disabled:opacity-90"
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      value={initialData?.commission?.owner}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="commission.owner"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Komisi Owner %
+                      </FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          placeholder="Masukkan Komisi (contoh: 70 %)"
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onValueChange={({ floatValue }) =>
+                            floatValue !== undefined &&
+                            field.onChange(floatValue || 0)
+                          }
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
                       <FormMessage />
-                    </Space>
-                  );
-                }}
-              />
-            )}
-          </div>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Partner %</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      className="disabled:opacity-90"
+                      value={initialData?.commission?.partner}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="commission.partner"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Komisi Partner %</FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled={!isEdit || loading}
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          placeholder="Masukkan Komisi (contoh: 70 %)"
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onValueChange={({ floatValue }) =>
+                            floatValue !== undefined &&
+                            field.onChange(floatValue || 0)
+                          }
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {!isEdit ? (
+                <FormItem>
+                  <FormLabel>Komisi Transgo % (Otomatis)</FormLabel>
+                  <FormControl>
+                    <NumericFormat
+                      disabled={!isEdit || loading}
+                      customInput={Input}
+                      type="text"
+                      isAllowed={({ floatValue }) =>
+                        floatValue === undefined || floatValue <= 100
+                      }
+                      thousandSeparator
+                      allowNegative={false}
+                      placeholder="Masukkan Komisi (contoh: 70 %)"
+                      className="disabled:opacity-90"
+                      value={initialData?.commission?.transgo}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="commission.transgo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Komisi Transgo % (Otomatis)
+                      </FormLabel>
+                      <FormControl>
+                        <NumericFormat
+                          disabled
+                          customInput={Input}
+                          type="text"
+                          isAllowed={({ floatValue }) =>
+                            floatValue === undefined || floatValue <= 100
+                          }
+                          thousandSeparator
+                          allowNegative={false}
+                          className="disabled:opacity-90"
+                          value={field.value}
+                          onBlur={field.onBlur}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+          )}
+
           <FormField
             control={form.control}
             name="photos"
@@ -684,6 +927,13 @@ export const FleetForm: React.FC<FleetFormProps> = ({
           )}
         </form>
       </Form>
+
+      {showDetailOwner && !isFetchingOwner && (
+        <OwnerDetail
+          data={ownerData?.data}
+          onClose={() => setShowDetailOwner(false)}
+        />
+      )}
     </>
   );
 };

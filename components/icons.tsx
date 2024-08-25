@@ -73,9 +73,9 @@ const NotebookText = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="1.75"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <path d="M2 6h4" />
     <path d="M2 10h4" />
@@ -96,9 +96,9 @@ const UsersRound = () => (
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <path d="M18 21a8 8 0 0 0-16 0" />
     <circle cx="10" cy="8" r="5" />
