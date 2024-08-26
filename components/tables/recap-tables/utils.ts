@@ -1,31 +1,25 @@
 export function getStatusVariant(status: string): string {
   switch (status) {
-    case "pending":
+    case LedgerStatus.PENDING:
+    case LedgerStatus.ON_HOLD:
       return "bg-red-50 text-red-500";
-    case "waiting":
+    case LedgerStatus.PARTIALLY_PAID:
       return "bg-yellow-50 text-yellow-500";
-    case "partially paid":
-      return "bg-yellow-50 text-yellow-500";
-    case "on_progress":
-      return "bg-blue-50 text-blue-500";
-    case "done":
-    case "paid":
+    case LedgerStatus.DONE:
+    case LedgerStatus.PROCCESSED:
       return "bg-green-50 text-green-500";
-    case "rejected":
-      return "bg-red-50 text-red-500";
-    case "failed":
-      return "bg-red-50 text-red-500";
     default:
-      return "";
+      return "bg-red-50 text-red-500";
   }
 }
 
 export enum LedgerStatus {
   PENDING = "pending",
-  PARTIALLY_PAID = "partially paid",
   DONE = "done",
-  FAILED = "failed",
-  PAID = "paid",
+  PARTIALLY_PAID = "partially paid",
+
+  ON_HOLD = "on_hold",
+  PROCCESSED = "proccessed",
 }
 
 export function getLedgerStatusLabel(payment_status: string): string {
@@ -33,12 +27,13 @@ export function getLedgerStatusLabel(payment_status: string): string {
     case LedgerStatus.PENDING:
       return "Belum Dibayar";
     case LedgerStatus.DONE:
-    case LedgerStatus.PAID:
       return "Lunas";
     case LedgerStatus.PARTIALLY_PAID:
       return "Kurang Bayar";
-    case LedgerStatus.FAILED:
-      return "Gagal";
+    case LedgerStatus.ON_HOLD:
+      return "Belum Diproses";
+    case LedgerStatus.PROCCESSED:
+      return "Sudah Diproses";
     default:
       return "";
   }
