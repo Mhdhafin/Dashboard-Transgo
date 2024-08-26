@@ -65,6 +65,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={showCashFlowModal}
         onClose={() => setShowCashFlowModal(false)}
         onConfirm={() => null}
+        initialData={data || null}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>

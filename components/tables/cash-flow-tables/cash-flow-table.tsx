@@ -256,6 +256,7 @@ const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
         isOpen={showModalCashFlow}
         onClose={() => setShowModalCashFlow(false)}
         onConfirm={() => null}
+        initialData={ledgersData?.items || null}
       />
     </>
   );
