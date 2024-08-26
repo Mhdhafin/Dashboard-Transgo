@@ -54,7 +54,7 @@ const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
   });
   const [showModalCashFlow, setShowModalCashFlow] = useState(false);
 
-  const { data } = useGetLedgersFleet(fleetId, {
+  const { data, isFetching } = useGetLedgersFleet(fleetId, {
     page: pageIndex + 1,
     limit: pageSize,
   });
@@ -102,73 +102,77 @@ const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
       </div>
 
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
-        <Table className="relative">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className={
-                        // @ts-ignore
-                        header.column.columnDef.meta?.centerHeader
-                          ? "text-center"
-                          : ""
-                      }
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => {
+        {isFetching ? (
+          <Spinner />
+        ) : (
+          <Table className="relative">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
                     return (
-                      <TableCell
-                        key={cell.id}
+                      <TableHead
+                        key={header.id}
                         className={
                           // @ts-ignore
-                          cell.column.columnDef.meta?.centerHeader
+                          header.column.columnDef.meta?.centerHeader
                             ? "text-center"
                             : ""
                         }
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
                     );
                   })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Tidak ada data yang dapat ditampilkan.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 ease-in-out"
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={
+                            // @ts-ignore
+                            cell.column.columnDef.meta?.centerHeader
+                              ? "text-center"
+                              : ""
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Tidak ada data yang dapat ditampilkan.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
