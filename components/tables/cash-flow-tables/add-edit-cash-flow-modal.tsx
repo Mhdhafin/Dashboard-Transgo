@@ -85,17 +85,18 @@ interface IAddEditCashFlowModalProps {
   isOpen: boolean;
   onClose: () => void;
   isLoading?: boolean;
-  onConfirm: () => void;
   initialData?: any | null;
+  fleetName: string;
 }
 
 const AddEditCashFlowModal = ({
   isOpen,
   onClose,
   isLoading = false,
-  onConfirm,
   initialData,
+  fleetName,
 }: IAddEditCashFlowModalProps) => {
+  console.log("🚀 ~ initialData:", initialData);
   const [isChecked, setIsChecked] = useState(false);
 
   const defaultValues = initialData
@@ -129,8 +130,11 @@ const AddEditCashFlowModal = ({
           <DialogTitle>Tambah Arus Pencatatan</DialogTitle>
           <DialogDescription>
             Tindakan ini akan menambahkan arus pemasukan / pengeluaran untuk
-            armada Hoda City, mohon pastikan data yang diinput telah benar
-            sepenuhnya.
+            armada{" "}
+            <span className="text-sm font-bold text-[#64748B]">
+              {fleetName}
+            </span>
+            , mohon pastikan data yang diinput telah benar sepenuhnya.
           </DialogDescription>
         </DialogHeader>
 
@@ -341,7 +345,7 @@ const AddEditCashFlowModal = ({
             type="submit"
             onClick={(e) => {
               e.stopPropagation();
-              onConfirm();
+              // onConfirm();
             }}
           >
             {isLoading ? (

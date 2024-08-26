@@ -35,17 +35,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AddEditCashFlowModal from "./add-edit-cash-flow-modal";
-import { columns } from "./columns";
+import { getColumns } from "./columns";
 import { useGetLedgersFleet } from "@/hooks/api/useLedgers";
 import Spinner from "@/components/spinner";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50];
 
 interface ICashFlowTableProps {
-  fleetId: number;
+  fleet: {
+    id: number;
+    name: string;
+  };
 }
 
-const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
+const CashFlowTable = ({ fleet }: ICashFlowTableProps) => {
   const { user } = useUser();
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
@@ -54,13 +57,14 @@ const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
   });
   const [showModalCashFlow, setShowModalCashFlow] = useState(false);
 
-  const { data, isFetching } = useGetLedgersFleet(fleetId, {
+  const { data, isFetching } = useGetLedgersFleet(fleet.id, {
     page: pageIndex + 1,
     limit: pageSize,
   });
 
   const ledgersData = data?.data;
 
+  const columns = getColumns({ fleet });
   const filteredColumns = columns.filter((item) => {
     if (user?.role === "owner" && item.id === "actions") return false;
 
@@ -252,12 +256,14 @@ const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
         </div>
       </div>
 
-      <AddEditCashFlowModal
-        isOpen={showModalCashFlow}
-        onClose={() => setShowModalCashFlow(false)}
-        onConfirm={() => null}
-        initialData={ledgersData?.items || null}
-      />
+      {showModalCashFlow && (
+        <AddEditCashFlowModal
+          isOpen={showModalCashFlow}
+          onClose={() => setShowModalCashFlow(false)}
+          initialData={ledgersData?.items || null}
+          fleetName={fleet.name}
+        />
+      )}
     </>
   );
 };

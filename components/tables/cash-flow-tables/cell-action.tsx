@@ -19,9 +19,12 @@ import { useDeleteLedgers } from "@/hooks/api/useLedgers";
 
 interface CellActionProps {
   data: ILedgersFleet;
+  fleet: {
+    name: string;
+  };
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+export const CellAction: React.FC<CellActionProps> = ({ data, fleet }) => {
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showCashFlowModal, setShowCashFlowModal] = useState(false);
   const router = useRouter();
@@ -55,18 +58,22 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      <AlertModal
-        isOpen={showAlertModal}
-        onClose={() => setShowAlertModal(false)}
-        onConfirm={onConfirm}
-        loading={false}
-      />
-      <AddEditCashFlowModal
-        isOpen={showCashFlowModal}
-        onClose={() => setShowCashFlowModal(false)}
-        onConfirm={() => null}
-        initialData={data || null}
-      />
+      {showAlertModal && (
+        <AlertModal
+          isOpen={showAlertModal}
+          onClose={() => setShowAlertModal(false)}
+          onConfirm={onConfirm}
+          loading={false}
+        />
+      )}
+      {showCashFlowModal && (
+        <AddEditCashFlowModal
+          isOpen={showCashFlowModal}
+          onClose={() => setShowCashFlowModal(false)}
+          initialData={data || null}
+          fleetName={fleet.name}
+        />
+      )}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
           <Button variant="ghost" className="h-8 w-8 p-0">

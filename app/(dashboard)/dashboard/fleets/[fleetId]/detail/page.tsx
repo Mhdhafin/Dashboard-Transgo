@@ -32,7 +32,7 @@ export default function Page({ params }: { params: { fleetId: number } }) {
         />
       )}
 
-      {!isFetching && <CashFlowTable fleetId={params.fleetId} />}
+      {!isFetching && <CashFlowTable fleet={data?.data} />}
     </div>
   );
 }

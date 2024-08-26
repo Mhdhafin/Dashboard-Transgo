@@ -36,85 +36,94 @@ export interface ILedgersFleet {
   user: { name: string };
 }
 
-export const columns: ColumnDef<ILedgersFleet>[] = [
-  {
-    accessorKey: "date",
-    header: "Tanggal",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium">
-        {row.original.date
-          ? dayjs(row.original.date).locale("id").format("dddd, D MMMM YYYY")
-          : ""}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "category",
-    header: "Kategori",
-    cell: ({ row }) =>
-      row.original.category?.name ? (
-        <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50">
-          {row.original.category.name}
+export const getColumns = ({
+  fleet,
+}: {
+  fleet: {
+    id: number;
+    name: string;
+  };
+}): ColumnDef<ILedgersFleet>[] => {
+  return [
+    {
+      accessorKey: "date",
+      header: "Tanggal",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium">
+          {row.original.date
+            ? dayjs(row.original.date).locale("id").format("dddd, D MMMM YYYY")
+            : ""}
         </span>
-      ) : null,
-  },
-  {
-    accessorKey: "description",
-    header: "Keterangan",
-    cell: ({ row }) => (
-      <span className="text-sm font-medium truncate">
-        {row.original.description || ""}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "amount_min",
-    header: "Kredit (-)",
-    meta: {
-      centerHeader: true,
+      ),
     },
-    cell: ({ row }) => (
-      <span className="text-sm font-medium">
-        {row.original.credit_amount
-          ? "- " + formatRupiah(row.original.credit_amount)
-          : ""}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "amount_plus",
-    header: "Debit (+)",
-    meta: {
-      centerHeader: true,
+    {
+      accessorKey: "category",
+      header: "Kategori",
+      cell: ({ row }) =>
+        row.original.category?.name ? (
+          <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50">
+            {row.original.category.name}
+          </span>
+        ) : null,
     },
-    cell: ({ row }) => (
-      <span className="text-sm font-medium">
-        {row.original.debit_amount
-          ? "+ " + formatRupiah(row.original.debit_amount)
-          : ""}
-      </span>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    meta: {
-      centerHeader: true,
-    },
-    cell: ({ row }) =>
-      row.original.status ? (
-        <span
-          className={cn(
-            getStatusVariant(row.original.status),
-            "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full capitalize",
-          )}
-        >
-          {getLedgerStatusLabel(row.original.status)}
+    {
+      accessorKey: "description",
+      header: "Keterangan",
+      cell: ({ row }) => (
+        <span className="text-sm font-medium truncate">
+          {row.original.description || ""}
         </span>
-      ) : null,
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
-  },
-];
+      ),
+    },
+    {
+      accessorKey: "amount_min",
+      header: "Kredit (-)",
+      meta: {
+        centerHeader: true,
+      },
+      cell: ({ row }) => (
+        <span className="text-sm font-medium">
+          {row.original.credit_amount
+            ? "- " + formatRupiah(row.original.credit_amount)
+            : ""}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "amount_plus",
+      header: "Debit (+)",
+      meta: {
+        centerHeader: true,
+      },
+      cell: ({ row }) => (
+        <span className="text-sm font-medium">
+          {row.original.debit_amount
+            ? "+ " + formatRupiah(row.original.debit_amount)
+            : ""}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      meta: {
+        centerHeader: true,
+      },
+      cell: ({ row }) =>
+        row.original.status ? (
+          <span
+            className={cn(
+              getStatusVariant(row.original.status),
+              "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full capitalize",
+            )}
+          >
+            {getLedgerStatusLabel(row.original.status)}
+          </span>
+        ) : null,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => <CellAction data={row.original} fleet={fleet} />, // Pass fleet to CellAction
+    },
+  ];
+};
