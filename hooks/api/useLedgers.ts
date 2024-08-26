@@ -48,3 +48,19 @@ export const useGetLedgersFleet = (
     queryFn: getLedgersFleet,
   });
 };
+
+export const useDeleteLedgers = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const deleteLedgers = (id: number) => {
+    return axiosAuth.delete(`${BASE_ENDPOINT}/${id}`);
+  };
+
+  return useMutation({
+    mutationFn: deleteLedgers,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["ledgers", "fleet"] });
+    },
+  });
+};

@@ -9,13 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
-import { useDeleteOwner } from "@/hooks/api/useOwner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddEditCashFlowModal from "./add-edit-cash-flow-modal";
 import { ILedgersFleet } from "./columns";
+import { useDeleteLedgers } from "@/hooks/api/useLedgers";
 
 interface CellActionProps {
   data: ILedgersFleet;
@@ -27,40 +27,40 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const id = data?.id;
-  // const { mutateAsync: deleteOwner } = useDeleteOwner(id);
+  const { mutateAsync: deleteLedgers } = useDeleteLedgers();
 
-  // const onConfirm = async () => {
-  //   deleteOwner(id, {
-  //     onSuccess: () => {
-  //       toast({
-  //         variant: "success",
-  //         title: "Owner berhasil dihapus!",
-  //       });
-  //       router.refresh();
-  //     },
-  //     onError: (error) => {
-  //       toast({
-  //         variant: "destructive",
-  //         title: "Oops! Ada error.",
-  //         description: `something went wrong: ${error.message}`,
-  //       });
-  //       queryClient.invalidateQueries({ queryKey: ["owners"] });
-  //     },
-  //     onSettled: () => {
-  //       queryClient.invalidateQueries({ queryKey: ["owners"] });
-  //       setShowAlertModal(false);
-  //     },
-  //   });
-  // };
+  const onConfirm = async () => {
+    deleteLedgers(Number(id), {
+      onSuccess: () => {
+        toast({
+          variant: "success",
+          title: "Ledgers berhasil dihapus!",
+        });
+        router.refresh();
+      },
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Oops! Ada error.",
+          description: `something went wrong: ${error.message}`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["owners"] });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["owners"] });
+        setShowAlertModal(false);
+      },
+    });
+  };
 
   return (
     <>
-      {/* <AlertModal
+      <AlertModal
         isOpen={showAlertModal}
         onClose={() => setShowAlertModal(false)}
-        // onConfirm={onConfirm}
+        onConfirm={onConfirm}
         loading={false}
-      /> */}
+      />
       <AddEditCashFlowModal
         isOpen={showCashFlowModal}
         onClose={() => setShowCashFlowModal(false)}
