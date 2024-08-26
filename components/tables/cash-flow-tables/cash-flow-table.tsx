@@ -1,30 +1,24 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import AddEditCashFlowModal from "./add-edit-cash-flow-modal";
-
+import { ChevronLeftIcon, ChevronRightIcon, Plus } from "lucide-react";
 import {
-  ColumnDef,
-  PaginationState,
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons";
+import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useDebounce } from "use-debounce";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { useUser } from "@/context/UserContext";
+
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -34,85 +28,38 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useUser } from "@/context/UserContext";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import AddEditCashFlowModal from "./add-edit-cash-flow-modal";
+import { columns } from "./columns";
+import { useGetLedgersFleet } from "@/hooks/api/useLedgers";
+import Spinner from "@/components/spinner";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  pageCount: number;
-  pageSizeOptions?: number[];
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50];
+
+interface ICashFlowTableProps {
+  fleetId: number;
 }
 
-export default function CashFlowTable<TData, TValue>({
-  columns,
-  data,
-  pageCount,
-  pageSizeOptions = [10, 20, 30, 40, 50],
-}: DataTableProps<TData, TValue>) {
+const CashFlowTable = ({ fleetId }: ICashFlowTableProps) => {
   const { user } = useUser();
+
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [showModalCashFlow, setShowModalCashFlow] = useState(false);
 
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  // Search params
-  const page = searchParams?.get("page") ?? "1";
-  const q = searchParams?.get("q");
-  const pageAsNumber = Number(page);
-  const fallbackPage =
-    isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
-  const per_page = searchParams?.get("limit") ?? "10";
-  const perPageAsNumber = Number(per_page);
-  const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
+  const { data } = useGetLedgersFleet(fleetId, {
+    page: pageIndex + 1,
+    limit: pageSize,
+  });
 
-  const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
-    q ?? "",
-  );
-  const [searchDebounce] = useDebounce(searchQuery, 500);
-
-  // Create query string
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null | undefined>) => {
-      const newSearchParams = new URLSearchParams();
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null || value === undefined) {
-          newSearchParams.delete(key);
-        } else {
-          newSearchParams.set(key, String(value));
-        }
-      }
-
-      return newSearchParams.toString();
-    },
-    [],
-  );
-  // Handle server-side pagination
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: fallbackPage - 1,
-      pageSize: fallbackPerPage,
-    });
-
-  React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        limit: pageSize,
-        q: searchDebounce || undefined,
-      })}`,
-      {
-        scroll: false,
-      },
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, pageSize, searchDebounce]);
+  const ledgersData = data?.data;
 
   const filteredColumns = columns.filter((item) => {
     if (user?.role === "owner" && item.id === "actions") return false;
@@ -121,9 +68,10 @@ export default function CashFlowTable<TData, TValue>({
   });
 
   const table = useReactTable({
-    data,
+    data: ledgersData?.items ?? [],
     columns: filteredColumns,
-    pageCount: pageCount ?? -1,
+    // @ts-ignore
+    pageCount: Math.ceil((data?.meta?.total_items ?? 0) / pageSize),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {
@@ -243,7 +191,7 @@ export default function CashFlowTable<TData, TValue>({
                   />
                 </SelectTrigger>
                 <SelectContent side="top">
-                  {pageSizeOptions.map((pageSize) => (
+                  {PAGE_SIZE_OPTIONS.map((pageSize) => (
                     <SelectItem key={pageSize} value={`${pageSize}`}>
                       {pageSize}
                     </SelectItem>
@@ -307,4 +255,6 @@ export default function CashFlowTable<TData, TValue>({
       />
     </>
   );
-}
+};
+
+export default CashFlowTable;

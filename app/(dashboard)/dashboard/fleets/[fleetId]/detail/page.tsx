@@ -8,7 +8,6 @@ import BreadCrumb from "@/components/breadcrumb";
 import { FleetForm } from "@/components/forms/fleet-form";
 import Spinner from "@/components/spinner";
 import CashFlowTable from "@/components/tables/cash-flow-tables/cash-flow-table";
-import { columns } from "@/components/tables/cash-flow-tables/columns";
 
 export default function Page({ params }: { params: { fleetId: number } }) {
   const breadcrumbItems = [
@@ -33,25 +32,7 @@ export default function Page({ params }: { params: { fleetId: number } }) {
         />
       )}
 
-      <CashFlowTable
-        columns={columns}
-        data={[
-          {
-            id: 1,
-            name: "",
-            status: "",
-            email: "",
-            date_of_birth: "",
-            nik: "",
-            role: "",
-            id_photo: "",
-            gender: "",
-            phone_number: "",
-            emergency_phone_number: "",
-          },
-        ]}
-        pageCount={0}
-      />
+      {!isFetching && <CashFlowTable fleetId={params.fleetId} />}
     </div>
   );
 }
