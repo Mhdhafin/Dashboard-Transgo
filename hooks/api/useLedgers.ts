@@ -64,3 +64,40 @@ export const useDeleteLedgers = () => {
     },
   });
 };
+
+export const useGetInfinityCategories = (query?: string) => {
+  const axiosAuth = useAxiosAuth();
+
+  const getInfinityCategories = (pageParam = 1, query?: string) => {
+    return axiosAuth.get(`${BASE_ENDPOINT}/categories`, {
+      params: {
+        limit: 10,
+        pageParam,
+        q: query,
+      },
+    });
+  };
+
+  return useInfiniteQuery({
+    queryKey: ["ledgers", "categories", query],
+    queryFn: ({ pageParam }) => getInfinityCategories(pageParam, query),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.data.pagination?.next_page,
+  });
+};
+
+export const usePostLedgers = () => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const postLedgers = (body: any) => {
+    return axiosAuth.post(BASE_ENDPOINT, body);
+  };
+
+  return useMutation({
+    mutationFn: postLedgers,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["ledgers", "fleet"] });
+    },
+  });
+};

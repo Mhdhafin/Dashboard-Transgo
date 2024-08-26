@@ -21,6 +21,7 @@ interface CellActionProps {
   data: ILedgersFleet;
   fleet: {
     name: string;
+    id: number;
   };
 }
 
@@ -47,10 +48,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data, fleet }) => {
           title: "Oops! Ada error.",
           description: `something went wrong: ${error.message}`,
         });
-        queryClient.invalidateQueries({ queryKey: ["owners"] });
+        queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
       },
       onSettled: () => {
-        queryClient.invalidateQueries({ queryKey: ["owners"] });
+        queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
         setShowAlertModal(false);
       },
     });
@@ -71,7 +72,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, fleet }) => {
           isOpen={showCashFlowModal}
           onClose={() => setShowCashFlowModal(false)}
           initialData={data || null}
-          fleetName={fleet.name}
+          fleet={fleet}
         />
       )}
       <DropdownMenu modal={false}>

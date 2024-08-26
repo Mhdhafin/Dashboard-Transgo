@@ -64,17 +64,6 @@ export const useGetDetailOwner = (id: string | number) => {
   });
 };
 
-type Body = {
-  name: string;
-  email: string;
-  gender?: string;
-  date_of_birth?: string;
-  nik?: string;
-  password?: string;
-  file: string;
-  id_photo: string;
-};
-
 export const usePostOwner = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();

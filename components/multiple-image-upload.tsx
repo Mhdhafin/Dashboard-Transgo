@@ -69,9 +69,9 @@ export default function MulitpleImageUpload({
         />
       </div>
       <div className="flex flex-wrap gap-4 ">
-        {value.map((item: any) => (
+        {value.map((item: any, index: number) => (
           <div
-            key={item?.name ?? value.url}
+            key={item?.name + "-" + index ?? value.url + "-" + index}
             className="relative rounded-md cursor-pointer w-full h-[300px] sm:w-1/3 lg:w-1/4 xl:w-1/5"
           >
             {!disabled && (
