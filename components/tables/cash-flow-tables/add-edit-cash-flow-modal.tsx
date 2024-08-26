@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import {
   useGetInfinityCategories,
+  usePatchLedgers,
   usePostLedgers,
 } from "@/hooks/api/useLedgers";
 import { useDebounce } from "use-debounce";
@@ -44,6 +45,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { isEmpty } from "lodash";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -84,16 +86,28 @@ const AddEditCashFlowModal = ({
 }: IAddEditCashFlowModalProps) => {
   const [isChecked, setIsChecked] = useState(false);
 
+  const defaultValues =
+    !isEmpty(initialData) && isEdit
+      ? {
+          status: initialData.status,
+          credit_amount: initialData.credit_amount,
+          debit_amount: initialData.debit_amount,
+          description: initialData.description,
+          date: initialData.date,
+          category_id: initialData.category.id,
+        }
+      : {
+          status: "pending",
+          credit_amount: null,
+          debit_amount: null,
+          description: "",
+          date: "",
+          category_id: null,
+        };
+
   const form = useForm<CashFlowSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      status: "pending",
-      credit_amount: null,
-      debit_amount: null,
-      description: "",
-      date: "",
-      category_id: null,
-    },
+    defaultValues,
   });
 
   const Option = AntdSelect;
@@ -106,7 +120,13 @@ const AddEditCashFlowModal = ({
 
   const [currentCategory, setCurrentCategory] = useState<
     "credit_amount" | "debit_amount" | string
-  >("credit_amount");
+  >(
+    initialData
+      ? initialData?.credit_amount !== null
+        ? "credit_amount"
+        : "debit_amount"
+      : "credit_amount",
+  );
 
   const handleCategoryChange = (
     value: "credit_amount" | "debit_amount" | string,
@@ -115,6 +135,7 @@ const AddEditCashFlowModal = ({
   };
 
   const { mutate: createLedger } = usePostLedgers();
+  const { mutate: patchLedger } = usePatchLedgers(fleet.id);
 
   const [searchCategory, setSearchCategory] = useState("");
   const [searchCategoryDebounce] = useDebounce(searchCategory, 500);
@@ -125,6 +146,35 @@ const AddEditCashFlowModal = ({
   const queryClient = useQueryClient();
 
   const onSubmit = (data: CashFlowSchema) => {
+    if (isEdit) {
+      const newPayload = {
+        ...data,
+        fleet_id: fleet.id,
+      };
+
+      patchLedger(newPayload, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
+          toast({
+            variant: "success",
+            title: "ledger successfully created!",
+          });
+          onClose();
+        },
+        onError: (error) => {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! ada sesuatu yang error",
+            description: `error: ${
+              // @ts-ignore
+              error?.response?.data?.message || error?.message
+            }`,
+          });
+        },
+      });
+
+      return;
+    }
     const newPayload = {
       ...data,
       fleet_id: fleet.id,
@@ -138,8 +188,6 @@ const AddEditCashFlowModal = ({
           title: "ledger successfully created!",
         });
         onClose();
-        // router.refresh();
-        // router.push(`/dashboard/fleets`);
       },
       onError: (error) => {
         toast({

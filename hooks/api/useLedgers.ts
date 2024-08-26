@@ -101,3 +101,19 @@ export const usePostLedgers = () => {
     },
   });
 };
+
+export const usePatchLedgers = (id: number) => {
+  const axiosAuth = useAxiosAuth();
+  const queryClient = useQueryClient();
+
+  const postLedgers = (body: any) => {
+    return axiosAuth.patch(`${BASE_ENDPOINT}/${id}`, body);
+  };
+
+  return useMutation({
+    mutationFn: postLedgers,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["ledgers", "fleet"] });
+    },
+  });
+};

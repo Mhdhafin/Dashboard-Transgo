@@ -73,6 +73,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, fleet }) => {
           onClose={() => setShowCashFlowModal(false)}
           initialData={data || null}
           fleet={fleet}
+          isEdit
         />
       )}
       <DropdownMenu modal={false}>
