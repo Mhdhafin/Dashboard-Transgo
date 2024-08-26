@@ -75,7 +75,7 @@ const CashFlowTable = ({ fleet }: ICashFlowTableProps) => {
     data: ledgersData?.items ?? [],
     columns: filteredColumns,
     // @ts-ignore
-    pageCount: Math.ceil((data?.meta?.total_items ?? 0) / pageSize),
+    pageCount: Math.ceil((data?.data?.meta?.total_items ?? 0) / pageSize),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {
