@@ -66,8 +66,6 @@ const formSchema = z.object({
   name: z
     .string({ required_error: "Nama diperlukan" })
     .min(3, { message: "Nama minimal harus 3 karakter" }),
-  // imgUrl: z.array(ImgSchema),
-  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z
     .string({ required_error: "Email diperlukan" })
     .email({ message: "Email harus valid" }),
@@ -86,8 +84,6 @@ const formEditSchema = z.object({
   name: z
     .string({ required_error: "Nama diperlukan" })
     .min(3, { message: "Nama minimal harus 3 karakter" }),
-  // imgUrl: z.array(ImgSchema),
-  // nik: z.string().min(16, { message: "NIK minimal harus 16 karakter" }),
   email: z
     .string({ required_error: "Email diperlukan" })
     .email({ message: "Email harus valid" }),
