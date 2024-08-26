@@ -582,6 +582,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                             style={{ width: "100%" }}
                             height={40}
                             className="p"
+                            showNow={false}
                             onChange={onChange} // send value to hook form
                             onBlur={onBlur} // notify when input is touched/blur
                             value={

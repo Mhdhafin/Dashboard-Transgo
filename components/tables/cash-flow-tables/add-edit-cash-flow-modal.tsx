@@ -328,6 +328,7 @@ const AddEditCashFlowModal = ({
                         onBlur={onBlur}
                         value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
                         format="YYYY-MM-DD"
+                        showNow
                       />
                     </Space>
                   </ConfigProvider>

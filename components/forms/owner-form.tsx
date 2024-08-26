@@ -432,6 +432,7 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
                           className="p"
                           onChange={onChange} // send value to hook form
                           onBlur={onBlur}
+                          showNow={false}
                           value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
                           format={"YYYY-MM-DD"}
                         />
