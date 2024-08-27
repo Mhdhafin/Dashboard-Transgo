@@ -41,14 +41,8 @@ import { isEmpty } from "lodash";
 const formSchema = z
   .object({
     status: z.enum(["on_hold", "proccessed"]),
-    credit_amount: z
-      .number()
-      .min(1, { message: "price must be at least 1" })
-      .nullable(),
-    debit_amount: z
-      .number()
-      .min(1, { message: "price must be at least 1" })
-      .nullable(),
+    credit_amount: z.number().nullable(),
+    debit_amount: z.number().nullable(),
     description: z
       .string()
       .min(1, "Keterangan harus minimal 1 karakter")
@@ -67,11 +61,18 @@ const formSchema = z
       }),
     ]),
   })
-  .refine((data) => data.credit_amount !== null || data.debit_amount !== null, {
-    message: "Salah satu dari credit_amount atau debit_amount harus diisi",
-    path: ["credit_amount", "debit_amount"],
-  });
-
+  .refine(
+    (data) => {
+      if (data.credit_amount === null && data.debit_amount === null) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Biaya Tidak Boleh Kosong",
+      path: ["credit_amount"],
+    },
+  );
 type CashFlowSchema = z.infer<typeof formSchema>;
 
 interface IAddEditCashFlowModalProps {
@@ -365,9 +366,7 @@ const AddEditCashFlowModal = ({
                       </Space>
                     </ConfigProvider>
                   </FormControl>
-                  {fieldState.error && (
-                    <FormMessage>{fieldState.error.message}</FormMessage>
-                  )}
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -404,9 +403,9 @@ const AddEditCashFlowModal = ({
                         />
                       </div>
                     </FormControl>
-                    <FormMessage>
-                      {fieldState.error ? fieldState.error?.message : null}
-                    </FormMessage>
+                    {fieldState.error && (
+                      <FormMessage>{fieldState.error.message}</FormMessage>
+                    )}
                   </FormItem>
                 );
               }}
