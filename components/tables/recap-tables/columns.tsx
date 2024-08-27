@@ -191,8 +191,9 @@ export const columns: ColumnDef<IItems>[] = [
               {row.original?.credit_amount !== null ? "- " : "+ "}
               {formatRupiah(commission)}
               {row.original?.owner_commission !== undefined &&
-              row.original.owner_commission !== null
-                ? ` (${row.original.fleet?.commission?.owner}%)`
+              row.original.owner_commission !== null &&
+              row.original.fleet?.commission?.owner !== null
+                ? ` (${row.original.fleet.commission?.owner}%)`
                 : ""}
             </>
           ) : (
