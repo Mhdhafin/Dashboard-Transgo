@@ -39,6 +39,7 @@ import { Select as AntdSelect, Space } from "antd";
 import { NumericFormat } from "react-number-format";
 import { useGetDetailOwner, useGetInfinityOwners } from "@/hooks/api/useOwner";
 import OwnerDetail from "./section/owner-detail";
+import { useUser } from "@/context/UserContext";
 
 const fileSchema = z.custom<any>(
   (val: any) => {
@@ -97,11 +98,17 @@ const formSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
-  commission: z.object({
-    transgo: z.number(),
-    owner: z.number(),
-    partner: z.number(),
-  }),
+  commission: z
+    .object({
+      transgo: z.number(),
+      owner: z.number(),
+      partner: z.number(),
+    })
+    .refine((data) => data.owner + data.partner <= 100, {
+      message:
+        "Total persentase dari Owner dan Partner tidak boleh melebihi 100%",
+      path: ["owner", "partner"],
+    }),
 });
 
 const editFormSchema = z.object({
@@ -133,11 +140,17 @@ const editFormSchema = z.object({
   }),
   location_id: z.string().min(1, { message: "Tolong pilih lokasi" }),
   owner_id: z.number().nullable(),
-  commission: z.object({
-    transgo: z.number(),
-    owner: z.number(),
-    partner: z.number(),
-  }),
+  commission: z
+    .object({
+      transgo: z.number(),
+      owner: z.number(),
+      partner: z.number(),
+    })
+    .refine((data) => data.owner + data.partner <= 100, {
+      message:
+        "Total persentase dari Owner dan Partner tidak boleh melebihi 100%",
+      path: ["owner", "partner"],
+    }),
 });
 
 type CustomerFormValues = z.infer<typeof formSchema> & {
@@ -159,6 +172,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
   isEdit,
 }) => {
   const { fleetId } = useParams();
+  const { user } = useUser();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -226,6 +240,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     resolver: zodResolver(!initialData ? formSchema : editFormSchema),
     defaultValues,
   });
+
+  const formErrors = form.formState.errors;
 
   const { data: ownerData, isFetching: isFetchingOwner } = useGetDetailOwner(
     form.getValues("owner_id") || 0,
@@ -364,12 +380,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     }
   };
 
-  const [commission, setCommission] = useState({
-    owner: initialData?.commission?.owner || 0,
-    partner: initialData?.commission?.partner || 0,
-    transgo: initialData?.commission?.transgo || 100,
-  });
-
   const watchOwner = form.watch("commission.owner") || 0;
   const watchPartner = form.watch("commission.partner") || 0;
 
@@ -381,7 +391,8 @@ export const FleetForm: React.FC<FleetFormProps> = ({
     const transgoValue = remaining >= 0 ? remaining : 0;
 
     form.setValue("commission.transgo", transgoValue);
-  }, [watchOwner, watchPartner, form.setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchOwner, watchPartner]);
 
   return (
     <>
@@ -636,20 +647,22 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     value={initialData?.owner?.name}
                   />
                 </FormControl>
-                <Button
-                  className={cn(
-                    buttonVariants({ variant: "main" }),
-                    "w-[65px] h-[36px] !py-1.5",
-                  )}
-                  disabled={
-                    !form.getFieldState("owner_id").isDirty &&
-                    isEmpty(form.getValues("owner_id")?.toString())
-                  }
-                  type="button"
-                  onClick={() => setShowDetailOwner(true)}
-                >
-                  Lihat
-                </Button>
+                {user?.role !== "owner" && (
+                  <Button
+                    className={cn(
+                      buttonVariants({ variant: "main" }),
+                      "w-[65px] h-[36px] !py-1.5",
+                    )}
+                    disabled={
+                      !form.getFieldState("owner_id").isDirty &&
+                      isEmpty(form.getValues("owner_id")?.toString())
+                    }
+                    type="button"
+                    onClick={() => setShowDetailOwner(true)}
+                  >
+                    Lihat
+                  </Button>
+                )}
               </div>
               <FormMessage />
             </FormItem>
@@ -708,20 +721,22 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           )}
                         </AntdSelect>
                       </FormControl>
-                      <Button
-                        className={cn(
-                          buttonVariants({ variant: "main" }),
-                          "w-[65px] h-[36px] !py-1.5",
-                        )}
-                        disabled={
-                          !form.getFieldState("owner_id").isDirty &&
-                          isEmpty(form.getValues("owner_id")?.toString())
-                        }
-                        type="button"
-                        onClick={() => setShowDetailOwner(true)}
-                      >
-                        Lihat
-                      </Button>
+                      {user?.role !== "owner" && (
+                        <Button
+                          className={cn(
+                            buttonVariants({ variant: "main" }),
+                            "w-[65px] h-[36px] !py-1.5",
+                          )}
+                          disabled={
+                            !form.getFieldState("owner_id").isDirty &&
+                            isEmpty(form.getValues("owner_id")?.toString())
+                          }
+                          type="button"
+                          onClick={() => setShowDetailOwner(true)}
+                        >
+                          Lihat
+                        </Button>
+                      )}
                     </div>
                     <FormMessage />
                   </Space>
@@ -781,7 +796,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                           onBlur={field.onBlur}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -805,7 +819,6 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                       value={initialData?.commission?.partner}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               ) : (
                 <FormField
@@ -889,6 +902,11 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                   )}
                 />
               )}
+
+              <FormMessage className="col-span-3">
+                {/* @ts-ignore */}
+                {formErrors.commission?.owner?.partner?.message}
+              </FormMessage>
             </div>
           )}
 
