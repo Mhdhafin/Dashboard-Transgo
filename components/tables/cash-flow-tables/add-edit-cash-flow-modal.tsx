@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -46,18 +46,14 @@ dayjs.extend(timezone);
 const formSchema = z
   .object({
     status: z.enum(["on_hold", "proccessed"]),
-    credit_amount: z.union([
-      z.number().min(1, { message: "price must be at least 1" }),
-      z
-        .nullable(z.number())
-        .refine((val) => val !== null, { message: "Biaya Tidak Boleh kosong" }),
-    ]),
-    debit_amount: z.union([
-      z.number().min(1, { message: "price must be at least 1" }),
-      z
-        .nullable(z.number())
-        .refine((val) => val !== null, { message: "Biaya Tidak Boleh kosong" }),
-    ]),
+    credit_amount: z
+      .number()
+      .min(1, { message: "price must be at least 1" })
+      .nullable(),
+    debit_amount: z
+      .number()
+      .min(1, { message: "price must be at least 1" })
+      .nullable(),
     description: z
       .string()
       .min(1, "Keterangan harus minimal 1 karakter")
@@ -144,6 +140,22 @@ const AddEditCashFlowModal = ({
         : "debit_amount"
       : "credit_amount",
   );
+
+  useEffect(() => {
+    if (currentCategory === "credit_amount") {
+      const debitAmount = form.getValues("debit_amount");
+      if (debitAmount) {
+        form.setValue("credit_amount", debitAmount);
+        form.setValue("debit_amount", null);
+      }
+    } else if (currentCategory === "debit_amount") {
+      const creditAmount = form.getValues("credit_amount");
+      if (creditAmount) {
+        form.setValue("debit_amount", creditAmount);
+        form.setValue("credit_amount", null);
+      }
+    }
+  }, [currentCategory, form]);
 
   const handleCategoryChange = (
     value: "credit_amount" | "debit_amount" | string,
