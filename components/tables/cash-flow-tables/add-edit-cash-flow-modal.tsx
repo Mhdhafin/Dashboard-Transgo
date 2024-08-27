@@ -34,14 +34,9 @@ import {
 import { useDebounce } from "use-debounce";
 
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { isEmpty } from "lodash";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const formSchema = z
   .object({
@@ -352,10 +347,9 @@ const AddEditCashFlowModal = ({
                           onChange={(date) => {
                             if (date) {
                               field.onChange(
-                                dayjs(date)
-                                  .utc()
-                                  .startOf("day")
-                                  .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                                dayjs(date).format(
+                                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
+                                ),
                               );
                             }
                           }}
