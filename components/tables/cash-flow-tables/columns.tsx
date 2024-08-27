@@ -36,13 +36,9 @@ export interface ILedgersFleet {
   user: { name: string };
 }
 
-export const getColumns = ({
-  fleet,
-}: {
-  fleet: {
-    id: number;
-    name: string;
-  };
+export const getColumns = (fleet: {
+  id: number;
+  name: string;
 }): ColumnDef<ILedgersFleet>[] => {
   return [
     {

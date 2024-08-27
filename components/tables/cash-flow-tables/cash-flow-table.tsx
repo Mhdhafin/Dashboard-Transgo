@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, Plus } from "lucide-react";
 import {
   DoubleArrowLeftIcon,
@@ -64,7 +64,7 @@ const CashFlowTable = ({ fleet }: ICashFlowTableProps) => {
 
   const ledgersData = data?.data;
 
-  const columns = getColumns({ fleet });
+  const columns = useMemo(() => getColumns(fleet), [fleet]);
   const filteredColumns = columns.filter((item) => {
     if (user?.role === "owner" && item.id === "actions") return false;
 
