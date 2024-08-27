@@ -150,7 +150,7 @@ const AddEditCashFlowModal = ({
         form.setValue("credit_amount", null);
       }
     }
-  }, [currentCategory, form]);
+  }, [currentCategory]);
 
   const handleCategoryChange = (
     value: "credit_amount" | "debit_amount" | string,
@@ -170,60 +170,61 @@ const AddEditCashFlowModal = ({
   const queryClient = useQueryClient();
 
   const onSubmit = (data: CashFlowSchema) => {
-    if (isEdit) {
-      const newPayload = {
-        ...data,
-        fleet_id: fleet.id,
-      };
+    console.log(form.getValues("date"));
+    // if (isEdit) {
+    //   const newPayload = {
+    //     ...data,
+    //     fleet_id: fleet.id,
+    //   };
 
-      patchLedger(newPayload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
-          toast({
-            variant: "success",
-            title: "ledger successfully created!",
-          });
-          onClose();
-        },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! ada sesuatu yang error",
-            description: `error: ${
-              // @ts-ignore
-              error?.response?.data?.message || error?.message
-            }`,
-          });
-        },
-      });
+    //   patchLedger(newPayload, {
+    //     onSuccess: () => {
+    //       queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
+    //       toast({
+    //         variant: "success",
+    //         title: "ledger successfully created!",
+    //       });
+    //       onClose();
+    //     },
+    //     onError: (error) => {
+    //       toast({
+    //         variant: "destructive",
+    //         title: "Uh oh! ada sesuatu yang error",
+    //         description: `error: ${
+    //           // @ts-ignore
+    //           error?.response?.data?.message || error?.message
+    //         }`,
+    //       });
+    //     },
+    //   });
 
-      return;
-    }
-    const newPayload = {
-      ...data,
-      fleet_id: fleet.id,
-    };
+    //   return;
+    // }
+    // const newPayload = {
+    //   ...data,
+    //   fleet_id: fleet.id,
+    // };
 
-    createLedger(newPayload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
-        toast({
-          variant: "success",
-          title: "ledger successfully created!",
-        });
-        onClose();
-      },
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! ada sesuatu yang error",
-          description: `error: ${
-            // @ts-ignore
-            error?.response?.data?.message || error?.message
-          }`,
-        });
-      },
-    });
+    // createLedger(newPayload, {
+    //   onSuccess: () => {
+    //     queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
+    //     toast({
+    //       variant: "success",
+    //       title: "ledger successfully created!",
+    //     });
+    //     onClose();
+    //   },
+    //   onError: (error) => {
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Uh oh! ada sesuatu yang error",
+    //       description: `error: ${
+    //         // @ts-ignore
+    //         error?.response?.data?.message || error?.message
+    //       }`,
+    //     });
+    //   },
+    // });
   };
 
   return (
@@ -347,9 +348,9 @@ const AddEditCashFlowModal = ({
                           onChange={(date) => {
                             if (date) {
                               field.onChange(
-                                dayjs(date).format(
-                                  "YYYY-MM-DDTHH:mm:ss.SSS[Z]",
-                                ),
+                                dayjs(date)
+                                  .startOf("day")
+                                  .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
                               );
                             }
                           }}
