@@ -301,7 +301,7 @@ const AddEditCashFlowModal = ({
                               onClick={handleAddAndSelectCategory}
                               className="text-[rgba(0,0,0,0.88)]"
                             >
-                              Tambah {searchText}
+                              + Tambah Kategori &quot;{searchText}&quot;
                             </p>
                           )
                         }
