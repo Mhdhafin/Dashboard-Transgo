@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Spinner from "@/components/spinner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -21,18 +20,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NumericFormat } from "react-number-format";
 import { Input } from "@/components/ui/input";
 import { ConfigProvider, DatePicker, Space, Select as AntdSelect } from "antd";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   useGetInfinityCategories,
   usePatchLedgers,
@@ -50,19 +43,43 @@ import { isEmpty } from "lodash";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const formSchema = z.object({
-  status: z.enum(["pending", "done"]),
-  credit_amount: z.number().min(1, { message: "price is required" }).nullable(),
-  debit_amount: z.number().min(1, { message: "price is required" }).nullable(),
-  description: z
-    .string()
-    .min(1, "Keterangan harus minimal 1 karakter")
-    .max(30, "Keterangan maksimal 30 karakter"),
-  date: z.string({
-    required_error: "Tolong masukkan Tanggal",
-  }),
-  category_id: z.number().nullable(),
-});
+const formSchema = z
+  .object({
+    status: z.enum(["on_hold", "proccessed"]),
+    credit_amount: z.union([
+      z.number().min(1, { message: "price must be at least 1" }),
+      z
+        .nullable(z.number())
+        .refine((val) => val !== null, { message: "Biaya Tidak Boleh kosong" }),
+    ]),
+    debit_amount: z.union([
+      z.number().min(1, { message: "price must be at least 1" }),
+      z
+        .nullable(z.number())
+        .refine((val) => val !== null, { message: "Biaya Tidak Boleh kosong" }),
+    ]),
+    description: z
+      .string()
+      .min(1, "Keterangan harus minimal 1 karakter")
+      .max(30, "Keterangan maksimal 30 karakter"),
+    date: z
+      .string({
+        required_error: "Tolong masukkan Tanggal",
+      })
+      .refine((value) => value.trim() !== "", {
+        message: "Tanggal tidak boleh kosong",
+      }),
+    category_id: z.union([
+      z.number().min(1, { message: "price must be at least 1" }),
+      z.nullable(z.number()).refine((val) => val !== null, {
+        message: "Kategori Tidak Boleh kosong",
+      }),
+    ]),
+  })
+  .refine((data) => data.credit_amount !== null || data.debit_amount !== null, {
+    message: "Salah satu dari credit_amount atau debit_amount harus diisi",
+    path: ["credit_amount", "debit_amount"],
+  });
 
 type CashFlowSchema = z.infer<typeof formSchema>;
 
@@ -97,7 +114,7 @@ const AddEditCashFlowModal = ({
           category_id: initialData.category.id,
         }
       : {
-          status: "pending",
+          status: "on_hold",
           credit_amount: null,
           debit_amount: null,
           description: "",
@@ -206,7 +223,9 @@ const AddEditCashFlowModal = ({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader className="text-left">
-          <DialogTitle>Tambah Arus Pencatatan</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit Arus Pencatatan" : "Tambah Arus Pencatatan"}
+          </DialogTitle>
           <DialogDescription>
             Tindakan ini akan menambahkan arus pemasukan / pengeluaran untuk
             armada{" "}
@@ -228,7 +247,9 @@ const AddEditCashFlowModal = ({
               render={({ field }) => {
                 return (
                   <Space size={12} direction="vertical" className="w-full">
-                    <FormLabel>Kategori</FormLabel>
+                    <FormLabel className="relative label-required">
+                      Kategori
+                    </FormLabel>
                     <FormControl>
                       <AntdSelect
                         getPopupContainer={(trigger) => trigger.parentElement}
@@ -302,44 +323,48 @@ const AddEditCashFlowModal = ({
               )}
             />
 
-            <Controller
+            <FormField
               control={form.control}
               name="date"
-              render={({ field: { onChange, onBlur, value, ref } }) => {
-                return (
-                  <ConfigProvider>
-                    <Space size={12} direction="vertical" className="w-full">
-                      <FormLabel className="relative label-required">
-                        Tanggal
-                      </FormLabel>
-                      <DatePicker
-                        className="w-full"
-                        size="large"
-                        onChange={(date) => {
-                          if (date) {
-                            onChange(
-                              dayjs(date)
-                                .utc()
-                                .startOf("day")
-                                .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-                            ); // Format directly to string
+              render={({ field, fieldState }) => (
+                <FormItem>
+                  <FormLabel className="relative label-required">
+                    Tanggal
+                  </FormLabel>
+                  <FormControl>
+                    <ConfigProvider>
+                      <Space size={12} direction="vertical" className="w-full">
+                        <DatePicker
+                          className="w-full"
+                          size="large"
+                          onChange={(date) => {
+                            if (date) {
+                              field.onChange(
+                                dayjs(date)
+                                  .utc()
+                                  .startOf("day")
+                                  .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                              );
+                            }
+                          }}
+                          onBlur={field.onBlur}
+                          value={
+                            field.value
+                              ? dayjs(field.value, "YYYY-MM-DD")
+                              : undefined
                           }
-                        }}
-                        onBlur={onBlur}
-                        value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
-                        format="YYYY-MM-DD"
-                        showNow
-                      />
-                    </Space>
-                  </ConfigProvider>
-                );
-              }}
+                          format="YYYY-MM-DD"
+                          showNow
+                        />
+                      </Space>
+                    </ConfigProvider>
+                  </FormControl>
+                  {fieldState.error && (
+                    <FormMessage>{fieldState.error.message}</FormMessage>
+                  )}
+                </FormItem>
+              )}
             />
-            {form.formState.errors.date && (
-              <span className="text-red-500">
-                {form.formState.errors.date?.message}
-              </span>
-            )}
 
             <FormField
               name={
@@ -348,7 +373,8 @@ const AddEditCashFlowModal = ({
                   : "debit_amount"
               }
               control={form.control}
-              render={({ field }) => {
+              render={({ field, fieldState }) => {
+                console.log("fieldStateL ", fieldState);
                 return (
                   <FormItem>
                     <FormLabel className="relative label-required">
@@ -364,6 +390,7 @@ const AddEditCashFlowModal = ({
                           type="text"
                           className="h-[40px] pl-9 disabled:opacity-90"
                           thousandSeparator=","
+                          allowNegative={false}
                           value={field.value || ""}
                           onValueChange={(values) =>
                             field.onChange(Number(values.value))
@@ -372,7 +399,9 @@ const AddEditCashFlowModal = ({
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage>
+                      {fieldState.error ? fieldState.error?.message : null}
+                    </FormMessage>
                   </FormItem>
                 );
               }}
@@ -412,14 +441,16 @@ const AddEditCashFlowModal = ({
                     <FormControl>
                       <Tabs
                         onValueChange={field.onChange}
-                        defaultValue="done"
-                        value={field.value == "pending" ? "pending" : "done"}
+                        defaultValue="proccessed"
+                        value={
+                          field.value == "on_hold" ? "on_hold" : "proccessed"
+                        }
                       >
                         <TabsList className="grid w-full grid-cols-2 !h-10">
-                          <TabsTrigger value="pending" className="!h-8">
+                          <TabsTrigger value="on_hold" className="!h-8">
                             Belum Diproses
                           </TabsTrigger>
-                          <TabsTrigger value="done" className="!h-8">
+                          <TabsTrigger value="proccessed" className="!h-8">
                             Sudah Diproses
                           </TabsTrigger>
                         </TabsList>
@@ -460,7 +491,7 @@ const AddEditCashFlowModal = ({
                 variant="main"
                 type="submit"
               >
-                Konfirmasi Pencatatan
+                {isEdit ? "Edit Pencatatan" : "Konfirmasi Pencatatan"}
               </Button>
             </DialogFooter>
           </form>

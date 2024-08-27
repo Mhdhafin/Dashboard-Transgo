@@ -61,7 +61,15 @@ export const getColumns = ({
       header: "Kategori",
       cell: ({ row }) =>
         row.original.category?.name ? (
-          <span className="text-green-500 font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full bg-green-50">
+          <span
+            className={cn(
+              row.original.debit_amount !== null
+                ? "text-green-500"
+                : "text-red-500",
+              row.original.debit_amount !== null ? "bg-green-50" : "bg-red-50",
+              "font-medium text-[12px] leading-5 px-2.5 py-1 rounded-full",
+            )}
+          >
             {row.original.category.name}
           </span>
         ) : null,
@@ -83,7 +91,7 @@ export const getColumns = ({
       },
       cell: ({ row }) => (
         <span className="text-sm font-medium">
-          {row.original.credit_amount
+          {row.original.credit_amount !== null
             ? "- " + formatRupiah(row.original.credit_amount)
             : ""}
         </span>
@@ -97,7 +105,7 @@ export const getColumns = ({
       },
       cell: ({ row }) => (
         <span className="text-sm font-medium">
-          {row.original.debit_amount
+          {row.original.debit_amount !== null
             ? "+ " + formatRupiah(row.original.debit_amount)
             : ""}
         </span>
