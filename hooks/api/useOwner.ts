@@ -53,6 +53,7 @@ export const useGetInfinityOwners = (query?: string) => {
 
 export const useGetDetailOwner = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
+  const { user } = useUser();
 
   const getDetailOwner = () => {
     return axiosAuth.get(`${baseEndpoint}/${id}`);
@@ -61,6 +62,7 @@ export const useGetDetailOwner = (id: string | number) => {
   return useQuery({
     queryKey: ["owners", id],
     queryFn: getDetailOwner,
+    enabled: user?.role !== "owner" && !!id,
   });
 };
 
