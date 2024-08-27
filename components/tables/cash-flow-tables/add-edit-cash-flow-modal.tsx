@@ -442,9 +442,7 @@ const AddEditCashFlowModal = ({
             />
 
             <FormItem>
-              <FormLabel className="relative label-required">
-                Kategori
-              </FormLabel>
+              <FormLabel className="relative label-required">Arus</FormLabel>
               <FormControl>
                 <Tabs
                   onValueChange={handleCategoryChange}
