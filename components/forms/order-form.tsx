@@ -1225,6 +1225,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                               format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
                               showTime
                               placeholder="Pilih tanggal dan waktu mulai"
+                              showNow={false}
                             />
                           </FormControl>
                           <FormMessage />

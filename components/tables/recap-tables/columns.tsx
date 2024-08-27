@@ -50,8 +50,10 @@ export const columns: ColumnDef<IItems>[] = [
       row.original.category?.name ? (
         <span
           className={cn(
-            row.original.debit_amount ? "text-green-500" : "text-red-500",
-            row.original.debit_amount ? "bg-green-50" : "bg-red-50",
+            row.original.debit_amount !== null
+              ? "text-green-500"
+              : "text-red-500",
+            row.original.debit_amount !== null ? "bg-green-50" : "bg-red-50",
             "font-medium text-[12px] w-fit h-[20px] leading-5 px-2.5 py-1 rounded-full",
           )}
         >
@@ -138,7 +140,7 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
-        {row.original.debit_amount
+        {row.original.debit_amount !== null
           ? "+ " + formatRupiah(row.original.debit_amount)
           : ""}
       </span>
@@ -158,7 +160,7 @@ export const columns: ColumnDef<IItems>[] = [
     ),
     cell: ({ row }) => (
       <span className="text-sm font-medium">
-        {row.original.credit_amount
+        {row.original.credit_amount !== null
           ? "- " + formatRupiah(row.original.credit_amount)
           : ""}
       </span>
@@ -184,12 +186,19 @@ export const columns: ColumnDef<IItems>[] = [
         row.original?.debit_amount;
       return (
         <span className="text-sm font-medium">
-          {commission
-            ? `${commission < 0 ? "-" : "+"}` + formatRupiah(commission)
-            : ""}{" "}
-          {row.original.fleet?.commission?.owner
-            ? `(${row.original.fleet?.commission?.owner}%)`
-            : ""}
+          {commission ? (
+            <>
+              {row.original?.credit_amount !== null ? "- " : "+ "}
+              {formatRupiah(commission)}
+              {row.original?.owner_commission !== undefined &&
+              row.original.owner_commission !== null &&
+              row.original.fleet?.commission?.owner !== null
+                ? ` (${row.original.fleet.commission?.owner}%)`
+                : ""}
+            </>
+          ) : (
+            ""
+          )}
         </span>
       );
     },

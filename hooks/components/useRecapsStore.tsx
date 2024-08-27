@@ -1,4 +1,4 @@
-import { useGetRecaps } from "../api/useRecaps";
+import { useGetRecaps } from "../api/useLedgers";
 
 interface IFleet {
   color: string | null;
@@ -62,8 +62,8 @@ const useRecapsStore = (params?: any) => {
         date: "",
         end_date: "",
         duration: 0,
-        credit_amount: 0,
-        debit_amount: 0,
+        credit_amount: null,
+        debit_amount: null,
         user: { name: "" },
         commission: 0,
         description: "",

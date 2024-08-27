@@ -436,6 +436,7 @@ export const DriverForm: React.FC<DriverFormProps> = ({
                           onBlur={onBlur}
                           value={value ? dayjs(value, "YYYY-MM-DD") : undefined}
                           format={"YYYY-MM-DD"}
+                          showNow={false}
                         />
                       </Space>
                     </ConfigProvider>

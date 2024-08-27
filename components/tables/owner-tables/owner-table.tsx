@@ -176,6 +176,7 @@ export function OwnerTable<TData, TValue>({
       setSearchQuery("");
     }
   }, [q]);
+
   return (
     <>
       <Input
