@@ -159,7 +159,7 @@ const AddEditCashFlowModal = ({
   };
 
   const { mutate: createLedger } = usePostLedgers();
-  const { mutate: patchLedger } = usePatchLedgers(fleet.id);
+  const { mutate: patchLedger } = usePatchLedgers(initialData?.id);
 
   const [searchCategory, setSearchCategory] = useState("");
   const [searchCategoryDebounce] = useDebounce(searchCategory, 500);
