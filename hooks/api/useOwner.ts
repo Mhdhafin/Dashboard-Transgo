@@ -105,7 +105,7 @@ export const useDeleteOwner = (id: number) => {
   };
 
   return useMutation({
-    mutationFn: () => deleteOwnerFn(id),
+    mutationFn: deleteOwnerFn,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["owners"] });
     },
