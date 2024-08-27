@@ -374,7 +374,6 @@ const AddEditCashFlowModal = ({
               }
               control={form.control}
               render={({ field, fieldState }) => {
-                console.log("fieldStateL ", fieldState);
                 return (
                   <FormItem>
                     <FormLabel className="relative label-required">
