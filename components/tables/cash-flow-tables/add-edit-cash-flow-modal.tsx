@@ -55,7 +55,8 @@ const formSchema = z
         message: "Tanggal tidak boleh kosong",
       }),
     category_id: z.union([
-      z.number().min(1, { message: "price must be at least 1" }),
+      z.string().min(1, { message: "Kategori tidak boleh kosong" }),
+      z.number().min(1, { message: "Kategori tidak boleh kosong" }),
       z.nullable(z.number()).refine((val) => val !== null, {
         message: "Kategori Tidak Boleh kosong",
       }),
@@ -94,6 +95,16 @@ const AddEditCashFlowModal = ({
   isEdit = false,
 }: IAddEditCashFlowModalProps) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const [localOptions, setLocalOptions] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const handleAddAndSelectCategory = () => {
+    const newOption = { id: searchText, name: searchText };
+    setLocalOptions((prevOptions) => [...prevOptions, newOption]);
+    form.setValue("category_id", newOption.id);
+  };
 
   const defaultValues =
     !isEmpty(initialData) && isEdit
@@ -151,6 +162,7 @@ const AddEditCashFlowModal = ({
         form.setValue("credit_amount", null);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCategory]);
 
   const handleCategoryChange = (
@@ -171,12 +183,17 @@ const AddEditCashFlowModal = ({
   const queryClient = useQueryClient();
 
   const onSubmit = (data: CashFlowSchema) => {
-    if (isEdit) {
-      const newPayload = {
-        ...data,
-        fleet_id: fleet.id,
-      };
+    const { category_id, ...restData } = data;
 
+    const newPayload = {
+      ...restData,
+      fleet_id: fleet.id,
+      ...(typeof category_id === "string"
+        ? { category: category_id }
+        : { category_id }),
+    };
+
+    if (isEdit) {
       patchLedger(newPayload, {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["ledgers", "fleet"] });
@@ -200,10 +217,6 @@ const AddEditCashFlowModal = ({
 
       return;
     }
-    const newPayload = {
-      ...data,
-      fleet_id: fleet.id,
-    };
 
     createLedger(newPayload, {
       onSuccess: () => {
@@ -265,7 +278,10 @@ const AddEditCashFlowModal = ({
                         value={field.value}
                         placeholder="Pilih Kategori"
                         style={{ width: "100%", height: "36px" }}
-                        onSearch={setSearchCategory}
+                        onSearch={(value) => {
+                          setSearchCategory(value);
+                          setSearchText(value);
+                        }}
                         onChange={field.onChange}
                         onPopupScroll={(event) => {
                           const target = event.target as HTMLDivElement;
@@ -280,7 +296,14 @@ const AddEditCashFlowModal = ({
                         notFoundContent={
                           isFetchingNextPage ? (
                             <p className="px-3 text-sm">loading</p>
-                          ) : null
+                          ) : (
+                            <p
+                              onClick={handleAddAndSelectCategory}
+                              className="text-[rgba(0,0,0,0.88)]"
+                            >
+                              Tambah {searchText}
+                            </p>
+                          )
                         }
                       >
                         {isEdit && (
@@ -298,6 +321,14 @@ const AddEditCashFlowModal = ({
                           }),
                         )}
 
+                        {localOptions.map((item: any) => {
+                          return (
+                            <Option key={item.id} value={item.id}>
+                              {item.name}
+                            </Option>
+                          );
+                        })}
+
                         {isFetchingNextPage && (
                           <Option disabled>
                             <p className="px-3 text-sm">loading</p>
@@ -310,7 +341,6 @@ const AddEditCashFlowModal = ({
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="description"
