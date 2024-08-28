@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import React from "react";
 
-export default function RecapTableV2<TData, TValue>({
+export default function RecapTable<TData, TValue>({
   columns,
   data,
   total,

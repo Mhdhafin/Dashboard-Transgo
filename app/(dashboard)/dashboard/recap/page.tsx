@@ -11,7 +11,7 @@ import useRecapsStore, { ITotal } from "@/hooks/components/useRecapsStore";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
 import Spinner from "@/components/spinner";
 import dayjs from "dayjs";
-import RecapTableV2 from "@/components/tables/recap-tables/recap-table-v2";
+import RecapTable from "@/components/tables/recap-tables/recap-table";
 
 const Page = () => {
   const { month, year, dateRange } = useMonthYearState();
@@ -40,9 +40,7 @@ const Page = () => {
         <YearAndMonthSelector withDateRange />
       </div>
 
-      {/* <RecapTable columns={columns} data={items} total={total} /> */}
-
-      <RecapTableV2 columns={columns} data={items} total={total} />
+      <RecapTable columns={columns} data={items} total={total} />
     </div>
   );
 };
