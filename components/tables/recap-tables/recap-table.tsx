@@ -1,4 +1,3 @@
-import header from "@/components/layout/header";
 import { ITotal } from "@/hooks/components/useRecapsStore";
 import { formatRupiah } from "@/lib/utils";
 import {
@@ -9,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import React from "react";
 
-export default function RecapTableV2<TData, TValue>({
+export default function RecapTable<TData, TValue>({
   columns,
   data,
   total,
@@ -131,7 +130,7 @@ export default function RecapTableV2<TData, TValue>({
             <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[200px]">
               {formatRupiah(total.credit)}
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[0px]">
+            <td className="text-center h-[64px] bg-blue-500 text-white text-sm font-bold sticky right-[0px]">
               {formatRupiah(total.owner_comission)}
             </td>
           </tr>
