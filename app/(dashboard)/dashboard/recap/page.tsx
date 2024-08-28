@@ -2,12 +2,10 @@
 
 import React from "react";
 
-import { formatRupiah } from "@/lib/utils";
-
 import YearAndMonthSelector from "@/components/calendar/year-and-month-selector";
 import { Heading } from "@/components/ui/heading";
 import { columns } from "@/components/tables/recap-tables/columns";
-import useRecapsStore, { ITotal } from "@/hooks/components/useRecapsStore";
+import useRecapsStore from "@/hooks/components/useRecapsStore";
 import { useMonthYearState } from "@/hooks/useMonthYearState";
 import Spinner from "@/components/spinner";
 import dayjs from "dayjs";
@@ -33,10 +31,7 @@ const Page = () => {
   return (
     <div className="flex-1 space-y-5 p-4 md:p-8 pt-6">
       <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-5">
-          <Heading title="Recap Pencatatan" />
-          <CommissionAmount total={total} />
-        </div>
+        <Heading title="Recap Pencatatan" />
         <YearAndMonthSelector withDateRange />
       </div>
 
@@ -44,13 +39,5 @@ const Page = () => {
     </div>
   );
 };
-
-const CommissionAmount = ({ total }: { total: ITotal }) => (
-  <div className="rounded-[8px] bg-blue-500 p-[8px_12px]">
-    <h4 className="text-[20px] leading-7 font-semibold text-white">
-      Komisi : {formatRupiah(total?.owner_comission || 0)}
-    </h4>
-  </div>
-);
 
 export default Page;
