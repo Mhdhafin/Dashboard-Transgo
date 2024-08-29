@@ -745,170 +745,171 @@ export const FleetForm: React.FC<FleetFormProps> = ({
             />
           )}
 
-          {!isEmpty(form.getValues("owner_id")?.toString()) && (
-            <div className="md:grid md:grid-cols-3 gap-5">
-              {!isEdit ? (
-                <FormItem>
-                  <FormLabel>Komisi Owner %</FormLabel>
-                  <FormControl>
-                    <NumericFormat
-                      disabled={!isEdit || loading}
-                      customInput={Input}
-                      type="text"
-                      isAllowed={({ floatValue }) =>
-                        floatValue === undefined || floatValue <= 100
-                      }
-                      thousandSeparator
-                      allowNegative={false}
-                      className="disabled:opacity-90"
-                      placeholder="Masukkan Komisi (contoh: 70 %)"
-                      value={initialData?.commission?.owner}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="commission.owner"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Komisi Owner %
-                      </FormLabel>
-                      <FormControl>
-                        <NumericFormat
-                          disabled={!isEdit || loading}
-                          customInput={Input}
-                          type="text"
-                          isAllowed={({ floatValue }) =>
-                            floatValue === undefined || floatValue <= 100
-                          }
-                          thousandSeparator
-                          allowNegative={false}
-                          placeholder="Masukkan Komisi (contoh: 70 %)"
-                          className="disabled:opacity-90"
-                          value={field.value}
-                          onValueChange={({ floatValue }) =>
-                            floatValue !== undefined &&
-                            field.onChange(floatValue || 0)
-                          }
-                          onBlur={field.onBlur}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              )}
+          {user?.role !== "owner" &&
+            !isEmpty(form.getValues("owner_id")?.toString()) && (
+              <div className="md:grid md:grid-cols-3 gap-5">
+                {!isEdit ? (
+                  <FormItem>
+                    <FormLabel>Komisi Owner %</FormLabel>
+                    <FormControl>
+                      <NumericFormat
+                        disabled={!isEdit || loading}
+                        customInput={Input}
+                        type="text"
+                        isAllowed={({ floatValue }) =>
+                          floatValue === undefined || floatValue <= 100
+                        }
+                        thousandSeparator
+                        allowNegative={false}
+                        className="disabled:opacity-90"
+                        placeholder="Masukkan Komisi (contoh: 70 %)"
+                        value={initialData?.commission?.owner}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="commission.owner"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="relative label-required">
+                          Komisi Owner %
+                        </FormLabel>
+                        <FormControl>
+                          <NumericFormat
+                            disabled={!isEdit || loading}
+                            customInput={Input}
+                            type="text"
+                            isAllowed={({ floatValue }) =>
+                              floatValue === undefined || floatValue <= 100
+                            }
+                            thousandSeparator
+                            allowNegative={false}
+                            placeholder="Masukkan Komisi (contoh: 70 %)"
+                            className="disabled:opacity-90"
+                            value={field.value}
+                            onValueChange={({ floatValue }) =>
+                              floatValue !== undefined &&
+                              field.onChange(floatValue || 0)
+                            }
+                            onBlur={field.onBlur}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-              {!isEdit ? (
-                <FormItem>
-                  <FormLabel>Komisi Partner %</FormLabel>
-                  <FormControl>
-                    <NumericFormat
-                      disabled={!isEdit || loading}
-                      customInput={Input}
-                      type="text"
-                      isAllowed={({ floatValue }) =>
-                        floatValue === undefined || floatValue <= 100
-                      }
-                      thousandSeparator
-                      allowNegative={false}
-                      placeholder="Masukkan Komisi (contoh: 70 %)"
-                      className="disabled:opacity-90"
-                      value={initialData?.commission?.partner}
-                    />
-                  </FormControl>
-                </FormItem>
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="commission.partner"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Komisi Partner %</FormLabel>
-                      <FormControl>
-                        <NumericFormat
-                          disabled={!isEdit || loading}
-                          customInput={Input}
-                          type="text"
-                          isAllowed={({ floatValue }) =>
-                            floatValue === undefined || floatValue <= 100
-                          }
-                          thousandSeparator
-                          allowNegative={false}
-                          placeholder="Masukkan Komisi (contoh: 70 %)"
-                          className="disabled:opacity-90"
-                          value={field.value}
-                          onValueChange={({ floatValue }) =>
-                            floatValue !== undefined &&
-                            field.onChange(floatValue || 0)
-                          }
-                          onBlur={field.onBlur}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                {!isEdit ? (
+                  <FormItem>
+                    <FormLabel>Komisi Partner %</FormLabel>
+                    <FormControl>
+                      <NumericFormat
+                        disabled={!isEdit || loading}
+                        customInput={Input}
+                        type="text"
+                        isAllowed={({ floatValue }) =>
+                          floatValue === undefined || floatValue <= 100
+                        }
+                        thousandSeparator
+                        allowNegative={false}
+                        placeholder="Masukkan Komisi (contoh: 70 %)"
+                        className="disabled:opacity-90"
+                        value={initialData?.commission?.partner}
+                      />
+                    </FormControl>
+                  </FormItem>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="commission.partner"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Komisi Partner %</FormLabel>
+                        <FormControl>
+                          <NumericFormat
+                            disabled={!isEdit || loading}
+                            customInput={Input}
+                            type="text"
+                            isAllowed={({ floatValue }) =>
+                              floatValue === undefined || floatValue <= 100
+                            }
+                            thousandSeparator
+                            allowNegative={false}
+                            placeholder="Masukkan Komisi (contoh: 70 %)"
+                            className="disabled:opacity-90"
+                            value={field.value}
+                            onValueChange={({ floatValue }) =>
+                              floatValue !== undefined &&
+                              field.onChange(floatValue || 0)
+                            }
+                            onBlur={field.onBlur}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-              {!isEdit ? (
-                <FormItem>
-                  <FormLabel>Komisi Transgo % (Otomatis)</FormLabel>
-                  <FormControl>
-                    <NumericFormat
-                      disabled={!isEdit || loading}
-                      customInput={Input}
-                      type="text"
-                      isAllowed={({ floatValue }) =>
-                        floatValue === undefined || floatValue <= 100
-                      }
-                      thousandSeparator
-                      allowNegative={false}
-                      placeholder="Masukkan Komisi (contoh: 70 %)"
-                      className="disabled:opacity-90"
-                      value={initialData?.commission?.transgo}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="commission.transgo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Komisi Transgo % (Otomatis)
-                      </FormLabel>
-                      <FormControl>
-                        <NumericFormat
-                          disabled
-                          customInput={Input}
-                          type="text"
-                          isAllowed={({ floatValue }) =>
-                            floatValue === undefined || floatValue <= 100
-                          }
-                          thousandSeparator
-                          allowNegative={false}
-                          className="disabled:opacity-90"
-                          value={field.value}
-                          onBlur={field.onBlur}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+                {!isEdit ? (
+                  <FormItem>
+                    <FormLabel>Komisi Transgo % (Otomatis)</FormLabel>
+                    <FormControl>
+                      <NumericFormat
+                        disabled={!isEdit || loading}
+                        customInput={Input}
+                        type="text"
+                        isAllowed={({ floatValue }) =>
+                          floatValue === undefined || floatValue <= 100
+                        }
+                        thousandSeparator
+                        allowNegative={false}
+                        placeholder="Masukkan Komisi (contoh: 70 %)"
+                        className="disabled:opacity-90"
+                        value={initialData?.commission?.transgo}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="commission.transgo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="relative label-required">
+                          Komisi Transgo % (Otomatis)
+                        </FormLabel>
+                        <FormControl>
+                          <NumericFormat
+                            disabled
+                            customInput={Input}
+                            type="text"
+                            isAllowed={({ floatValue }) =>
+                              floatValue === undefined || floatValue <= 100
+                            }
+                            thousandSeparator
+                            allowNegative={false}
+                            className="disabled:opacity-90"
+                            value={field.value}
+                            onBlur={field.onBlur}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-              <FormMessage className="col-span-3">
-                {/* @ts-ignore */}
-                {formErrors.commission?.owner?.partner?.message}
-              </FormMessage>
-            </div>
-          )}
+                <FormMessage className="col-span-3">
+                  {/* @ts-ignore */}
+                  {formErrors.commission?.owner?.partner?.message}
+                </FormMessage>
+              </div>
+            )}
 
           <FormField
             control={form.control}
