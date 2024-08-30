@@ -121,18 +121,33 @@ export default function RecapTable<TData, TValue>({
             >
               Jumlah
             </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[600px]">
-              {total.duration || 0} hari
-            </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[400px]">
-              {formatRupiah(total.debit)}
-            </td>
-            <td className="text-center h-[64px] bg-white text-neutral-700 text-sm font-bold sticky right-[200px]">
-              {formatRupiah(total.credit)}
-            </td>
-            <td className="text-center h-[64px] bg-blue-500 text-white text-sm font-bold sticky right-[0px]">
-              {formatRupiah(total.owner_comission)}
-            </td>
+            {[
+              {
+                value: `${total.duration || 0} hari`,
+                additionalClasses: "right-[600px] bg-white text-neutral-700",
+              },
+              {
+                value: formatRupiah(total.debit),
+                additionalClasses: "right-[400px] bg-white text-neutral-700",
+              },
+              {
+                value: formatRupiah(total.credit),
+                additionalClasses: "right-[200px] bg-white text-neutral-700",
+              },
+              {
+                value: formatRupiah(total.owner_comission),
+                additionalClasses: "right-[0px] bg-blue-500 text-white",
+              },
+            ].map((item, index) => (
+              <td
+                key={index}
+                className={`text-center h-[64px] text-sm font-bold sticky ${
+                  item.additionalClasses || ""
+                }`}
+              >
+                {item.value}
+              </td>
+            ))}
           </tr>
         </tfoot>
       </table>
