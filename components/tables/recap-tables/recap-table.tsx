@@ -24,16 +24,16 @@ export default function RecapTable<TData, TValue>({
   });
 
   return (
-    <div className="relative border max-h-[calc(100vh-200px)] border-solid rounded-lg overflow-auto">
-      <table className="min-w-full divide-y divide-gray-200">
+    <div className="relative border max-h-[calc(100vh-200px)] border-neutral-200 border-solid rounded-lg overflow-auto">
+      <table className="min-w-full border-separate border-spacing-0">
         <thead className="bg-slate-200">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-slate-200 top-0 sticky z-50">
+            <tr key={headerGroup.id} className="top-0 sticky z-50">
               {headerGroup.headers.map((header) => {
                 return (
                   <th
                     key={header.id}
-                    className={`h-[48px] bg-slate-200 py-[14px] ${
+                    className={`h-[48px] bg-slate-200 border-b border-neutral-200 border-solid py-[14px] ${
                       // @ts-ignore
                       header.column.columnDef.meta?.centerHeader
                         ? "text-center last:pr-[10px]"
@@ -79,7 +79,7 @@ export default function RecapTable<TData, TValue>({
                 return (
                   <td
                     key={cell.id}
-                    className={`h-[48px] bg-white ${
+                    className={`h-[48px] bg-white border-b border-solid border-neutral-200 ${
                       // @ts-ignore
                       cell.column.columnDef.meta?.centerHeader
                         ? "text-center last:pr-[10px]"
@@ -113,10 +113,10 @@ export default function RecapTable<TData, TValue>({
             </tr>
           ))}
         </tbody>
-        <tfoot className="bg-gray-50 sticky bottom-0 z-50 border-t border-solid">
+        <tfoot className="sticky bottom-0 z-50 w-full">
           <tr>
             <td
-              className="text-center h-[64px] bg-white text-neutral-700 text-sm font-semibold"
+              className="text-center h-[64px] bg-white text-neutral-700 text-sm font-semibold border-neutral-200 border-t border-solid"
               colSpan={6}
             >
               Jumlah
@@ -141,7 +141,7 @@ export default function RecapTable<TData, TValue>({
             ].map((item, index) => (
               <td
                 key={index}
-                className={`text-center h-[64px] text-sm font-bold sticky ${
+                className={`text-center h-[64px] border-neutral-200 border-t border-solid text-sm font-bold sticky ${
                   item.additionalClasses || ""
                 }`}
               >
