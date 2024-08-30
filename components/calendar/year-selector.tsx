@@ -11,21 +11,13 @@ const YearSelector = () => {
 
   return (
     <div className="flex flex-row gap-1 items-center">
-      <Button
-        variant="outline"
-        className="h-8 w-8 p-0"
-        onClick={handlePrevYear}
-      >
+      <Button variant="outline" className="size-9 p-0" onClick={handlePrevYear}>
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <Button variant="outline" className="h-8">
+      <Button variant="outline" className="h-9">
         {year}
       </Button>
-      <Button
-        variant="outline"
-        className="h-8 w-8 p-0"
-        onClick={handleNextYear}
-      >
+      <Button variant="outline" className="size-9 p-0" onClick={handleNextYear}>
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
