@@ -9,6 +9,14 @@ import "dayjs/locale/id";
 import { IItems } from "@/hooks/components/useRecapsStore";
 
 import { getLedgerStatusLabel, getStatusVariant } from "./utils";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { HoverCardPortal } from "@radix-ui/react-hover-card";
+import { CalendarDays } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 
@@ -111,7 +119,6 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
-
       index: 3,
     },
     header: () => (
@@ -121,9 +128,46 @@ export const columns: ColumnDef<IItems>[] = [
     enableSorting: false,
     cell: ({ row }) =>
       row.original.duration ? (
-        <span className="bg-[#f5f5f5] font-medium text-[12px] leading-5 rounded-full py-1 px-2.5">
-          {row.original.duration} Hari
-        </span>
+        <HoverCard>
+          <HoverCardTrigger>
+            <span className="bg-[#f5f5f5] font-medium text-[12px] leading-5 rounded-full py-1 px-2.5">
+              {row.original.duration} Hari
+            </span>
+          </HoverCardTrigger>
+          <HoverCardPortal container={document.body}>
+            <HoverCardContent>
+              <div className="flex items-center">
+                <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+                <span className="text-muted-foreground font-normal text-[12px] leading-4">
+                  Tanggal Pengambilan
+                </span>
+              </div>
+              <div className="pt-1">
+                <p className="text-[14px] font-semibold leading-5">
+                  {dayjs(row.original?.date).format("dddd, DD MMMM YYYY")}
+                </p>
+                <p className="text-[14px] font-normal leading-5">
+                  Jam {dayjs(row.original.date).format("H:mm")} WIB
+                </p>
+              </div>
+              <Separator className="my-4" />
+              <div className="flex items-center">
+                <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+                <span className="text-muted-foreground font-normal text-[12px] leading-4">
+                  Tanggal Pengembilan
+                </span>
+              </div>
+              <div className="pt-1">
+                <p className="text-[14px] font-semibold leading-5">
+                  {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
+                </p>
+                <p className="text-[14px] font-normal leading-5">
+                  Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
+                </p>
+              </div>
+            </HoverCardContent>
+          </HoverCardPortal>
+        </HoverCard>
       ) : null,
   },
   {
@@ -131,7 +175,6 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
-
       index: 2,
     },
     size: 200,
@@ -151,7 +194,6 @@ export const columns: ColumnDef<IItems>[] = [
     meta: {
       centerHeader: true,
       stickyColumn: true,
-
       index: 1,
     },
     size: 200,
