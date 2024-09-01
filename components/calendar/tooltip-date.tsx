@@ -1,10 +1,14 @@
 import React from "react";
+import dayjs from "dayjs";
 
 import { HoverCardContent } from "../ui/hover-card";
 import { Separator } from "../ui/separator";
 import { ORDER_STATUS, PAYMENT_STATUS } from "./utils";
 
 import { IUsage } from "./types";
+
+import "dayjs/locale/id";
+dayjs.locale("id");
 
 const TooltipDate = ({ data }: { data: IUsage }) => {
   return (

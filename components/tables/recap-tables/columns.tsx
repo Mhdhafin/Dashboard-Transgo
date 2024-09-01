@@ -18,6 +18,7 @@ import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import { CalendarDays } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 const duration = require("dayjs/plugin/duration");
+dayjs.locale("id");
 dayjs.extend(duration);
 
 export const columns: ColumnDef<IItems>[] = [
