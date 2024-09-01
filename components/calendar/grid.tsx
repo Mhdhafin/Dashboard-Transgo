@@ -6,6 +6,9 @@ import { ORDER_STATUS } from "./utils";
 import { ICalendarData } from "./types";
 import { useUser } from "@/context/UserContext";
 
+const DAY_WIDTH = 64;
+const BOX_HEIGHT = 40;
+
 const Grid = ({
   dates,
   data,
@@ -35,6 +38,29 @@ const Grid = ({
         : `/dashboard/orders/${orderId}/detail`;
 
     window.open(url);
+  };
+
+  const handleOffsets = (
+    startOffset: number,
+    endOffset: number,
+    startTime: any,
+    endTime: any,
+    totalHours: number,
+  ) => {
+    if (startOffset === -1 && endOffset === -1) {
+      return null;
+    } else if (endOffset === -1) {
+      const endOfMonth = startTime.endOf("month");
+      const hoursInCurrentMonth = endOfMonth.diff(startTime, "hour", true);
+      return (hoursInCurrentMonth / 24) * DAY_WIDTH;
+    } else if (startOffset === -1) {
+      startOffset = 0;
+      const startOfMonth = endTime.startOf("month");
+      const hoursInCurrentMonth = endTime.diff(startOfMonth, "hour", true);
+      return (hoursInCurrentMonth / 24) * DAY_WIDTH;
+    } else {
+      return (totalHours / 24) * DAY_WIDTH;
+    }
   };
 
   return (
@@ -71,52 +97,37 @@ const Grid = ({
             const endOffset = getDayOffset(endTime.format("YYYY-MM-DD"));
 
             const totalHours = getTimeOffset(startTime, endTime);
-            const dayWidth = 64;
-            const boxHeight = 40;
 
-            let width = 0;
+            const width = handleOffsets(
+              startOffset,
+              endOffset,
+              startTime,
+              endTime,
+              totalHours,
+            );
+            if (width === null) return;
 
-            if (startOffset === -1 && endOffset === -1) {
-              return;
-            } else if (endOffset === -1) {
-              const endOfMonth = startTime.endOf("month");
-              const hoursInCurrentMonth = endOfMonth.diff(
-                startTime,
-                "hour",
-                true,
-              );
-              width = (hoursInCurrentMonth / 24) * dayWidth;
-            } else if (startOffset === -1) {
-              startOffset = 0;
-              const startOfMonth = endTime.startOf("month");
-              const hoursInCurrentMonth = endTime.diff(
-                startOfMonth,
-                "hour",
-                true,
-              );
-              width = (hoursInCurrentMonth / 24) * dayWidth;
-            } else {
-              width = (totalHours / 24) * dayWidth;
-            }
+            const leftPos =
+              startOffset * DAY_WIDTH + (startTime.hour() / 24) * DAY_WIDTH;
 
             return (
               <div
-                className={`absolute rounded-lg ${ORDER_STATUS[
+                className={`absolute cursor-pointer rounded-lg ${ORDER_STATUS[
                   usage.orderStatus
                 ]?.bgColor} ${ORDER_STATUS[usage.orderStatus]?.border} `}
                 key={usageIndex}
                 style={{
                   top: 12,
-                  left:
-                    startOffset * dayWidth +
-                    (!startOffset ? 0 : startTime.hour() / 24) * dayWidth,
+                  left: startOffset === -1 ? -8 : leftPos,
                   width: width,
-                  height: boxHeight,
+                  height: BOX_HEIGHT,
                 }}
               >
                 <Tooltip type="date" data={usage}>
                   <div
-                    className="flex p-[10px] cursor-pointer items-center justify-center h-full w-full"
+                    className={`flex ${
+                      width <= 20 ? "" : "px-[10px]"
+                    } items-center justify-center h-full w-full`}
                     onClick={() =>
                       handleOrderClick(usage.orderStatus, usage.id)
                     }
