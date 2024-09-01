@@ -112,7 +112,7 @@ const Grid = ({
 
             return (
               <div
-                className={`absolute rounded-lg ${ORDER_STATUS[
+                className={`absolute cursor-pointer rounded-lg ${ORDER_STATUS[
                   usage.orderStatus
                 ]?.bgColor} ${ORDER_STATUS[usage.orderStatus]?.border} `}
                 key={usageIndex}
@@ -125,7 +125,9 @@ const Grid = ({
               >
                 <Tooltip type="date" data={usage}>
                   <div
-                    className="flex p-[10px] cursor-pointer items-center justify-center h-full w-full"
+                    className={`flex ${
+                      width <= 20 ? "" : "px-[10px]"
+                    } items-center justify-center h-full w-full`}
                     onClick={() =>
                       handleOrderClick(usage.orderStatus, usage.id)
                     }
