@@ -185,7 +185,11 @@ export const columns: ColumnDef<IItems>[] = [
     cell: ({ row }) => (
       <span className="text-sm font-medium">
         {row.original.debit_amount !== null
-          ? "+ " + formatRupiah(row.original.debit_amount)
+          ? "+ " +
+            formatRupiah(row.original.debit_amount) +
+            ((row.original.order?.discount || 0) > 0
+              ? ` (${row.original.order?.discount}% OFF)`
+              : "")
           : ""}
       </span>
     ),

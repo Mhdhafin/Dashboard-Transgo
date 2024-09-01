@@ -27,6 +27,7 @@ export interface IItems {
   owner_commission?: number;
   fleet: IFleet;
   user: { name: string };
+  order?: { discount?: number };
 }
 
 export interface ITotal {
