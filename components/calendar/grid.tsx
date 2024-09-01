@@ -118,7 +118,7 @@ const Grid = ({
                 key={usageIndex}
                 style={{
                   top: 12,
-                  left: leftPos,
+                  left: startOffset === -1 ? 0 : leftPos,
                   width: width,
                   height: BOX_HEIGHT,
                 }}
