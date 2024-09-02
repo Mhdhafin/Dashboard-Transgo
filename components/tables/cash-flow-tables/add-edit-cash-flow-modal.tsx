@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as z from "zod";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +39,9 @@ import dayjs from "dayjs";
 import { toast } from "@/components/ui/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { isEmpty } from "lodash";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const formSchema = z
   .object({
@@ -184,10 +189,14 @@ const AddEditCashFlowModal = ({
 
   const onSubmit = (data: CashFlowSchema) => {
     const { category_id, ...restData } = data;
+    const formattedDate = dayjs(data.date)
+      .utc()
+      .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
 
     const newPayload = {
       ...restData,
       fleet_id: fleet.id,
+      date: formattedDate,
       ...(typeof category_id === "string"
         ? { category: category_id }
         : { category_id }),
@@ -375,15 +384,9 @@ const AddEditCashFlowModal = ({
                         <DatePicker
                           className="w-full"
                           size="large"
-                          onChange={(date) => {
-                            if (date) {
-                              field.onChange(
-                                dayjs(date)
-                                  .startOf("day")
-                                  .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-                              );
-                            }
-                          }}
+                          onChange={(_, dateString) =>
+                            field.onChange(dateString)
+                          }
                           onBlur={field.onBlur}
                           value={
                             field.value
