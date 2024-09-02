@@ -363,6 +363,7 @@ const AddEditCashFlowModal = ({
                       placeholder="Keterangan"
                       value={field.value ?? ""}
                       onChange={field.onChange}
+                      className="!placeholder-black !placeholder-opacity-25"
                     />
                   </FormControl>
                   <FormMessage />
