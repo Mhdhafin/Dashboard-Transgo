@@ -112,15 +112,15 @@ const RequestTableWrapper = () => {
 
   const lists = [
     {
-      name: "Menunggu",
+      name: "Pending",
       value: "pending",
     },
     {
-      name: "Sedang Berjalan",
+      name: "On Progress",
       value: "on_progress",
     },
     {
-      name: "Sudah Bayar",
+      name: "Done",
       value: "done",
     },
   ];
