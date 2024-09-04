@@ -12,7 +12,7 @@ import { useMonthYearState } from "@/hooks/useMonthYearState";
 import { Skeleton } from "../ui/skeleton";
 
 const Calendar = () => {
-  const { month, year } = useMonthYearState();
+  const { month, year, typeQuery } = useMonthYearState();
   const [pageParam, setPageParam] = useState("1");
 
   const {
@@ -24,12 +24,13 @@ const Calendar = () => {
   } = useCalendarViewStore({
     month: month.toString(),
     year: year.toString(),
+    ...(typeQuery && { type: typeQuery }),
     page: pageParam,
   });
 
   useEffect(() => {
     setPageParam("1");
-  }, [month, year]);
+  }, [month, year, typeQuery]);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useCallback(

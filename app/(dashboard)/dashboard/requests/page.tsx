@@ -16,6 +16,9 @@ import {
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import TabLists from "@/components/TabLists";
 import type { Metadata } from "next";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import RequestTableWrapper from "./request-table-wrapper";
+import { getRequests } from "@/client/requestClient";
 
 const breadcrumbItems = [
   { title: "Requests Tasks", link: "/dashboard/requests" },
@@ -32,37 +35,14 @@ export const metadata: Metadata = {
 };
 
 const page = async ({ searchParams }: paramsProps) => {
-  const session = await getServerSession(authOptions);
-  const page = Number(searchParams.page) || 1;
-  const pageLimit = Number(searchParams.limit) || 10;
-  const q = searchParams.q || null;
-  const status = searchParams.status ?? "pending";
+  const queryClient = new QueryClient();
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_HOST}/requests?status=${status}&page=${page}&limit=${pageLimit}` +
-      (q ? `&q=${q}` : ""),
-    {
-      headers: {
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
-    },
-  );
-  const requestRes = await res.json();
+  await queryClient.prefetchQuery({
+    queryKey: ["requests"],
+    queryFn: getRequests,
+  });
 
-  const lists = [
-    {
-      name: "Pending",
-      value: "pending",
-    },
-    {
-      name: "On Progress",
-      value: "on_progress",
-    },
-    {
-      name: "Done",
-      value: "done",
-    },
-  ];
+  const defaultTab = searchParams.status ?? "pending";
 
   return (
     <>
@@ -70,49 +50,20 @@ const page = async ({ searchParams }: paramsProps) => {
         <BreadCrumb items={breadcrumbItems} />
 
         <div className="flex items-start justify-between">
-          <Heading title="Requests Tasks" />
-          {/* hide button - https://qosim-project.atlassian.net/browse/OMT-32?atlOrigin=eyJpIjoiNmY5MzliYmIyYmM1NDYxMjhiNzNjMTMzYjY5NGEzNjYiLCJwIjoiaiJ9  */}
-          {/* show button : 01-08 */}
+          <Heading title="Request Tasks" />
+
           <Link
             href={"/dashboard/requests/create"}
             className={cn(buttonVariants({ variant: "main" }))}
           >
-            <Plus className="mr-2 h-4 w-4" /> Add New
+            <Plus className="mr-2 h-4 w-4" /> Tambah Tasks
           </Link>
         </div>
         <Separator />
-        <Tabs defaultValue={status} className="space-y-4">
-          <TabLists lists={lists} />
-          <TabsContent value="pending" className="space-y-4">
-            <RequestTable
-              columns={pendingColumns}
-              data={requestRes.items}
-              searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
-              pageNo={page}
-            />
-          </TabsContent>
-          <TabsContent value="on_progress" className="space-y-4">
-            <RequestTable
-              columns={completedColumns}
-              data={requestRes.items}
-              searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
-              pageNo={page}
-            />
-          </TabsContent>
-          <TabsContent value="done" className="space-y-4">
-            <RequestTable
-              columns={completedColumns}
-              data={requestRes.items}
-              searchKey="name"
-              totalUsers={requestRes.meta?.total_items}
-              pageCount={Math.ceil(requestRes.meta?.total_items / pageLimit)}
-              pageNo={page}
-            />
-          </TabsContent>
+        <Tabs defaultValue={defaultTab} className="space-y-4">
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <RequestTableWrapper />
+          </HydrationBoundary>
         </Tabs>
       </div>
     </>

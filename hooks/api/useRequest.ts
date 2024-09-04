@@ -3,11 +3,27 @@ import useAxiosAuth from "../axios/use-axios-auth";
 import { useUser } from "@/context/UserContext";
 
 const baseEndpoint = "/requests";
-export const useGetRequests = (params: any, options = {}, type: string) => {
+interface GetRequestsParams {
+  status: string;
+  page: number;
+  limit: number;
+  q?: string;
+  start_date?: string | Date | undefined;
+  end_date?: string | Date | undefined;
+}
+
+export const useGetRequests = (
+  params: GetRequestsParams,
+  options = {},
+  type: string,
+) => {
   const axiosAuth = useAxiosAuth();
 
-  const getRequests = () => {
-    return axiosAuth.get(baseEndpoint, { params });
+  const getRequests = async () => {
+    const { data } = await axiosAuth.get(baseEndpoint, {
+      params,
+    });
+    return data;
   };
 
   return useQuery({

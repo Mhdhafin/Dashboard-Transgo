@@ -57,7 +57,8 @@ export function RequestTable<TData, TValue>({
   totalUsers,
   pageCount,
   pageSizeOptions = [10, 20, 30, 40, 50],
-}: DataTableProps<TData, TValue>) {
+  searchQuery,
+}: DataTableProps<TData, TValue>& { searchQuery: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -65,15 +66,17 @@ export function RequestTable<TData, TValue>({
   const page = searchParams?.get("page") ?? "1";
   const q = searchParams?.get("q");
   const status = searchParams?.get("status") ?? "pending";
+
+  const start_date = searchParams?.get("start_date");
+  const end_date = searchParams?.get("end_date");
+
   const pageAsNumber = Number(page);
   const fallbackPage =
     isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
   const per_page = searchParams?.get("limit") ?? "10";
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
-  const [searchQuery, setSearchQuery] = React.useState<string | undefined>(
-    q ?? "",
-  );
+  
   const [searchDebounce] = useDebounce(searchQuery, 500);
 
   // Create query string
@@ -107,6 +110,8 @@ export function RequestTable<TData, TValue>({
         page: pageIndex + 1,
         limit: pageSize,
         q: searchDebounce || undefined,
+        start_date: start_date || undefined,
+        end_date: end_date || undefined,
       })}`,
       {
         scroll: false,
@@ -130,7 +135,7 @@ export function RequestTable<TData, TValue>({
     manualFiltering: true,
   });
 
-  // Handle search input change
+  /* // Handle search input change
   const handleSearchInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -187,16 +192,16 @@ export function RequestTable<TData, TValue>({
       })}`,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [status]); */
 
   return (
     <>
-      <Input
+      {/* <Input
         placeholder={`Cari request tasks...`}
         value={searchQuery}
         onChange={handleSearchInputChange}
         className="w-full md:max-w-sm mb-5"
-      />
+      /> */}
       <ScrollArea className="rounded-md border h-[calc(80vh-300px)]">
         <Table className="relative">
           <TableHeader>
