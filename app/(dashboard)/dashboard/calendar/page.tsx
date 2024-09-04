@@ -19,7 +19,7 @@ const page = () => {
       <BreadCrumb items={BREAD_CRUMB_ITEMS} />
       <div className="flex flex-row items-center justify-between">
         <Heading title="Calendar" />
-        <YearAndMonthSelector />
+        <YearAndMonthSelector withType/>
       </div>
       <Calendar />
     </div>

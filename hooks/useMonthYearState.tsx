@@ -10,6 +10,8 @@ interface MonthYearStore {
   setDateRange: (dateRange: DateRange) => void;
   searchQuery: string;
   setSearchQuery: (searchQuery: string) => void;
+  typeQuery: string;
+  setTypeQuery: (typeQuery: string) => void;
   handlePrevMonth: () => void;
   handleNextMonth: () => void;
   handlePrevYear: () => void;
@@ -27,6 +29,8 @@ export const useMonthYearState = create<MonthYearStore>((set) => ({
   setDateRange: (dateRange) => set({ dateRange }),
   searchQuery: "",
   setSearchQuery: (searchQuery) => set({ searchQuery }),
+  typeQuery: "",
+  setTypeQuery: (typeQuery) => set({ typeQuery }),
 
   // function
   handleClearDate: () => set({ dateRange: { from: undefined, to: undefined } }),
