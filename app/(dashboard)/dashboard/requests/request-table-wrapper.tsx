@@ -175,9 +175,13 @@ const RequestTableWrapper = () => {
   }, [searchDebounce]);
 
   useEffect(() => {
+    handleClearDate()
     router.push(
       `${pathname}?${createQueryString({
         status: defaultTab,
+        q: null,
+        start_date: null,
+        end_date: null,
         page: null,
         limit: null,
       })}`,
