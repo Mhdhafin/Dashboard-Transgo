@@ -130,8 +130,8 @@ const RequestTableWrapper = () => {
       router.push(
         `${pathname}?${createQueryString({
           status: defaultTab,
-          start_date: dayjs(dateRange?.from).format("YYYY-MM-DD"),
-          end_date: dayjs(dateRange?.to).format("YYYY-MM-DD"),
+          start_date: dayjs(dateRange?.from).locale("id").format("YYYY-MM-DDT00:00:00Z"),
+          end_date: dayjs(dateRange?.to).locale("id").format("YYYY-MM-DDT23:00:00Z"),
         })}`,
       );
     } else {
