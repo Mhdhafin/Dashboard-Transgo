@@ -130,11 +130,8 @@ const RequestTableWrapper = () => {
       router.push(
         `${pathname}?${createQueryString({
           status: defaultTab,
-          q: searchDebounce,
           start_date: dayjs(dateRange?.from).format("YYYY-MM-DD"),
           end_date: dayjs(dateRange?.to).format("YYYY-MM-DD"),
-          page: null,
-          limit: pageLimit,
         })}`,
       );
     } else {
@@ -158,10 +155,10 @@ const RequestTableWrapper = () => {
         `${pathname}?${createQueryString({
           status: defaultTab,
           q: searchDebounce,
+          start_date: null,
+          end_date: null,
           page: null,
           limit: pageLimit,
-          start_date: dayjs(dateRange?.from).format("YYYY-MM-DD"),
-          end_date: dayjs(dateRange?.to).format("YYYY-MM-DD"),
         })}`,
       );
     } else {
@@ -169,6 +166,8 @@ const RequestTableWrapper = () => {
         `${pathname}?${createQueryString({
           status: defaultTab,
           q: null,
+          page: null,
+          limit: null,
         })}`,
       );
     }
