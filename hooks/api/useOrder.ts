@@ -110,13 +110,17 @@ export const useOrdersStatusCount = () => {
   });
 };
 
-export const useDeleteOrder = (id: number) => {
+export const useDeleteOrder = (id: number, force: boolean) => {
   const axiosAuth = useAxiosAuth();
 
   const queryClient = useQueryClient();
 
   const deleteOrder = (id: number) => {
-    return axiosAuth.delete(`${baseEndpoint}/${id}`);
+    return axiosAuth.delete(`${baseEndpoint}/${id}`,{
+      params: {
+        force,
+      },
+    });
   };
 
   return useMutation({
