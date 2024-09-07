@@ -249,13 +249,6 @@ export function OrderTable<TData, TValue>({
               table.getRowModel().rows.map((row: any) => (
                 <TableRow
                   className="hover:bg-gray-100 transition-colors duration-200 ease-in-out"
-                  onClick={() => {
-                    if (row?.original?.status !== "pending") {
-                      router.push(
-                        `/dashboard/orders/${row.original.id}/detail`,
-                      );
-                    }
-                  }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
@@ -264,6 +257,16 @@ export function OrderTable<TData, TValue>({
                       <TableCell
                         key={cell.id}
                         className="last:flex last:justify-end"
+                        onClick={() => {
+                          if (row?.original?.status !== "pending" && !cell.id.includes("actions") ) {
+                            console.log(cell.id);
+                            console.log(!cell.id.includes("actions"));
+                            
+                            router.push(
+                              `/dashboard/orders/${row.original.id}/detail`,
+                            );
+                          }
+                        }}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

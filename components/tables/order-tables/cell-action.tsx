@@ -1,5 +1,5 @@
 "use client";
-import { AlertModal } from "@/components/modal/alert-modal";
+import { AlertForceModal } from "@/components/modal/alertforce-modal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -23,11 +23,14 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const [force, setForce] = useState(false);
+
   const router = useRouter();
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteOrder } = useDeleteOrder(id);
+  const { mutateAsync: deleteOrder } = useDeleteOrder(id, force);
 
   const onConfirm = async () => {
     setLoading(true);
@@ -58,11 +61,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      <AlertModal
+      <AlertForceModal
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
         loading={loading}
+        data={data}
+        checked={force}
+        setChecked={setForce}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
