@@ -48,27 +48,27 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
           <Label htmlFor="mobil">Mobil</Label>
-          <Input id="mobil" readOnly defaultValue={`${data?.fleet?.name} ( ${data?.fleet?.plate_number} )`} />
+          <Input id="mobil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.fleet?.name} ( ${data?.fleet?.plate_number} )`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="keterangan">Keterangan Sewa</Label>
-          <Input id="keterangan" readOnly defaultValue={`${data?.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}`} />
+          <Input id="keterangan" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="durasi">Durasi Sewa</Label>
-          <Input id="durasi" readOnly defaultValue={`${data?.duration} hari`} />
+          <Input id="durasi" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.duration} hari`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="pemakaian">Pemakaian</Label>
-          <Input id="pemakaian" readOnly defaultValue={`${data?.is_out_of_town ? data?.fleet?.location?.location : "Jakarta"}`} />
+          <Input id="pemakaian" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.is_out_of_town ? data?.fleet?.location?.location : "Jakarta"}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-ambil">Tanggal Ambil</Label>
-          <Input id="tanggal-ambil" readOnly defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
+          <Input id="tanggal-ambil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-kembali">Tanggal Kembali</Label>
-          <Input id="tanggal-kembali" readOnly defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
+          <Input id="tanggal-kembali" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
         </div>
       </div>
       <div className="flex items-center space-x-2">
