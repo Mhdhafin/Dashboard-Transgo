@@ -40,7 +40,7 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
   return (
     <ModalCustom
       title={<span className="text-lg text-start justify-start font-semibold">Batalkan Sewa</span>}
-      description={<span>Tindakan ini akan membatalkan jadwal sewa untuk armada{" "}<strong>{data?.fleet?.name} ( {data?.fleet?.plate_number} )</strong>, mohon pastikan tindakan anda sepenuhnya.</span>}
+      description={<span>Tindakan ini akan membatalkan jadwal sewa untuk armada{" "}<strong>{data?.fleet?.name}</strong>, mohon pastikan tindakan anda sepenuhnya.</span>}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -48,7 +48,7 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">
           <Label htmlFor="mobil">Mobil</Label>
-          <Input id="mobil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.fleet?.name} ( ${data?.fleet?.plate_number} )`} />
+          <Input id="mobil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.fleet?.name}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="keterangan">Keterangan Sewa</Label>
@@ -60,7 +60,7 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
         </div>
         <div className="grid gap-2">
           <Label htmlFor="pemakaian">Pemakaian</Label>
-          <Input id="pemakaian" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.is_out_of_town ? data?.fleet?.location?.location : "Jakarta"}`} />
+          <Input id="pemakaian" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${data?.is_out_of_town ? data?.fleet?.location?.name : "Jakarta"}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-ambil">Tanggal Ambil</Label>
@@ -68,7 +68,7 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-kembali">Tanggal Kembali</Label>
-          <Input id="tanggal-kembali" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
+          <Input id="tanggal-kembali" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.end_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
         </div>
       </div>
       <div className="flex items-center space-x-2">
