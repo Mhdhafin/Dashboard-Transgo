@@ -40,17 +40,19 @@ const OrderTableWrapper = () => {
   const [searchQuery, setSearchQuery] = React.useState<string>(q ?? "");
   const [searchDebounce] = useDebounce(searchQuery, 500);
 
+  const getOrderParams = (status: string) => ({
+    limit: pageLimit,
+    page: page,
+    q: searchDebounce,
+    status: status,
+    ...(startDate ? { start_date: startDate } : {}),
+    ...(endDate ? { end_date: endDate } : {}),
+    ...(orderBy ? { order_by: orderBy } : {}),
+    ...(orderColumn ? { order_column: orderColumn } : {}),
+  });
+
   const { data: pendingData, isFetching: isFetchingPendingData } = useGetOrders(
-    {
-      limit: pageLimit,
-      page: page,
-      q: searchDebounce,
-      status: "pending",
-      start_date: startDate,
-      end_date: endDate,
-      order_by: orderBy,
-      order_column: orderColumn,
-    },
+    getOrderParams("pending"),
     {
       enabled: defaultTab === "pending",
     },
@@ -59,32 +61,14 @@ const OrderTableWrapper = () => {
 
   const { data: onProgressData, isFetching: isFetchingOnProgressData } =
     useGetOrders(
-      {
-        limit: pageLimit,
-        page: page,
-        q: searchDebounce,
-        status: "on_progress",
-        start_date: startDate,
-        end_date: endDate,
-        order_by: orderBy,
-        order_column: orderColumn,
-      },
+      getOrderParams("on_progress"),
       { enabled: defaultTab === "on_progress" },
       "on_progress",
     );
 
   const { data: completedData, isFetching: isFetchingCompletedData } =
     useGetOrders(
-      {
-        limit: pageLimit,
-        page: page,
-        q: searchDebounce,
-        status: "done",
-        start_date: startDate,
-        end_date: endDate,
-        order_by: orderBy,
-        order_column: orderColumn,
-      },
+      getOrderParams("done"),
       { enabled: defaultTab === "done" },
       "done",
     );
@@ -137,8 +121,12 @@ const OrderTableWrapper = () => {
       router.push(
         `${pathname}?${createQueryString({
           status: defaultTab,
-          start_date: dayjs(dateRange?.from).locale("id").format("YYYY-MM-DDT00:00:00Z"),
-          end_date: dayjs(dateRange?.to).locale("id").format("YYYY-MM-DDT23:00:00Z"),
+          start_date: dayjs(dateRange?.from)
+            .locale("id")
+            .format("YYYY-MM-DDT00:00:00Z"),
+          end_date: dayjs(dateRange?.to)
+            .locale("id")
+            .format("YYYY-MM-DDT23:00:00Z"),
         })}`,
       );
     } else {
