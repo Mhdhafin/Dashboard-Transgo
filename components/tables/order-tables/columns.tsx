@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/hover-card";
 import { CalendarDays, Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { getPaymentStatusLabel, getStatusVariant } from "@/app/(dashboard)/dashboard/orders/[orderId]/types/order";
 
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
@@ -85,6 +86,30 @@ export const pendingColumns: ColumnDef<any>[] = [
     ),
   },
   {
+    accessorKey: "is_with_driver",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Keterangan Sewa
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Keterangan Sewa Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
+    ),
+    enableSorting: false,
+  },
+  {
     accessorKey: "total_price",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">
@@ -107,7 +132,7 @@ export const pendingColumns: ColumnDef<any>[] = [
   },
 ];
 
-export const onProgressColumns: ColumnDef<any>[] = [
+export const confirmedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (
@@ -174,6 +199,193 @@ export const onProgressColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: "is_with_driver",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Keterangan Sewa
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Keterangan Sewa Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "pic",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Penanggung Jawab
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Penanggung Jawab Pengambilan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span>{row.original.start_request?.driver?.name ?? "-"}</span>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "total_price",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">
+        Total Harga
+      </span>
+    ),
+    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
+  },
+  {
+    accessorKey: "payment_status",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Pembayaran
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Pembayaran Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span
+        className={cn(
+          getStatusVariant(row.original?.payment_status),
+          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+        )}
+      >
+        {getPaymentStatusLabel(row.original?.payment_status)}
+      </span>
+      // <span>{row.original.end_request?.driver?.name ?? "-"}</span>
+    ),
+    enableSorting: false,
+  },
+
+  {
+    id: "actions",
+    cell: ({ row }) => <CellAction data={row.original} />,
+    enableSorting: false,
+  },
+];
+
+export const onGoingColumns: ColumnDef<any>[] = [
+  {
+    accessorKey: "name",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "fleet",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "duration",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+    ),
+    cell: ({ row }) => (
+      <HoverCard>
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
+          {row.original?.duration} Hari
+        </HoverCardTrigger>
+        <HoverCardContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="flex items-center">
+            <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+            <span className="text-muted-foreground font-normal text-[12px] leading-4">
+              Tanggal Pengambilan
+            </span>
+          </div>
+          <div className="pt-1">
+            <p className="text-[14px] font-semibold leading-5">
+              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
+            </p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
+            </p>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex items-center">
+            <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+            <span className="text-muted-foreground font-normal text-[12px] leading-4">
+              Tanggal Pengembilan
+            </span>
+          </div>
+          <div className="pt-1">
+            <p className="text-[14px] font-semibold leading-5">
+              {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
+            </p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
+            </p>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "is_with_driver",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Keterangan Sewa
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Keterangan Sewa Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
+    ),
+    enableSorting: false,
+  },
+  {
     accessorKey: "pic",
     header: () => (
       <HoverCard>
@@ -205,6 +417,38 @@ export const onProgressColumns: ColumnDef<any>[] = [
       </span>
     ),
     cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
+  },
+  {
+    accessorKey: "payment_status",
+    header: () => (
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Pembayaran
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Pembayaran Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    cell: ({ row }) => (
+      <span
+        className={cn(
+          getStatusVariant(row.original?.payment_status),
+          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+        )}
+      >
+        {getPaymentStatusLabel(row.original?.payment_status)}
+      </span>
+      // <span>{row.original.end_request?.driver?.name ?? "-"}</span>
+    ),
+    enableSorting: false,
   },
 
   {
@@ -281,12 +525,12 @@ export const completedColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "pic",
+    accessorKey: "is_with_driver",
     header: () => (
       <HoverCard>
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-neutral-700">
-            Penanggung Jawab
+            Keterangan Sewa
           </span>
           <HoverCardTrigger>
             <Info />
@@ -294,13 +538,13 @@ export const completedColumns: ColumnDef<any>[] = [
         </div>
         <HoverCardContent className="w-full p-2" align="start">
           <span className="font-semibold text-xs">
-            Ini adalah Penanggung Jawab Pengembalian
+            Ini adalah Keterangan Sewa Pesanan
           </span>
         </HoverCardContent>
       </HoverCard>
     ),
     cell: ({ row }) => (
-      <span>{row.original.end_request?.driver?.name ?? "-"}</span>
+      <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
     ),
     enableSorting: false,
   },
@@ -314,22 +558,33 @@ export const completedColumns: ColumnDef<any>[] = [
     cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
   },
   {
-    accessorKey: "status",
+    accessorKey: "payment_status",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Status</span>
+      <HoverCard>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-neutral-700">
+            Pembayaran
+          </span>
+          <HoverCardTrigger>
+            <Info />
+          </HoverCardTrigger>
+        </div>
+        <HoverCardContent className="w-full p-2" align="start">
+          <span className="font-semibold text-xs">
+            Ini adalah Pembayaran Pesanan
+          </span>
+        </HoverCardContent>
+      </HoverCard>
     ),
     cell: ({ row }) => (
-      <>
-        {row.original.request_status === "done" ? (
-          <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full max-w-[62px]">
-            Selesai
-          </div>
-        ) : (
-          <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full max-w-[105px]">
-            Belum Kembali
-          </div>
+      <span
+        className={cn(
+          getStatusVariant(row.original?.payment_status),
+          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
         )}
-      </>
+      >
+        {getPaymentStatusLabel(row.original?.payment_status)}
+      </span>
     ),
     enableSorting: false,
   },
