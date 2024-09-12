@@ -522,6 +522,9 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   // disable date for past dates
   const disabledDate = (current: Dayjs | null): boolean => {
+    // ada request untuk enable past date ketika update order
+    if (lastPath === "edit") return false;
+
     return current ? current < dayjs().startOf("day") : false;
   };
 
