@@ -88,21 +88,7 @@ export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "is_with_driver",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Keterangan Sewa
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Keterangan Sewa Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan Sewa</span>
     ),
     cell: ({ row }) => (
       <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
@@ -201,21 +187,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "is_with_driver",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Keterangan Sewa
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Keterangan Sewa Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan Sewa</span>
     ),
     cell: ({ row }) => (
       <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
@@ -258,21 +230,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "payment_status",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Pembayaran
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Pembayaran Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
     ),
     cell: ({ row }) => (
       <span
@@ -364,21 +322,7 @@ export const onGoingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "is_with_driver",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Keterangan Sewa
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Keterangan Sewa Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan Sewa</span>
     ),
     cell: ({ row }) => (
       <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
@@ -421,21 +365,7 @@ export const onGoingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "payment_status",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Pembayaran
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Pembayaran Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
     ),
     cell: ({ row }) => (
       <span
@@ -527,21 +457,7 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "is_with_driver",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Keterangan Sewa
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Keterangan Sewa Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan Sewa</span>
     ),
     cell: ({ row }) => (
       <span>{row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}</span>
@@ -560,21 +476,7 @@ export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "payment_status",
     header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Pembayaran
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Pembayaran Pesanan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
+      <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
     ),
     cell: ({ row }) => (
       <span
