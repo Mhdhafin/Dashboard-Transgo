@@ -1661,7 +1661,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             className="col-span-3"
                             rows={3}
                             value={field.value || ""}
-                            onChange={field.onChange}
+                            onChange={(e) => {
+                              e.target.value = e.target.value.trimStart()
+                              field.onChange(e.target.value);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />

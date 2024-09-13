@@ -171,7 +171,11 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Lokasi"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -190,7 +194,11 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Tempat"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -229,8 +237,11 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
-                        value={field.value || ""}
-                        onChange={field.onChange}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart();
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -268,8 +279,11 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
-                        value={field.value || ""}
-                        onChange={field.onChange}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart();
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -307,8 +321,11 @@ export const LocationForm: React.FC<LocationFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
-                        value={field.value || ""}
-                        onChange={field.onChange}
+                        value={field.value ?? ""}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart();
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
