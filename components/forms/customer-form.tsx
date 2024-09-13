@@ -486,6 +486,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                       placeholder="Nomor Telepon"
                       value={field.value ?? ""}
                       onChange={field.onChange}
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -506,6 +507,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                       placeholder="Nomor Emergency"
                       value={field.value ?? ""}
                       onChange={field.onChange}
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />
