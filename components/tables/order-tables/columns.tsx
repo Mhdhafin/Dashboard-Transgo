@@ -236,7 +236,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
       <span
         className={cn(
           getStatusVariant(row.original?.payment_status),
-          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+          "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
         )}
       >
         {getPaymentStatusLabel(row.original?.payment_status)}
@@ -371,7 +371,7 @@ export const onGoingColumns: ColumnDef<any>[] = [
       <span
         className={cn(
           getStatusVariant(row.original?.payment_status),
-          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+          "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
         )}
       >
         {getPaymentStatusLabel(row.original?.payment_status)}
@@ -482,7 +482,7 @@ export const completedColumns: ColumnDef<any>[] = [
       <span
         className={cn(
           getStatusVariant(row.original?.payment_status),
-          "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
+          "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
         )}
       >
         {getPaymentStatusLabel(row.original?.payment_status)}
