@@ -77,9 +77,9 @@ const OrderTableWrapper = () => {
 
   const { data: completedData, isFetching: isFetchingCompletedData } =
     useGetOrders(
-      getOrderParams("done"),
-      { enabled: defaultTab === "done" },
-      "done",
+      getOrderParams(OrderStatus.DONE),
+      { enabled: defaultTab === OrderStatus.DONE },
+      OrderStatus.DONE,
     );
 
   const createQueryString = React.useCallback(
@@ -230,7 +230,7 @@ const OrderTableWrapper = () => {
           />
         </div>
       </div>
-      <TabsContent value="pending" className="space-y-4">
+      <TabsContent value={OrderStatus.PENDING} className="space-y-4">
         {isFetchingPendingData && <Spinner />}
         {!isFetchingPendingData && pendingData && (
           <OrderTable
@@ -246,7 +246,7 @@ const OrderTableWrapper = () => {
           />
         )}
       </TabsContent>
-      <TabsContent value="on_progress" className="space-y-4">
+      <TabsContent value={OrderStatus.CONFIRMED} className="space-y-4">
         {isFetchingConfirmedData && <Spinner />}
         {!isFetchingConfirmedData && confirmedData && (
           <OrderTable
