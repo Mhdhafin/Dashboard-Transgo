@@ -5,7 +5,7 @@ import SearchInput from "@/components/search-input";
 import Spinner from "@/components/spinner";
 import {
   completedColumns,
-  onGoingColumns,
+  onProgressColumns,
   confirmedColumns,
   pendingColumns,
 } from "@/components/tables/order-tables/columns";
@@ -68,11 +68,11 @@ const OrderTableWrapper = () => {
       OrderStatus.CONFIRMED,
     );
 
-  const { data: onGoingData, isFetching: isFetchingOnGoingData } =
+  const { data: onProgressData, isFetching: isFetchingOnProgressData } =
     useGetOrders(
-      getOrderParams(OrderStatus.ON_GOING),
-      { enabled: defaultTab === OrderStatus.ON_GOING },
-      OrderStatus.ON_GOING,
+      getOrderParams(OrderStatus.ON_PROGRESS),
+      { enabled: defaultTab === OrderStatus.ON_PROGRESS },
+      OrderStatus.ON_PROGRESS,
     );
 
   const { data: completedData, isFetching: isFetchingCompletedData } =
@@ -121,7 +121,7 @@ const OrderTableWrapper = () => {
     },
     {
       name: "Sedang Berjalan",
-      value: OrderStatus.ON_GOING,
+      value: OrderStatus.ON_PROGRESS,
     },
     {
       name: "Selesai",
@@ -262,17 +262,17 @@ const OrderTableWrapper = () => {
           />
         )}
       </TabsContent>
-      <TabsContent value={OrderStatus.ON_GOING} className="space-y-4">
-        {isFetchingOnGoingData && <Spinner />}
-        {!isFetchingOnGoingData && onGoingData && (
+      <TabsContent value={OrderStatus.ON_PROGRESS} className="space-y-4">
+        {isFetchingOnProgressData && <Spinner />}
+        {!isFetchingOnProgressData && onProgressData && (
           <OrderTable
-            columns={onGoingColumns}
+            columns={onProgressColumns}
             sorting={sorting}
             setSorting={setSorting}
-            data={onGoingData.items}
+            data={onProgressData.items}
             searchKey="name"
-            totalUsers={onGoingData.meta?.total_items}
-            pageCount={Math.ceil(onGoingData.meta?.total_items / pageLimit)}
+            totalUsers={onProgressData.meta?.total_items}
+            pageCount={Math.ceil(onProgressData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
           />
