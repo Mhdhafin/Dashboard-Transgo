@@ -6,6 +6,10 @@ export function getStatusVariant(status: string): string {
             return 'bg-yellow-50 text-yellow-500';
         case 'partially paid':
             return 'bg-yellow-50 text-yellow-500';
+        case 'confirmed':
+            return 'bg-orange-50 text-orange-500';
+        case 'on_going':
+            return 'bg-blue-50 text-blue-500';
         case 'on_progress':
             return 'bg-blue-50 text-blue-500';
         case 'done':
@@ -13,7 +17,7 @@ export function getStatusVariant(status: string): string {
         case 'rejected':
             return 'bg-red-50 text-red-500';
         case 'failed':
-            return 'bg-red-50 text-red-500';
+            return 'bg-gray-50 text-gray-500';
         default:
             return '';
     }
@@ -22,6 +26,8 @@ export function getStatusVariant(status: string): string {
 export enum OrderStatus {
     PENDING = 'pending',
     WAITING = 'waiting',
+    CONFIRMED = 'confirmed',
+    ON_GOING = 'on_going',
     ON_PROGRESS = 'on_progress',
     DONE = 'done',
 }

@@ -6,6 +6,7 @@ import Spinner from "@/components/spinner";
 import {
   completedColumns,
   onProgressColumns,
+  confirmedColumns,
   pendingColumns,
 } from "@/components/tables/order-tables/columns";
 import { OrderTable } from "@/components/tables/order-tables/order-table";
@@ -17,6 +18,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
+import { OrderStatus } from "./[orderId]/types/order";
 
 const OrderTableWrapper = () => {
   // THIS MORNING I WOULD LIKE TO FIX THIS !!!!!!
@@ -52,25 +54,32 @@ const OrderTableWrapper = () => {
   });
 
   const { data: pendingData, isFetching: isFetchingPendingData } = useGetOrders(
-    getOrderParams("pending"),
+    getOrderParams(OrderStatus.PENDING),
     {
-      enabled: defaultTab === "pending",
+      enabled: defaultTab === OrderStatus.PENDING,
     },
-    "pending",
+    OrderStatus.PENDING,
   );
+
+  const { data: confirmedData, isFetching: isFetchingConfirmedData } =
+    useGetOrders(
+      getOrderParams(OrderStatus.CONFIRMED),
+      { enabled: defaultTab === OrderStatus.CONFIRMED },
+      OrderStatus.CONFIRMED,
+    );
 
   const { data: onProgressData, isFetching: isFetchingOnProgressData } =
     useGetOrders(
-      getOrderParams("on_progress"),
-      { enabled: defaultTab === "on_progress" },
-      "on_progress",
+      getOrderParams(OrderStatus.ON_PROGRESS),
+      { enabled: defaultTab === OrderStatus.ON_PROGRESS },
+      OrderStatus.ON_PROGRESS,
     );
 
   const { data: completedData, isFetching: isFetchingCompletedData } =
     useGetOrders(
-      getOrderParams("done"),
-      { enabled: defaultTab === "done" },
-      "done",
+      getOrderParams(OrderStatus.DONE),
+      { enabled: defaultTab === OrderStatus.DONE },
+      OrderStatus.DONE,
     );
 
   const createQueryString = React.useCallback(
@@ -104,15 +113,19 @@ const OrderTableWrapper = () => {
   const lists = [
     {
       name: "Menunggu",
-      value: "pending",
+      value: OrderStatus.PENDING,
+    },
+    {
+      name: "Terkonfirmasi",
+      value: OrderStatus.CONFIRMED,
     },
     {
       name: "Sedang Berjalan",
-      value: "on_progress",
+      value: OrderStatus.ON_PROGRESS,
     },
     {
-      name: "Sudah Bayar",
-      value: "done",
+      name: "Selesai",
+      value: OrderStatus.DONE,
     },
   ];
 
@@ -217,7 +230,7 @@ const OrderTableWrapper = () => {
           />
         </div>
       </div>
-      <TabsContent value="pending" className="space-y-4">
+      <TabsContent value={OrderStatus.PENDING} className="space-y-4">
         {isFetchingPendingData && <Spinner />}
         {!isFetchingPendingData && pendingData && (
           <OrderTable
@@ -233,7 +246,23 @@ const OrderTableWrapper = () => {
           />
         )}
       </TabsContent>
-      <TabsContent value="on_progress" className="space-y-4">
+      <TabsContent value={OrderStatus.CONFIRMED} className="space-y-4">
+        {isFetchingConfirmedData && <Spinner />}
+        {!isFetchingConfirmedData && confirmedData && (
+          <OrderTable
+            columns={confirmedColumns}
+            sorting={sorting}
+            setSorting={setSorting}
+            data={confirmedData.items}
+            searchKey="name"
+            totalUsers={confirmedData.meta?.total_items}
+            pageCount={Math.ceil(confirmedData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
+      </TabsContent>
+      <TabsContent value={OrderStatus.ON_PROGRESS} className="space-y-4">
         {isFetchingOnProgressData && <Spinner />}
         {!isFetchingOnProgressData && onProgressData && (
           <OrderTable
@@ -249,7 +278,7 @@ const OrderTableWrapper = () => {
           />
         )}
       </TabsContent>
-      <TabsContent value="done" className="space-y-4">
+      <TabsContent value={OrderStatus.DONE} className="space-y-4">
         {isFetchingCompletedData && <Spinner />}
         {!isFetchingCompletedData && completedData && (
           <OrderTable

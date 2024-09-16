@@ -418,7 +418,11 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Nama Fleet"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -472,7 +476,11 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                     <Input
                       disabled={!isEdit || loading}
                       placeholder="Plat Nomor"
-                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -502,7 +510,10 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                         disabled={!isEdit || loading}
                         placeholder="Warna"
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart();
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

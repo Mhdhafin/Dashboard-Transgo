@@ -6,6 +6,8 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { ModalCustom } from "../ui/modalcustom";
 import dayjs from "dayjs";
+import "dayjs/locale/id";
+
 import Spinner from "../spinner";
 
 interface AlertForceModalProps {
@@ -64,11 +66,11 @@ export const AlertForceModal: React.FC<AlertForceModalProps> = ({
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-ambil">Tanggal Ambil</Label>
-          <Input id="tanggal-ambil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.start_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
+          <Input id="tanggal-ambil" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.start_date).locale('id').format("HH:mm dddd, DD MMMM YYYY")}`} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tanggal-kembali">Tanggal Kembali</Label>
-          <Input id="tanggal-kembali" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.end_date).format("HH:mm dddd, DD MMMM YYYY")}`} />
+          <Input id="tanggal-kembali" readOnly className="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0" defaultValue={`${dayjs(data?.end_date).locale('id').format("HH:mm dddd, DD MMMM YYYY")}`} />
         </div>
       </div>
       <div className="flex items-center space-x-2">

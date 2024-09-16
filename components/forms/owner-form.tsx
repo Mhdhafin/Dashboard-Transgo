@@ -289,7 +289,10 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
                       disabled={!isEdit || loading}
                       placeholder="Nama Owner"
                       value={field.value ?? ""}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -309,7 +312,10 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
                       disabled={!isEdit || loading}
                       placeholder="Email"
                       value={field.value ?? ""}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.trimStart();
+                        field.onChange(e.target.value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -331,7 +337,10 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
                         disabled={!isEdit || loading}
                         placeholder="Password"
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart();
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -353,6 +362,7 @@ export const OwnerForm: React.FC<OwnerFormProps> = ({
                       placeholder="Nomor Telepon"
                       value={field.value ?? ""}
                       onChange={field.onChange}
+                      type="number"
                     />
                   </FormControl>
                   <FormMessage />

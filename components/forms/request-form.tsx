@@ -692,7 +692,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         rows={8}
                         value={field.value ?? predefinedAddress}
                         disabled={!isEdit || loading}
-                        onChange={field.onChange}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart()
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -729,7 +732,10 @@ export const RequestForm: React.FC<RequestFormProps> = ({
                         className="col-span-4"
                         rows={8}
                         disabled={!isEdit || loading}
-                        onChange={field.onChange}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.trimStart()
+                          field.onChange(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
