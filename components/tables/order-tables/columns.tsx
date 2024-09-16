@@ -253,7 +253,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
   },
 ];
 
-export const onGoingColumns: ColumnDef<any>[] = [
+export const onProgressColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (
