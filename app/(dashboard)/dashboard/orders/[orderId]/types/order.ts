@@ -17,7 +17,7 @@ export function getStatusVariant(status: string): string {
         case 'rejected':
             return 'bg-red-50 text-red-500';
         case 'failed':
-            return 'bg-red-50 text-red-500';
+            return 'bg-gray-50 text-gray-500';
         default:
             return '';
     }
