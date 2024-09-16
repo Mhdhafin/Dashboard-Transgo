@@ -50,6 +50,13 @@ export const ORDER_STATUS = {
     bgColorDarker: "bg-yellow-500",
     border: "hover:border hover:border-yellow-500",
   },
+  confirmed: {
+    text: "Terkonfirmasi",
+    color: "text-orange-900",
+    bgColor: "bg-orange-50",
+    bgColorDarker: "bg-orange-500",
+    border: "hover:border hover:border-orange-500",
+  },
   on_going: {
     text: "Sedang Berjalan",
     color: "text-blue-900",
