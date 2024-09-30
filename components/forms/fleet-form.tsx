@@ -700,6 +700,7 @@ export const FleetForm: React.FC<FleetFormProps> = ({
                               field.onChange(value);
                             }
                           }}
+                          allowClear
                           onPopupScroll={(event) =>
                             handleScroll(event, "owner")
                           }
