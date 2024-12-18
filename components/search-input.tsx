@@ -19,11 +19,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <div className="">
+    <div className="w-full lg:w-auto">
       <Input
         type="text"
         placeholder={placeholder}
-        className="w-[390px]"
+        className="w-full lg:w-[390px]"
         value={searchQuery}
         onChange={handleInputChange}
       />

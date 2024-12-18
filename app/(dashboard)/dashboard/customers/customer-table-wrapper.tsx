@@ -116,9 +116,9 @@ const CustomerTableWrapper = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <TabLists lists={lists} />
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap w-full lg:!w-auto">
           <SearchInput
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
