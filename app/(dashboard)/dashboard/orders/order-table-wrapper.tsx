@@ -215,9 +215,11 @@ const OrderTableWrapper = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <TabLists lists={lists} />
-        <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="overflow-x-auto flex items-center gap-4 w-full">
+          <TabLists lists={lists} />
+        </div>
+        <div className="flex items-center justify-between gap-4 flex-wrap w-full lg:!w-auto">
           <CalendarDateRangePicker
             onDateRangeChange={handleDateRangeChange}
             onClearDate={handleClearDate}

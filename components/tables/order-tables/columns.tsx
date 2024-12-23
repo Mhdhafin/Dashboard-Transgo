@@ -44,7 +44,7 @@ export const pendingColumns: ColumnDef<any>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <HoverCard>
-        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
           {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
@@ -142,7 +142,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
     ),
     cell: ({ row }) => (
       <HoverCard>
-        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
           {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
@@ -277,7 +277,7 @@ export const onProgressColumns: ColumnDef<any>[] = [
     ),
     cell: ({ row }) => (
       <HoverCard>
-        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
           {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent
@@ -412,7 +412,7 @@ export const completedColumns: ColumnDef<any>[] = [
     ),
     cell: ({ row }) => (
       <HoverCard>
-        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3">
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
           {row.original?.duration} Hari
         </HoverCardTrigger>
         <HoverCardContent

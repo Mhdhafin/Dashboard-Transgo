@@ -102,18 +102,18 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     lastPath === "preview"
       ? "Tinjau Pesanan"
       : lastPath === "edit"
-      ? "Edit Pesanan"
-      : lastPath === "detail"
-      ? "Detail Pesanan"
-      : "Tambah Pesanan";
+        ? "Edit Pesanan"
+        : lastPath === "detail"
+          ? "Detail Pesanan"
+          : "Tambah Pesanan";
   const description =
     lastPath === "preview"
       ? "Tinjau pesanan baru dari pelanggan"
       : lastPath === "edit"
-      ? "Edit pesanan untuk pelanggan"
-      : lastPath === "detail"
-      ? ""
-      : "Tambah pesanan baru untuk pelanggan";
+        ? "Edit pesanan untuk pelanggan"
+        : lastPath === "detail"
+          ? ""
+          : "Tambah pesanan baru untuk pelanggan";
   const toastMessage = initialData
     ? "Pesanan berhasil diubah!"
     : "Pesanan berhasil dibuat";
@@ -184,57 +184,57 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const { isMinimized } = useSidebar();
   const defaultValues = initialData
     ? {
-        start_request: {
-          is_self_pickup: initialData?.start_request?.is_self_pickup,
-          address: initialData?.start_request?.address,
-          distance: initialData?.start_request?.distance ?? 0,
-          driver_id: initialData?.start_request?.driver?.id?.toString(),
-        },
-        end_request: {
-          is_self_pickup: initialData?.end_request?.is_self_pickup,
-          address: initialData?.end_request?.address,
-          distance: initialData?.end_request?.distance ?? 0,
-          driver_id: initialData?.end_request?.driver?.id?.toString(),
-        },
-        customer: initialData?.customer?.id?.toString(),
-        fleet: initialData?.fleet?.id?.toString(),
-        description: initialData?.description,
-        is_with_driver: initialData?.is_with_driver,
-        is_out_of_town: initialData?.is_out_of_town,
-        date: initialData?.start_date,
-        duration: initialData?.duration?.toString(),
-        discount: initialData?.discount?.toString(),
-        insurance_id: initialData?.insurance
-          ? initialData?.insurance?.id.toString()
-          : "0",
-        service_price: initialData?.service_price.toString(),
-        additionals: initialData?.additional_services,
-      }
+      start_request: {
+        is_self_pickup: initialData?.start_request?.is_self_pickup,
+        address: initialData?.start_request?.address,
+        distance: initialData?.start_request?.distance ?? 0,
+        driver_id: initialData?.start_request?.driver?.id?.toString(),
+      },
+      end_request: {
+        is_self_pickup: initialData?.end_request?.is_self_pickup,
+        address: initialData?.end_request?.address,
+        distance: initialData?.end_request?.distance ?? 0,
+        driver_id: initialData?.end_request?.driver?.id?.toString(),
+      },
+      customer: initialData?.customer?.id?.toString(),
+      fleet: initialData?.fleet?.id?.toString(),
+      description: initialData?.description,
+      is_with_driver: initialData?.is_with_driver,
+      is_out_of_town: initialData?.is_out_of_town,
+      date: initialData?.start_date,
+      duration: initialData?.duration?.toString(),
+      discount: initialData?.discount?.toString(),
+      insurance_id: initialData?.insurance
+        ? initialData?.insurance?.id.toString()
+        : "0",
+      service_price: initialData?.service_price.toString(),
+      additionals: initialData?.additional_services,
+    }
     : {
-        start_request: {
-          is_self_pickup: true,
-          address: "",
-          distance: 0,
-          driver_id: "",
-        },
-        end_request: {
-          is_self_pickup: true,
-          address: "",
-          distance: 0,
-          driver_id: "",
-        },
-        customer: "",
-        fleet: "",
-        description: "",
-        is_with_driver: false,
-        is_out_of_town: false,
-        date: "",
-        duration: "1",
-        discount: "0",
-        insurance_id: "0",
-        service_price: "",
-        additionals: [],
-      };
+      start_request: {
+        is_self_pickup: true,
+        address: "",
+        distance: 0,
+        driver_id: "",
+      },
+      end_request: {
+        is_self_pickup: true,
+        address: "",
+        distance: 0,
+        driver_id: "",
+      },
+      customer: "",
+      fleet: "",
+      description: "",
+      is_with_driver: false,
+      is_out_of_town: false,
+      date: "",
+      duration: "1",
+      discount: "0",
+      insurance_id: "0",
+      service_price: "",
+      additionals: [],
+    };
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(schema),
@@ -322,8 +322,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
       ...(showServicePrice &&
         data?.service_price && {
-          service_price: +data.service_price.replace(/,/g, ""),
-        }),
+        service_price: +data.service_price.replace(/,/g, ""),
+      }),
       ...(fields.length !== 0 && {
         additional_services: additionalField.map((field) => {
           return {
@@ -355,8 +355,8 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           error?.response?.data?.message == "Customer must be verified."
             ? "Customer belum diverifikasi"
             : //@ts-ignore
-              error?.response?.data?.message
-        }`,
+            error?.response?.data?.message
+          }`,
       });
     };
 
@@ -682,12 +682,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         />
       )}
       <div
-        className={cn(
-          "flex items-center justify-between space-y-8",
-          isMinimized
-            ? "min-[1920px]:w-[1176px] w-[936px]"
-            : "min-[1920px]:w-[940px] w-[700px]",
-        )}
+        className="flex items-center justify-between space-y-8"
         id="header"
       >
         <Heading title={title} description={description} />
@@ -728,7 +723,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     buttonVariants({ variant: "outline" }),
                     "text-black",
                     user?.role !== "admin" &&
-                      "cursor-not-allowed pointer-events-none opacity-50",
+                    "cursor-not-allowed pointer-events-none opacity-50",
                   )}
                 >
                   Edit Pesanan
@@ -822,7 +817,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           className="space-y-8 w-full"
         >
           <div className="flex relative" id="parent">
-            <div className={cn("space-y-8 pr-5")}>
+            <div className={cn("space-y-8 w-full")}>
               <FormField
                 name="is_with_driver"
                 control={form.control}
@@ -883,14 +878,9 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               apabila 1 baris form terdapat 2 input field, maka kita perlu expand sebanya 120px disetiap field
               */}
               <div
-                className={cn(
-                  "grid grid-cols-2 gap-[10px] items-start",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px]"
-                    : "min-[1920px]:w-[940px] w-[700px]",
-                )}
+                className="grid grid-cols-2 gap-[10px]"
               >
-                <div className="flex items-end">
+                <div className="flex items-center">
                   {lastPath !== "preview" && isEdit ? (
                     <FormField
                       name="customer"
@@ -904,12 +894,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className={cn(
-                                    isMinimized
-                                      ? "min-[1920px]:w-[505px] w-[385px]"
-                                      : "min-[1920px]:w-[387px] w-[267px]",
-                                    "mr-2",
-                                  )}
+                                  className="mr-2"
                                   showSearch
                                   placeholder="Pilih Pelanggan"
                                   style={{
@@ -997,12 +982,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className={cn(
-                              isMinimized
-                                ? "min-[1920px]:w-[505px] w-[385px]"
-                                : "min-[1920px]:w-[387px] w-[267px]",
-                              "mr-2",
-                            )}
+                            className="mr-2"
                             style={{
                               height: "40px",
                             }}
@@ -1057,12 +1037,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className={cn(
-                                    isMinimized
-                                      ? "min-[1920px]:w-[505px] w-[385px]"
-                                      : "min-[1920px]:w-[387px] w-[267px]",
-                                    "mr-2",
-                                  )}
+                                  className="mr-2"
                                   showSearch
                                   placeholder="Pilih Armada"
                                   style={{
@@ -1147,12 +1122,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className={cn(
-                              isMinimized
-                                ? "min-[1920px]:w-[505px] w-[385px]"
-                                : "min-[1920px]:w-[387px] w-[267px]",
-                              "mr-2",
-                            )}
+                            className="mr-2"
                             style={{
                               height: "40px",
                             }}
@@ -1638,11 +1608,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       dangerouslySetInnerHTML={{
                         __html: !isEmpty(defaultValues?.description)
                           ? makeUrlsClickable(
-                              defaultValues?.description.replace(
-                                /\n/g,
-                                "<br />",
-                              ),
-                            )
+                            defaultValues?.description.replace(
+                              /\n/g,
+                              "<br />",
+                            ),
+                          )
                           : "-",
                       }}
                     />
@@ -2128,16 +2098,16 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       : defaultValues?.end_request?.address,
                   )
                     ? makeUrlsClickable(
-                        type === "start"
-                          ? defaultValues?.start_request?.address.replace(
-                              /\n/g,
-                              "<br />",
-                            )
-                          : defaultValues?.end_request?.address.replace(
-                              /\n/g,
-                              "<br />",
-                            ),
-                      )
+                      type === "start"
+                        ? defaultValues?.start_request?.address.replace(
+                          /\n/g,
+                          "<br />",
+                        )
+                        : defaultValues?.end_request?.address.replace(
+                          /\n/g,
+                          "<br />",
+                        ),
+                    )
                     : "-",
                 }}
               />

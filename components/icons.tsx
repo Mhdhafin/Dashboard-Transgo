@@ -20,6 +20,7 @@ import {
   LucideProps,
   Moon,
   MoreVertical,
+  Percent,
   Pizza,
   Plus,
   Settings,
@@ -140,6 +141,7 @@ export const Icons = {
   pdf: PDFIcon,
   owners: Owners,
   notebookText: NotebookText,
+  discount: Percent,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
