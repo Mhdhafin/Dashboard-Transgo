@@ -16,53 +16,6 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import DiscountTableWrapper from "./discount-table-wrapper";
 
 export default function Page() {
-  // const [discount, setDiscount] = useState(0);
-  // const { toast } = useToast();
-  // const { user } = useUser();
-
-  // useEffect(() => {
-  //   const fetchDiscount = async () => {
-  //     try {
-  //       const response = await fetch(`${API_HOST}/fleets/discount`);
-  //       const data = await response.text();
-  //       setDiscount(Number(data));
-  //     } catch (error) {
-  //       console.error("Failed to fetch discount:", error);
-  //     }
-  //   };
-
-  //   fetchDiscount();
-  // });
-
-  // const handleSave = async () => {
-  //   try {
-  //     const response = await fetch(`${API_HOST}/fleets/discount`, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Bearer ${user?.accessToken}`,
-  //       },
-  //       body: JSON.stringify({ discount }),
-  //     });
-
-  //     if (response.ok) {
-  //       toast({
-  //         title: "Discount saved",
-  //         description: `Discount percentage set to ${discount}%`,
-  //       });
-  //     } else {
-  //       throw new Error("Failed to save discount");
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to save discount:", error);
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to save discount",
-  //       variant: "destructive",
-  //     });
-  //   }
-  // };
-
   const breadcrumbItems = [
     { title: "Discount", link: "/dashboard/discount" },
   ];
