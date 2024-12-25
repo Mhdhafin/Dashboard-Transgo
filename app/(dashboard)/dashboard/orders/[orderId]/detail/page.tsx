@@ -18,8 +18,10 @@ export default function Page({ params }: { params: { orderId: number } }) {
   const { data, isFetching } = useGetDetailOrder(params.orderId);
 
   return (
-    <div className="flex-1 space-y-4 p-5">
-      <BreadCrumb items={breadcrumbItems} />
+    <div className="flex-1 space-y-4 p-5 pr-0">
+      <div className={cn(isMinimized ? "w-[936px]" : "w-[700px]")}>
+        <BreadCrumb items={breadcrumbItems} />
+      </div>
       {isFetching && <Spinner />}
       {!isFetching && data?.data && <OrderForm initialData={data?.data} />}
     </div>

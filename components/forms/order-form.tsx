@@ -682,7 +682,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         />
       )}
       <div
-        className="flex items-center justify-between space-y-8"
+        className={cn(
+          "flex items-center justify-between space-y-8",
+          isMinimized
+            ? "min-[1920px]:w-[1176px] w-[936px]"
+            : "min-[1920px]:w-[940px] w-[700px]",
+        )}
         id="header"
       >
         <Heading title={title} description={description} />
@@ -817,7 +822,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           className="space-y-8 w-full"
         >
           <div className="flex relative" id="parent">
-            <div className={cn("space-y-8 w-full")}>
+            <div className={cn("space-y-8 pr-5")}>
               <FormField
                 name="is_with_driver"
                 control={form.control}
@@ -878,9 +883,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               apabila 1 baris form terdapat 2 input field, maka kita perlu expand sebanya 120px disetiap field
               */}
               <div
-                className="grid grid-cols-2 gap-[10px]"
+                className={cn(
+                  "grid grid-cols-2 gap-[10px] items-start",
+                  isMinimized
+                    ? "min-[1920px]:w-[1176px] w-[936px]"
+                    : "min-[1920px]:w-[940px] w-[700px]",
+                )}
               >
-                <div className="flex items-center">
+                <div className="flex items-end">
                   {lastPath !== "preview" && isEdit ? (
                     <FormField
                       name="customer"
@@ -894,7 +904,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className="mr-2"
+                                  className={cn(
+                                    isMinimized
+                                      ? "min-[1920px]:w-[505px] w-[385px]"
+                                      : "min-[1920px]:w-[387px] w-[267px]",
+                                    "mr-2",
+                                  )}
                                   showSearch
                                   placeholder="Pilih Pelanggan"
                                   style={{
@@ -982,7 +997,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className="mr-2"
+                            className={cn(
+                              isMinimized
+                                ? "min-[1920px]:w-[505px] w-[385px]"
+                                : "min-[1920px]:w-[387px] w-[267px]",
+                              "mr-2",
+                            )}
                             style={{
                               height: "40px",
                             }}
@@ -1037,7 +1057,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className="mr-2"
+                                  className={cn(
+                                    isMinimized
+                                      ? "min-[1920px]:w-[505px] w-[385px]"
+                                      : "min-[1920px]:w-[387px] w-[267px]",
+                                    "mr-2",
+                                  )}
                                   showSearch
                                   placeholder="Pilih Armada"
                                   style={{
@@ -1122,7 +1147,12 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className="mr-2"
+                            className={cn(
+                              isMinimized
+                                ? "min-[1920px]:w-[505px] w-[385px]"
+                                : "min-[1920px]:w-[387px] w-[267px]",
+                              "mr-2",
+                            )}
                             style={{
                               height: "40px",
                             }}

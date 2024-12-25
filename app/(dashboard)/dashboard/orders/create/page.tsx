@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import React, { useEffect } from "react";
 
 export default function Page() {
-  useEffect(() => {});
+  useEffect(() => { });
   const { isMinimized } = useSidebar();
 
   const breadcrumbItems = [
@@ -15,8 +15,10 @@ export default function Page() {
   ];
 
   return (
-    <div className="flex-1 space-y-4 p-5">
-      <BreadCrumb items={breadcrumbItems} />
+    <div className="flex-1 space-y-4 p-5 pr-0">
+      <div className={cn(isMinimized ? "w-[936px]" : "w-[700px]")}>
+        <BreadCrumb items={breadcrumbItems} />
+      </div>
       <OrderForm initialData={null} isEdit />
     </div>
   );
