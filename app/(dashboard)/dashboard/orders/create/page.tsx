@@ -15,10 +15,8 @@ export default function Page() {
   ];
 
   return (
-    <div className="flex-1 space-y-4 p-5 pr-0">
-      <div className={cn(isMinimized ? "w-[936px]" : "w-[700px]")}>
-        <BreadCrumb items={breadcrumbItems} />
-      </div>
+    <div className="flex-1 space-y-4 p-5">
+      <BreadCrumb items={breadcrumbItems} />
       <OrderForm initialData={null} isEdit />
     </div>
   );

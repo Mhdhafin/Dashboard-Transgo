@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import { useOrdersStatusCount } from "@/hooks/api/useOrder";
 import { useCustomersStatusCount } from "@/hooks/api/useCustomer";
+import { useUser } from "@/context/UserContext";
 
 interface DashboardNavProps {
   items: NavItem[];
@@ -29,10 +31,29 @@ export function DashboardNav({
     useOrdersStatusCount();
   const { data: customerStatusCount, isFetching: isFetchingCustomerStatus } =
     useCustomersStatusCount();
+  const { user } = useUser();
   const orderCount = orderStatusCount?.data;
   const customerCount = customerStatusCount?.data;
 
-  if (!items?.length) {
+  const navItems = useMemo(() => {
+    const baseItems = [...items];
+  
+    // Avoid adding "Discount" if it already exists in the base items
+    const discountExists = baseItems.some(item => item.title === "Discount");
+    
+    if (user?.role === "admin" && !discountExists) {
+      baseItems.push({
+        title: "Discount",
+        href: "/dashboard/discount",
+        icon: "discount",
+        roles: ["admin"],
+      });
+    }
+  
+    return baseItems;
+  }, [items, user]);  
+
+  if (!navItems?.length) {
     return null;
   }
 
@@ -59,7 +80,7 @@ export function DashboardNav({
           )}
         </div>
       </span>
-      {items.map((item, index) => {
+      {navItems.map((item, index) => {
         const Icon = Icons[item.icon || "arrowRight"];
         const isActive = () => {
           const basePaths = [
