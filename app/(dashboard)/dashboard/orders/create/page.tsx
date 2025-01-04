@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import React, { useEffect } from "react";
 
 export default function Page() {
-  useEffect(() => {});
+  useEffect(() => { });
   const { isMinimized } = useSidebar();
 
   const breadcrumbItems = [
