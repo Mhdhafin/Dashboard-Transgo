@@ -31,6 +31,7 @@ interface PriceDetailProps {
   confirmLoading: boolean;
   type?: string;
   messages?: any;
+  innerRef?: any;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -45,19 +46,20 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   confirmLoading,
   type,
   messages,
+  innerRef
 }) => {
   return (
     <div
-      className="min-[1920px]:w-[640px] w-[400px] h-screen p-5 top-10 fixed right-0 border-l"
-      id="detail-sidebar"
+      className="p-5 top-10 border rounded-md w-full basis-1/3"
+      id="detail-sidebar" ref={innerRef}
     >
       <div className="">
         <h4 className="text-center font-semibold text-xl mb-4 mt-4">
           Rincian Harga{" "}
           {form.getValues("is_with_driver") ? "Dengan Supir" : "Lepas Kunci"}
         </h4>
-        <div className="flex flex-col justify-between h-screen">
-          <div className="min-h-[400px] overflow-auto mb-[200px]">
+        <div className="flex flex-col justify-between gap-8 h-full">
+          <div className="overflow-auto">
             <div className="border border-neutral-200 rounded-md p-[10px] mb-4 ">
               {form.getValues("is_with_driver") && (
                 <>
@@ -130,11 +132,11 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                   <div className="flex justify-between mb-1">
                     <p className="font-medium text-sm text-neutral-700">
                       {!form.getValues("start_request.is_self_pickup") &&
-                      !form.getValues("end_request.is_self_pickup")
+                        !form.getValues("end_request.is_self_pickup")
                         ? "Diantar & Dijemput"
                         : !form.getValues("start_request.is_self_pickup")
-                        ? "Diantar"
-                        : "Dijemput"}
+                          ? "Diantar"
+                          : "Dijemput"}
                     </p>
                     <p className="font-semibold text-base">
                       {formatRupiah(detail?.service_price ?? 0)}
@@ -143,7 +145,21 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                 )}
               {showAdditional && isEdit
                 ? detail?.additional_services?.length !== 0 &&
-                  detail?.additional_services?.map((item: any, index: any) => {
+                detail?.additional_services?.map((item: any, index: any) => {
+                  return (
+                    <div className="flex justify-between mb-1" key={index}>
+                      <p className="font-medium text-sm text-neutral-700">
+                        {item.name}
+                      </p>
+                      <p className="font-semibold text-base">
+                        {formatRupiah(item.price)}
+                      </p>
+                    </div>
+                  );
+                })
+                : initialData?.additional_services?.length !== 0 &&
+                initialData?.additional_services?.map(
+                  (item: any, index: any) => {
                     return (
                       <div className="flex justify-between mb-1" key={index}>
                         <p className="font-medium text-sm text-neutral-700">
@@ -154,22 +170,8 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                         </p>
                       </div>
                     );
-                  })
-                : initialData?.additional_services?.length !== 0 &&
-                  initialData?.additional_services?.map(
-                    (item: any, index: any) => {
-                      return (
-                        <div className="flex justify-between mb-1" key={index}>
-                          <p className="font-medium text-sm text-neutral-700">
-                            {item.name}
-                          </p>
-                          <p className="font-semibold text-base">
-                            {formatRupiah(item.price)}
-                          </p>
-                        </div>
-                      );
-                    },
-                  )}
+                  },
+                )}
               {(showAdditional || showServicePrice) && (
                 <Separator className="mb-1" />
               )}
@@ -210,7 +212,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
                     <p className="font-semibold text-base">
                       {formatRupiah(
                         detail?.weekend_days.length * detail?.weekend_price ??
-                          0,
+                        0,
                       )}
                     </p>
                   </div>
@@ -304,7 +306,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             </div>
           </div>
           {type === "preview" && initialData?.status === "pending" && (
-            <div className="flex flex-col gap-5 sticky bottom-1">
+            <div className="flex flex-col gap-5   bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
                 <Info className="h-10 w-10" />
                 <p>
@@ -330,7 +332,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
           )}
 
           {type === "create" && (
-            <div className="flex flex-col gap-5 sticky bottom-1">
+            <div className="flex flex-col gap-5   bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
                 <p>
@@ -356,7 +358,7 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
             initialData?.status !== "pending" &&
             initialData?.payment_pdf_url &&
             initialData?.payment_link && (
-              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1 sticky bottom-1">
+              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1   bottom-1">
                 <div className="flex gap-4">
                   <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
                     <Icons.pdf />

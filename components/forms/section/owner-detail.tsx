@@ -144,7 +144,7 @@ const OwnerDetail: React.FC<OwnerDetailProps> = ({ onClose, data }) => {
         />
       )}
       <div
-        className="min-[1920px]:w-[640px] z-50 bg-white w-[400px] min-h-[1753px] p-5 top-10 fixed right-0 border-l"
+        className="p-5 top-10 border rounded-md  w-full basis-1/3"
         id="detail-sidebar"
       >
         <div className="flex justify-between items-center mb-4">

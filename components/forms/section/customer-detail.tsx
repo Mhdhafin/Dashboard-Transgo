@@ -55,9 +55,10 @@ interface User {
 interface CustomerDetailProps {
   onClose: () => void;
   data?: User;
+  innerRef?: any;
 }
 
-const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
+const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data, innerRef }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
 
@@ -152,8 +153,8 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
         />
       )}
       <div
-        className="min-[1920px]:w-[640px] w-[400px] min-h-[1753px] p-5 top-10 fixed right-0 border-l"
-        id="detail-sidebar"
+        className="p-5 top-10 border rounded-md w-full basis-1/3"
+        id="detail-sidebar" ref={innerRef}
       >
         <div className="flex justify-between items-center mb-4">
           <h4 className="text-center font-semibold text-xl">
@@ -171,7 +172,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
           </Button>
         </div>
         <div className="flex flex-col justify-between h-screen">
-          <div className="mb-[300px]">
+          <div>
             <div className="mb-5 gap-2 grid">
               <div className="p-1 flex items-center  rounded-full w-full bg-neutral-50">
                 <div className="rounded-full h-[40px] w-[40px] flex items-center justify-center bg-neutral-100">
@@ -237,8 +238,8 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ onClose, data }) => {
                     {data?.gender === "male"
                       ? "Laki-Laki"
                       : data?.gender === "female"
-                      ? "Perempuan"
-                      : "-"}
+                        ? "Perempuan"
+                        : "-"}
                   </span>
                 </div>
               </div>

@@ -139,6 +139,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const [type, setType] = useState<string>("");
   const [schema, setSchema] = useState(() => generateSchema(true, true));
   const [messages, setMessages] = useState<any>({});
+  const detailRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollDetail = () => {
+    detailRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   const {
     data: customers,
@@ -682,12 +687,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         />
       )}
       <div
-        className={cn(
-          "flex items-center justify-between space-y-8",
-          isMinimized
-            ? "min-[1920px]:w-[1176px] w-[936px]"
-            : "min-[1920px]:w-[940px] w-[700px]",
-        )}
+        className={cn("flex items-center justify-between py-3 gap-2 flex-wrap")}
         id="header"
       >
         <Heading title={title} description={description} />
@@ -816,13 +816,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           </Button>
         )}
       </div>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
-        >
-          <div className="flex relative" id="parent">
-            <div className={cn("space-y-8 pr-5")}>
+      <div className="flex gap-4 flex-col lg:!flex-row">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8 w-full basis-2/3"
+          >
+            <div className="relative space-y-8" id="parent">
               <FormField
                 name="is_with_driver"
                 control={form.control}
@@ -838,7 +838,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                           }
                           onValueChange={field.onChange}
                           value={field.value ? "dengan_supir" : "lepas_kunci"}
-                          className="w-[235px]"
+                          className="w-full lg:w-[235px]"
                         >
                           <TabsList className="grid w-full grid-cols-2">
                             <TabsTrigger
@@ -883,12 +883,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               apabila 1 baris form terdapat 2 input field, maka kita perlu expand sebanya 120px disetiap field
               */}
               <div
-                className={cn(
-                  "grid grid-cols-2 gap-[10px] items-start",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px]"
-                    : "min-[1920px]:w-[940px] w-[700px]",
-                )}
+                className={cn("lg:grid grid-cols-2 gap-[10px] items-start",)}
               >
                 <div className="flex items-end">
                   {lastPath !== "preview" && isEdit ? (
@@ -897,19 +892,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <Space size={12} direction="vertical">
+                          <div className="space-y-2 w-full">
                             <FormLabel className="relative label-required">
                               Pelanggan
                             </FormLabel>
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className={cn(
-                                    isMinimized
-                                      ? "min-[1920px]:w-[505px] w-[385px]"
-                                      : "min-[1920px]:w-[387px] w-[267px]",
-                                    "mr-2",
-                                  )}
+                                  className={cn("mr-2 w-full")}
                                   showSearch
                                   placeholder="Pilih Pelanggan"
                                   style={{
@@ -973,13 +963,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                   setOpenCustomerDetail(true);
                                   setOpenFleetDetail(false);
                                   setOpenDriverDetail(false);
+                                  scrollDetail();
                                 }}
                               >
                                 Lihat
                               </Button>
                             </div>
                             <FormMessage />
-                          </Space>
+                          </div>
                         );
                       }}
                     />
@@ -997,12 +988,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className={cn(
-                              isMinimized
-                                ? "min-[1920px]:w-[505px] w-[385px]"
-                                : "min-[1920px]:w-[387px] w-[267px]",
-                              "mr-2",
-                            )}
+                            className={cn("mr-2",)}
                             style={{
                               height: "40px",
                             }}
@@ -1024,6 +1010,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             setOpenCustomerDetail(true);
                             setOpenFleetDetail(false);
                             setOpenDriverDetail(false);
+                            scrollDetail();
                           }}
                         >
                           {initialData?.customer?.status == "pending"
@@ -1050,19 +1037,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       control={form.control}
                       render={({ field }) => {
                         return (
-                          <Space size={12} direction="vertical">
+                          <div className="space-y-2 w-full">
                             <FormLabel className="relative label-required">
                               Armada
                             </FormLabel>
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className={cn(
-                                    isMinimized
-                                      ? "min-[1920px]:w-[505px] w-[385px]"
-                                      : "min-[1920px]:w-[387px] w-[267px]",
-                                    "mr-2",
-                                  )}
+                                  className={cn("mr-2 flex-1")}
                                   showSearch
                                   placeholder="Pilih Armada"
                                   style={{
@@ -1126,6 +1108,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                   setOpenFleetDetail(true);
                                   setOpenCustomerDetail(false);
                                   setOpenDriverDetail(false);
+                                  scrollDetail();
                                 }}
                               >
                                 Lihat
@@ -1137,7 +1120,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                 {messages.fleet}
                               </FormMessage>
                             )}
-                          </Space>
+                          </div>
                         );
                       }}
                     />
@@ -1147,12 +1130,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
-                            className={cn(
-                              isMinimized
-                                ? "min-[1920px]:w-[505px] w-[385px]"
-                                : "min-[1920px]:w-[387px] w-[267px]",
-                              "mr-2",
-                            )}
+                            className={cn("mr-2")}
                             style={{
                               height: "40px",
                             }}
@@ -1174,6 +1152,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             setOpenFleetDetail(true);
                             setOpenCustomerDetail(false);
                             setOpenDriverDetail(false);
+                            scrollDetail();
                           }}
                         >
                           Lihat
@@ -1184,12 +1163,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 </div>
               </div>
               <div
-                className={cn(
-                  "gap-5",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px] grid grid-cols-3"
-                    : "min-[1920px]:w-[940px] w-[700px] flex flex-wrap",
-                )}
+                className={cn("gap-2 lg:gap-5 flex flex-col lg:flex-row")}
               >
                 {isEdit ? (
                   <FormField
@@ -1197,7 +1171,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     name="date"
                     render={({ field }) => (
                       <ConfigProvider locale={locale}>
-                        <Space size={12} direction="vertical">
+                        <Space size={8} direction="vertical" className="w-full">
                           <FormLabel className="relative label-required">
                             Tanggal Sewa
                           </FormLabel>
@@ -1205,12 +1179,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             <DatePicker
                               disabledDate={disabledDate}
                               disabled={loading}
-                              className={cn(
-                                isMinimized
-                                  ? "w-full"
-                                  : "min-[1920px]:w-[460px] w-[340px]",
-                                "p",
-                              )}
+                              className={cn("p h-[40px] w-full")}
                               style={
                                 {
                                   // width: `${!isMinimized ? "340px" : "100%"}`,
@@ -1246,11 +1215,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     <FormLabel>Tanggal Sewa</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Input
-                        className={cn(
-                          isMinimized
-                            ? "w-full"
-                            : "min-[1920px]:w-[460px] w-[340px]",
-                        )}
+                        className={cn("w-full")}
                         style={{
                           height: "40px",
                         }}
@@ -1280,12 +1245,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                         value={field.value}
                       >
                         <FormControl
-                          className={cn(
-                            "disabled:opacity-100",
-                            isMinimized
-                              ? "w-full"
-                              : "min-[1920px]:w-[460px] w-[340px]",
-                          )}
+                          className={cn("disabled:opacity-100", "w-full", "h-[40px]")}
                         >
                           <SelectTrigger className="">
                             <SelectValue placeholder="asdf" />
@@ -1313,16 +1273,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   )}
                 />
 
-                <FormItem className="flex flex-col">
+                <FormItem className="flex flex-col pt-[5px]">
                   <FormLabel>Selesai sewa (otomatis)</FormLabel>
                   <FormControl>
                     <Input
-                      className={cn(
-                        // !isMinimized ? "w-[700px]" : "w-full"
-                        isMinimized
-                          ? "w-full"
-                          : "min-[1920px]:w-[940px] w-[700px]",
-                      )}
+                      className={cn("w-full h-[40px]")}
                       placeholder="Tanggal dan waktu selesai"
                       value={end == "Invalid Date" ? "" : end}
                       readOnly
@@ -1333,13 +1288,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 </FormItem>
               </div>
               <div
-                className={cn(
-                  "grid grid-cols-2 gap-5",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px]"
-                    : "min-[1920px]:w-[940px] w-[700px]",
-                  // isMinimized ? "w-[936px]" : "w-[700px]",
-                )}
+                className={cn("lg:grid grid-cols-2 gap-5")}
               >
                 <FormField
                   control={form.control}
@@ -1357,13 +1306,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                               field.value == false ? "dalam_kota" : "luar_kota"
                             }
                           >
-                            <TabsList className="grid w-full grid-cols-2">
+                            <TabsList className="grid w-full grid-cols-2 h-[40px]">
                               <TabsTrigger
                                 disabled={!isEdit || loading}
                                 value="dalam_kota"
                                 onClick={() =>
                                   form.setValue("is_out_of_town", false)
                                 }
+                                className="h-[30px]"
                               >
                                 Dalam Kota
                               </TabsTrigger>
@@ -1373,6 +1323,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                 onClick={() =>
                                   form.setValue("is_out_of_town", true)
                                 }
+                                className="h-[30px]"
                               >
                                 Luar Kota
                               </TabsTrigger>
@@ -1403,7 +1354,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                           onValueChange={field.onChange}
                           value={field.value || "0"}
                         >
-                          <FormControl className="disabled:opacity-100">
+                          <FormControl className="disabled:opacity-100 h-[40px]">
                             <SelectTrigger>
                               <SelectValue defaultValue="0" />
                             </SelectTrigger>
@@ -1433,12 +1384,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 />
               </div>
               <Separator
-                className={cn(
-                  "mt-1",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px]"
-                    : "min-[1920px]:w-[940px] w-[700px]",
-                )}
+                className={cn("mt-1")}
               />
               <DetailSection
                 title="Detail Pengambilan"
@@ -1454,6 +1400,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   setOpenFleetDetail(false);
                   setOpenDriverDetail(true);
                   setType("start");
+                  scrollDetail();
                 }}
                 lastPath={lastPath}
                 messages={messages}
@@ -1472,17 +1419,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   setOpenFleetDetail(false);
                   setOpenDriverDetail(true);
                   setType("end");
+                  scrollDetail();
                 }}
                 lastPath={lastPath}
                 messages={messages}
               />
               <div
-                className={cn(
-                  "space-y-8",
-                  isMinimized
-                    ? "min-[1920px]:w-[1176px] w-[936px]"
-                    : "min-[1920px]:w-[940px] w-[700px]",
-                )}
+                className={cn("space-y-8")}
               >
                 {showServicePrice && (
                   <FormField
@@ -1524,19 +1467,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
                 <div className="flex flex-col">
                   {fields.map((field_item, index) => (
-                    <div key={index} className="flex gap-4 items-end mb-4">
+                    <div key={index} className="lg:flex gap-4 items-end mb-4">
                       <FormField
                         name={`additionals.${index}.name`}
                         control={form.control}
                         render={({ field }) => {
                           return (
-                            <FormItem
-                              className={cn(
-                                isMinimized
-                                  ? "min-[1920px]:w-[548px] w-[428px]"
-                                  : "min-[1920px]:w-[940px] w-[700px]",
-                              )}
-                            >
+                            <FormItem>
                               <FormLabel className="relative label-required">
                                 Deskripsi Layanan
                               </FormLabel>
@@ -1560,13 +1497,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                         control={form.control}
                         render={({ field }) => {
                           return (
-                            <FormItem
-                              className={cn(
-                                isMinimized
-                                  ? "min-[1920px]:w-[548px] w-[428px]"
-                                  : "min-[1920px]:w-[940px] w-[700px]",
-                              )}
-                            >
+                            <FormItem>
                               <FormLabel className="relative label-required">
                                 Harga Layanan
                               </FormLabel>
@@ -1602,7 +1533,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                               variant: "destructive",
                               size: "icon",
                             }),
-                            "p-0 h-10 w-10 flex-none bg-red-50",
+                            "p-0 h-10 w-full lg:w-10 flex-none bg-red-50 mb-2 lg:mb-0",
                           )}
                           onClick={() => {
                             remove(index);
@@ -1634,7 +1565,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   <FormItem>
                     <FormLabel>Permintaan Khusus</FormLabel>
                     <p
-                      className="border border-gray-200 rounded-md px-3 py-1 break-words"
+                      className="border border-gray-200 rounded-md px-3 break-words"
                       dangerouslySetInnerHTML={{
                         __html: !isEmpty(defaultValues?.description)
                           ? makeUrlsClickable(
@@ -1679,64 +1610,68 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 )}
               </div>
             </div>
-          </div>
-        </form>
+          </form>
 
-        {/* sidebar */}
+          {/* sidebar */}
 
-        {openCustomerDetail && isFetchingCustomer && (
-          <div className="flex justify-center items-center h-[100px] w-full">
-            <Spinner />
-          </div>
-        )}
-        {openCustomerDetail && !isFetchingCustomer && (
-          <CustomerDetail
-            data={customerData?.data}
-            onClose={() => setOpenCustomerDetail(false)}
-          />
-        )}
-        {openFleetDetail && isFetchingFleet && (
-          <div className="flex justify-center items-center h-[100px] w-full">
-            <Spinner />
-          </div>
-        )}
+          {openCustomerDetail && isFetchingCustomer && (
+            <div className="flex justify-center items-center h-[100px] w-full">
+              <Spinner />
+            </div>
+          )}
+          {openCustomerDetail && !isFetchingCustomer && (
+            <CustomerDetail
+              innerRef={detailRef}
+              data={customerData?.data}
+              onClose={() => setOpenCustomerDetail(false)}
+            />
+          )}
+          {openFleetDetail && isFetchingFleet && (
+            <div className="flex justify-center items-center h-[100px] w-full">
+              <Spinner />
+            </div>
+          )}
 
-        {openFleetDetail && !isFetchingFleet && (
-          <FleetDetail
-            data={fleetData?.data}
-            onClose={() => setOpenFleetDetail(false)}
-          />
-        )}
+          {openFleetDetail && !isFetchingFleet && (
+            <FleetDetail
+              innerRef={detailRef}
+              data={fleetData?.data}
+              onClose={() => setOpenFleetDetail(false)}
+            />
+          )}
 
-        {openDriverDetail && isFetchingDriver && (
-          <div className="flex justify-center items-center h-[100px] w-full">
-            <Spinner />
-          </div>
-        )}
+          {openDriverDetail && isFetchingDriver && (
+            <div className="flex justify-center items-center h-[100px] w-full">
+              <Spinner />
+            </div>
+          )}
 
-        {openDriverDetail && !isFetchingDriver && (
-          <DriverDetail
-            data={driver?.data}
-            onClose={() => setOpenDriverDetail(false)}
-          />
-        )}
+          {openDriverDetail && !isFetchingDriver && (
+            <DriverDetail
+              innerRef={detailRef}
+              data={driver?.data}
+              onClose={() => setOpenDriverDetail(false)}
+            />
+          )}
 
-        {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
-          <PriceDetail
-            initialData={initialData}
-            isEdit={isEdit ?? false}
-            showServicePrice={showServicePrice}
-            showAdditional={additionalField?.length !== 0}
-            form={form}
-            detail={detail}
-            handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-            handleOpenRejectModal={() => setOpenRejectModal(true)}
-            confirmLoading={loading}
-            type={lastPath}
-            messages={messages}
-          />
-        )}
-      </Form>
+          {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
+            <PriceDetail
+              innerRef={detailRef}
+              initialData={initialData}
+              isEdit={isEdit ?? false}
+              showServicePrice={showServicePrice}
+              showAdditional={additionalField?.length !== 0}
+              form={form}
+              detail={detail}
+              handleOpenApprovalModal={() => setOpenApprovalModal(true)}
+              handleOpenRejectModal={() => setOpenRejectModal(true)}
+              confirmLoading={loading}
+              type={lastPath}
+              messages={messages}
+            />
+          )}
+        </Form>
+      </div>
     </>
   );
 };
@@ -1836,7 +1771,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
   return (
     <>
       <div className="space-y-4">
-        <div className="flex justify-between">
+        <div className="lg:flex justify-between">
           <h3 className="mb-4">{title}</h3>
           {type === "end" && lastPath !== "detail" && (
             <div className="flex gap-2">
@@ -1853,12 +1788,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
         </div>
         {/* Layanan */}
         <div
-          className={cn(
-            "gap-5",
-            isMinimized
-              ? "min-[1920px]:w-[1176px] w-[936px]"
-              : "min-[1920px]:w-[940px] w-[700px]",
-          )}
+          className={cn("gap-5")}
         >
           <FormField
             control={form.control}
@@ -1875,7 +1805,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                       value={field.value == true ? "1" : "0"}
                       onValueChange={field.onChange}
                     >
-                      <TabsList className="grid w-full grid-cols-2">
+                      <TabsList className="grid w-full grid-rows-2 lg:grid-cols-2 lg:grid-rows-none h-[100px] lg:h-[40px]">
                         {lists.map((list, index) => {
                           return (
                             <TabsTrigger
@@ -1888,6 +1818,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
                                   list.value == "0" ? false : true,
                                 );
                               }}
+                              className="h-[40px] lg:h-[30px]"
                             >
                               {list.name}
                             </TabsTrigger>
@@ -1908,214 +1839,183 @@ const DetailSection: React.FC<DetailSectionProps> = ({
           />
         </div>
         {/* Penanggung Jawab */}
-        <div
-          className={cn(
-            "flex gap-5 items-start",
-            isMinimized
-              ? "min-[1920px]:w-[1176px] w-[936px]"
-              : "min-[1920px]:w-[940px] w-[700px]",
-          )}
-        >
-          <div className="flex gap-2 items-end">
-            {isEdit ? (
-              <FormField
-                name={`${type}_request.driver_id`}
-                control={form.control}
-                render={({ field }) => (
-                  <Space size={12} direction="vertical">
-                    <FormLabel className="relative label-required">
-                      Penanggung Jawab
-                    </FormLabel>
-                    <div className="flex">
-                      <FormControl>
-                        <AntdSelect
-                          defaultValue={
-                            type === "start"
-                              ? initialData?.start_request?.driver?.name
-                              : initialData?.end_request?.driver?.name
-                          }
-                          showSearch
-                          placeholder="Pilih Penanggung Jawab"
-                          className={cn(
-                            isMinimized
-                              ? "min-[1920px]:w-[505px] w-[385px]"
-                              : "min-[1920px]:w-[387px] w-[267px]",
-                            "mr-2",
-                          )}
-                          style={{
-                            // width: `${isMinimized ? "385px" : "267px"}`,
-                            height: "40px",
-                          }}
-                          onSearch={setSearchDriverTerm}
-                          onChange={field.onChange}
-                          onPopupScroll={handleScrollDrivers}
-                          filterOption={false}
-                          notFoundContent={
-                            isFetchingNextDrivers ? (
-                              <p className="px-3 text-sm">loading</p>
-                            ) : null
-                          }
-                          // append value attribute when field is not  empty
-                          {...(!isEmpty(field.value) && {
-                            value: field.value,
-                          })}
-                          disabled={switchValue}
-                        >
-                          {lastPath !== "preview" &&
-                            lastPath !== "create" &&
-                            isEdit && (
-                              <Option
-                                value={
-                                  type == "start"
-                                    ? initialData?.start_request?.driver?.id?.toString()
-                                    : initialData?.end_request?.driver?.id?.toString()
-                                }
-                              >
-                                {type == "start"
-                                  ? initialData?.start_request?.driver?.name
-                                  : initialData?.end_request?.driver?.name}
-                              </Option>
-                            )}
-                          {drivers?.pages.map((page: any, pageIndex: any) =>
-                            page.data.items.map((item: any, itemIndex: any) => {
-                              return (
-                                <Option
-                                  key={item.id}
-                                  value={item.id.toString()}
-                                >
-                                  {item.name}
-                                </Option>
-                              );
-                            }),
-                          )}
-
-                          {isFetchingNextDrivers && (
-                            <Option disabled>
-                              <p className="px-3 text-sm">loading</p>
+        <div className="flex gap-2">
+          {isEdit ? (
+            <FormField
+              name={`${type}_request.driver_id`}
+              control={form.control}
+              render={({ field }) => (
+                <Space size={12} direction="vertical" className="w-full">
+                  <FormLabel className="relative label-required">
+                    Penanggung Jawab
+                  </FormLabel>
+                  <div className="flex">
+                    <FormControl>
+                      <AntdSelect
+                        defaultValue={
+                          type === "start"
+                            ? initialData?.start_request?.driver?.name
+                            : initialData?.end_request?.driver?.name
+                        }
+                        showSearch
+                        placeholder="Pilih Penanggung Jawab"
+                        className={cn("mr-2 w-full")}
+                        style={{
+                          // width: `${isMinimized ? "385px" : "267px"}`,
+                          height: "40px",
+                        }}
+                        onSearch={setSearchDriverTerm}
+                        onChange={field.onChange}
+                        onPopupScroll={handleScrollDrivers}
+                        filterOption={false}
+                        notFoundContent={
+                          isFetchingNextDrivers ? (
+                            <p className="px-3 text-sm">loading</p>
+                          ) : null
+                        }
+                        // append value attribute when field is not  empty
+                        {...(!isEmpty(field.value) && {
+                          value: field.value,
+                        })}
+                        disabled={switchValue}
+                      >
+                        {lastPath !== "preview" &&
+                          lastPath !== "create" &&
+                          isEdit && (
+                            <Option
+                              value={
+                                type == "start"
+                                  ? initialData?.start_request?.driver?.id?.toString()
+                                  : initialData?.end_request?.driver?.id?.toString()
+                              }
+                            >
+                              {type == "start"
+                                ? initialData?.start_request?.driver?.name
+                                : initialData?.end_request?.driver?.name}
                             </Option>
                           )}
-                        </AntdSelect>
-                      </FormControl>
-                      <Button
-                        className={cn(
-                          buttonVariants({ variant: "main" }),
-                          "max-w-[65px] h-[40px]",
+                        {drivers?.pages.map((page: any, pageIndex: any) =>
+                          page.data.items.map((item: any, itemIndex: any) => {
+                            return (
+                              <Option
+                                key={item.id}
+                                value={item.id.toString()}
+                              >
+                                {item.name}
+                              </Option>
+                            );
+                          }),
                         )}
-                        disabled={
-                          !form.getFieldState(`${type}_request.driver_id`)
-                            .isDirty &&
-                          isEmpty(form.getValues(`${type}_request.driver_id`))
-                        }
-                        type="button"
-                        onClick={handleButton}
-                      >
-                        Lihat
-                      </Button>
-                    </div>
-                    <FormMessage />
-                    {detailMessages?.driver_id && (
-                      <FormMessage className="text-main">
-                        {detailMessages?.driver_id}
-                      </FormMessage>
-                    )}
-                  </Space>
-                )}
-              />
-            ) : (
-              <FormItem>
-                <FormLabel>Penanggung Jawab</FormLabel>
-                <div className="flex">
-                  <FormControl className="disabled:opacity-100">
-                    <Input
+
+                        {isFetchingNextDrivers && (
+                          <Option disabled>
+                            <p className="px-3 text-sm">loading</p>
+                          </Option>
+                        )}
+                      </AntdSelect>
+                    </FormControl>
+                    <Button
                       className={cn(
-                        isMinimized
-                          ? "min-[1920px]:w-[505px] w-[385px]"
-                          : "min-[1920px]:w-[387px] w-[267px]",
-                        "mr-2",
+                        buttonVariants({ variant: "main" }),
+                        "max-w-[65px] h-[40px]",
                       )}
-                      style={{
-                        // width: `${isMinimized ? "385px" : "267px"}`,
-                        height: "40px",
-                      }}
-                      disabled={!isEdit || loading}
-                      value={
-                        type === "start"
-                          ? initialData?.start_request?.driver?.name
-                          : initialData?.end_request?.driver?.name
+                      disabled={
+                        !form.getFieldState(`${type}_request.driver_id`)
+                          .isDirty &&
+                        isEmpty(form.getValues(`${type}_request.driver_id`))
                       }
-                    />
-                  </FormControl>
-                  <Button
-                    className={cn(
-                      buttonVariants({ variant: "main" }),
-                      "max-w-[65px] h-[40px]",
-                    )}
-                    disabled={
-                      !form.getFieldState(`${type}_request.driver_id`)
-                        .isDirty &&
-                      isEmpty(form.getValues(`${type}_request.driver_id`))
+                      type="button"
+                      onClick={handleButton}
+                    >
+                      Lihat
+                    </Button>
+                  </div>
+                  <FormMessage />
+                  {detailMessages?.driver_id && (
+                    <FormMessage className="text-main">
+                      {detailMessages?.driver_id}
+                    </FormMessage>
+                  )}
+                </Space>
+              )}
+            />
+          ) : (
+            <FormItem>
+              <FormLabel>Penanggung Jawab</FormLabel>
+              <div className="flex">
+                <FormControl className="disabled:opacity-100">
+                  <Input
+                    className={cn("mr-2")}
+                    style={{
+                      // width: `${isMinimized ? "385px" : "267px"}`,
+                      height: "40px",
+                    }}
+                    disabled={!isEdit || loading}
+                    value={
+                      type === "start"
+                        ? initialData?.start_request?.driver?.name
+                        : initialData?.end_request?.driver?.name
                     }
-                    type="button"
-                    onClick={handleButton}
-                  >
-                    Lihat
-                  </Button>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          </div>
-          {!form.getValues(`${type}_request.is_self_pickup`) && (
-            <div className={cn("flex gap-2 items-end")}>
-              <FormField
-                name={`${type}_request.distance`}
-                control={form.control}
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Jarak
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          min={0}
-                          disabled={!isEdit || loading || switchValue}
-                          type="number"
-                          placeholder="Masukkan jarak (contoh 10 Km)"
-                          className={cn(
-                            "h-[40px]",
-                            // isMinimized ? "w-[458px]" : "w-[340px]",
-                            isMinimized
-                              ? "min-[1920px]:w-[578px] w-[458px]"
-                              : "min-[1920px]:w-[460px] w-[340px]",
-                          )}
-                          onChange={field.onChange}
-                          onBlur={field.onBlur}
-                          // append value attribute when this field is not empty
-                          value={field.value}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                      {detailMessages?.distance && (
-                        <FormMessage className="text-main">
-                          {detailMessages?.distance}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  );
-                }}
-              />
-            </div>
+                  />
+                </FormControl>
+                <Button
+                  className={cn(
+                    buttonVariants({ variant: "main" }),
+                    "max-w-[65px] h-[40px]",
+                  )}
+                  disabled={
+                    !form.getFieldState(`${type}_request.driver_id`)
+                      .isDirty &&
+                    isEmpty(form.getValues(`${type}_request.driver_id`))
+                  }
+                  type="button"
+                  onClick={handleButton}
+                >
+                  Lihat
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
           )}
         </div>
+        {!form.getValues(`${type}_request.is_self_pickup`) && (
+          <div className={cn("flex gap-2 items-end")}>
+            <FormField
+              name={`${type}_request.distance`}
+              control={form.control}
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel className="relative label-required">
+                      Jarak
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        min={0}
+                        disabled={!isEdit || loading || switchValue}
+                        type="number"
+                        placeholder="Masukkan jarak (contoh 10 Km)"
+                        className={cn("h-[40px]")}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        // append value attribute when this field is not empty
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    {detailMessages?.distance && (
+                      <FormMessage className="text-main">
+                        {detailMessages?.distance}
+                      </FormMessage>
+                    )}
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+        )}
         {/* Alamat */}
-        <div
-          className={cn(
-            isMinimized
-              ? "min-[1920px]:w-[1176px] w-[936px]"
-              : "min-[1920px]:w-[940px] w-[700px]",
-          )}
-        >
+        <div>
           {!isEdit ? (
             <FormItem>
               <FormLabel>Alamat</FormLabel>
@@ -2178,13 +2078,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
         {lastPath === "detail" && (
           <>
             {/* Bukti Serah Terima */}
-            <div
-              className={cn(
-                isMinimized
-                  ? "min-[1920px]:w-[1176px] w-[936px]"
-                  : "min-[1920px]:w-[940px] w-[700px]",
-              )}
-            >
+            <div>
               <FormItem>
                 <FormLabel>Bukti Serah Terima</FormLabel>
                 <Carousel>
@@ -2249,23 +2143,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
               </FormItem>
             </div>
             {/* Durasi */}
-            <div
-              className={cn(
-                isMinimized
-                  ? "min-[1920px]:w-[1176px] w-[936px]"
-                  : "min-[1920px]:w-[940px] w-[700px]",
-              )}
-            >
+            <div>
               <FormItem>
                 <FormLabel>Durasi</FormLabel>
                 <FormControl>
                   <Input
-                    className={cn(
-                      // !isMinimized ? "w-[700px]" : "w-full"
-                      isMinimized
-                        ? "w-full"
-                        : "min-[1920px]:w-[940px] w-[700px]",
-                    )}
+                    className={cn("w-full")}
                     placeholder="Tanggal dan waktu selesai"
                     value={
                       typeRequest?.progress_duration_second
@@ -2279,23 +2162,12 @@ const DetailSection: React.FC<DetailSectionProps> = ({
               </FormItem>
             </div>
             {/* Catatan Driver */}
-            <div
-              className={cn(
-                isMinimized
-                  ? "min-[1920px]:w-[1176px] w-[936px]"
-                  : "min-[1920px]:w-[940px] w-[700px]",
-              )}
-            >
+            <div>
               <FormItem>
                 <FormLabel>Catatan Driver</FormLabel>
                 <FormControl>
                   <Input
-                    className={cn(
-                      // !isMinimized ? "w-[700px]" : "w-full"
-                      isMinimized
-                        ? "w-full"
-                        : "min-[1920px]:w-[940px] w-[700px]",
-                    )}
+                    className={cn("w-full")}
                     placeholder="Tanggal dan waktu selesai"
                     value={typeRequestLog?.[0]?.description ?? "-"}
                     readOnly
@@ -2309,12 +2181,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({
       </div>
 
       <Separator
-        className={cn(
-          "mt-1",
-          isMinimized
-            ? "min-[1920px]:w-[1176px] w-[936px]"
-            : "min-[1920px]:w-[940px] w-[700px]",
-        )}
+        className={cn("mt-1")}
       />
 
       <PreviewImage
