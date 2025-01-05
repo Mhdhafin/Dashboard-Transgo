@@ -31,6 +31,7 @@ interface PriceDetailProps {
   confirmLoading: boolean;
   type?: string;
   messages?: any;
+  innerRef?: any;
 }
 
 const PriceDetail: React.FC<PriceDetailProps> = ({
@@ -45,11 +46,12 @@ const PriceDetail: React.FC<PriceDetailProps> = ({
   confirmLoading,
   type,
   messages,
+  innerRef
 }) => {
   return (
     <div
       className="p-5 top-10 border rounded-md w-full basis-1/3"
-      id="detail-sidebar"
+      id="detail-sidebar" ref={innerRef}
     >
       <div className="">
         <h4 className="text-center font-semibold text-xl mb-4 mt-4">

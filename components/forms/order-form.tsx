@@ -139,6 +139,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const [type, setType] = useState<string>("");
   const [schema, setSchema] = useState(() => generateSchema(true, true));
   const [messages, setMessages] = useState<any>({});
+  const detailRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollDetail = () => {
+    detailRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   const {
     data: customers,
@@ -958,6 +963,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                   setOpenCustomerDetail(true);
                                   setOpenFleetDetail(false);
                                   setOpenDriverDetail(false);
+                                  scrollDetail();
                                 }}
                               >
                                 Lihat
@@ -1004,6 +1010,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             setOpenCustomerDetail(true);
                             setOpenFleetDetail(false);
                             setOpenDriverDetail(false);
+                            scrollDetail();
                           }}
                         >
                           {initialData?.customer?.status == "pending"
@@ -1101,6 +1108,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                   setOpenFleetDetail(true);
                                   setOpenCustomerDetail(false);
                                   setOpenDriverDetail(false);
+                                  scrollDetail();
                                 }}
                               >
                                 Lihat
@@ -1144,6 +1152,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                             setOpenFleetDetail(true);
                             setOpenCustomerDetail(false);
                             setOpenDriverDetail(false);
+                            scrollDetail();
                           }}
                         >
                           Lihat
@@ -1391,6 +1400,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   setOpenFleetDetail(false);
                   setOpenDriverDetail(true);
                   setType("start");
+                  scrollDetail();
                 }}
                 lastPath={lastPath}
                 messages={messages}
@@ -1409,6 +1419,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                   setOpenFleetDetail(false);
                   setOpenDriverDetail(true);
                   setType("end");
+                  scrollDetail();
                 }}
                 lastPath={lastPath}
                 messages={messages}
@@ -1610,6 +1621,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           )}
           {openCustomerDetail && !isFetchingCustomer && (
             <CustomerDetail
+              innerRef={detailRef}
               data={customerData?.data}
               onClose={() => setOpenCustomerDetail(false)}
             />
@@ -1622,6 +1634,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
           {openFleetDetail && !isFetchingFleet && (
             <FleetDetail
+              innerRef={detailRef}
               data={fleetData?.data}
               onClose={() => setOpenFleetDetail(false)}
             />
@@ -1635,6 +1648,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
           {openDriverDetail && !isFetchingDriver && (
             <DriverDetail
+              innerRef={detailRef}
               data={driver?.data}
               onClose={() => setOpenDriverDetail(false)}
             />
@@ -1642,6 +1656,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
           {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
             <PriceDetail
+              innerRef={detailRef}
               initialData={initialData}
               isEdit={isEdit ?? false}
               showServicePrice={showServicePrice}
