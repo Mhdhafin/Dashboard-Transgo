@@ -19,6 +19,9 @@ import { Button } from "../ui/button";
 import { Percent } from "lucide-react";
 import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import { useDebounce } from "use-debounce";
+import { useGetInfinityFleets } from "@/hooks/api/useFleet";
+import { isEmpty, isNull, isString } from "lodash";
+import { cn, convertTime, makeUrlsClickable } from "@/lib/utils";
 
 const { RangePicker } = DatePicker;
 
@@ -26,6 +29,7 @@ const formSchema = z.object({
     discount: z.coerce.number().min(1, { message: "Discount minimal is from 1" }).max(100, { message: "Discount must be between 0 and 100" }),
     range_date: z.tuple([z.any(), z.any()]),
     location_id: z.string().min(0).optional(),
+    fleet_id: z.string().min(0).optional(),
 })
 
 type DiscountFormValues = z.infer<typeof formSchema>;
@@ -57,6 +61,16 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
         isFetchingNextPage: isFetchingNextLocations,
     } = useGetInfinityLocation(searchLocationDebounce);
 
+    const [searchFleetTerm, setSearchFleetTerm] = useState("");
+    const [searchFleetDebounce] = useDebounce(searchFleetTerm, 500);
+    const {
+        data: fleets,
+        isFetching: isFetchingFleets,
+        fetchNextPage: fetchNextFleets,
+        hasNextPage: hasNextFleets,
+        isFetchingNextPage: isFetchingNextFleets,
+    } = useGetInfinityFleets(searchFleetDebounce);
+
     const title = !isEdit ? "Edit Discount" : "Create Discount";
     const description = !isEdit
         ? "Create a new discount for your fleet"
@@ -75,13 +89,15 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             discount: initialData?.discount,
             start_date: new Date(initialData?.start_date),
             end_date: new Date(initialData?.end_date),
-            location_id: initialData?.location?.id?.toString()
+            location_id: initialData?.location?.id?.toString(),
+            fleet: initialData?.fleet?.id?.toString(),
         }
         : {
             discount: 0,
             start_date: "",
             end_date: "",
-            location_id: ""
+            location_id: "",
+            fleet: "",
         }
 
     const form = useForm<DiscountFormValues>({
@@ -90,13 +106,17 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
     });
 
     const Option = AntdSelect;
-    const handleScroll = (
-        event: React.UIEvent<HTMLDivElement>,
-        type: "location",
-    ) => {
+    const handleScrollLocation = (event: React.UIEvent<HTMLDivElement>) => {
         const target = event.target as HTMLDivElement;
         if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
             fetchNextLocations();
+        }
+    };
+
+    const handleScrollFleets = (event: React.UIEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLDivElement;
+        if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+            fetchNextFleets();
         }
     };
 
@@ -111,7 +131,8 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             discount: data?.discount,
             start_date: new Date(data?.range_date[0]).toISOString(),
             end_date: new Date(data?.range_date[1]).toISOString(),
-            location_id: parseInt(data?.location_id as string)
+            location_id: parseInt(data?.location_id as string),
+            fleet_id: parseInt(data?.fleet_id as string),
         }
 
         if (initialData) {
@@ -173,13 +194,13 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                 <form onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-8 w-full"
                 >
-                    <div className="flex flex-wrap flex-col md:!flex-row justify-between space-y-8 md:!space-x-8 md:!space-y-0">
+                    <div className="flex flex-wrap flex-col justify-between lg:!flex-row gap-4 md:!space-y-0">
                         <FormField
                             control={form.control}
                             name="range_date"
                             render={({ field: { onChange, onBlur, value, ref } }) => (
                                 <ConfigProvider locale={locale}>
-                                    <Space direction="vertical" size={12} className="flex-1">
+                                    <Space direction="vertical" size={12} className="basis-2/5">
                                         <FormLabel className="relative label-required">
                                             Tanggal Diskon
                                         </FormLabel>
@@ -204,20 +225,19 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                             control={form.control}
                             render={({ field }) => {
                                 return (
-                                    <Space size={12} direction="vertical" className="min-w-[200px]">
+                                    <Space size={12} direction="vertical" className="basis-1/6">
                                         <FormLabel className="relative">
                                             Lokasi
                                         </FormLabel>
-                                        <FormControl>
+                                        <FormControl className="w-full">
                                             <AntdSelect
                                                 showSearch
                                                 value={field.value}
-                                                placeholder=""
-                                                style={{ width: "100%" }}
+                                                placeholder="Pilih Lokasi"
                                                 onSearch={setSearchLocation}
                                                 onChange={field.onChange}
                                                 onPopupScroll={(event) =>
-                                                    handleScroll(event, "location")
+                                                    handleScrollLocation(event)
                                                 }
                                                 filterOption={false}
                                                 notFoundContent={
@@ -253,7 +273,67 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                                                 )}
                                             </AntdSelect>
                                         </FormControl>
-                                        <FormMessage />
+                                    </Space>
+                                );
+                            }}
+                        />
+
+                        <FormField
+                            name="fleet_id"
+                            control={form.control}
+                            render={({ field }) => {
+                                return (
+                                    <Space size={12} direction="vertical" className="basis-1/6">
+                                        <FormLabel className="relative">
+                                            Armada
+                                        </FormLabel>
+                                        <FormControl className="w-full">
+                                            <AntdSelect
+                                                showSearch
+                                                placeholder="Pilih Armada"
+                                                onSearch={setSearchFleetTerm}
+                                                onChange={field.onChange}
+                                                onPopupScroll={handleScrollFleets}
+                                                filterOption={false}
+                                                notFoundContent={
+                                                    isFetchingNextFleets ? (
+                                                        <p className="px-3 text-sm">loading</p>
+                                                    ) : null
+                                                }
+                                                {...(!isEmpty(field.value) && {
+                                                    value: field.value,
+                                                })}
+                                            >
+                                                {lastPath !== "create" && isEdit && (
+                                                    <Option
+                                                        value={initialData?.fleet?.id?.toString()}
+                                                    >
+                                                        {initialData?.fleet?.name}
+                                                    </Option>
+                                                )}
+                                                {fleets?.pages.map(
+                                                    (page: any, pageIndex: any) =>
+                                                        page.data.items.map(
+                                                            (item: any, itemIndex: any) => {
+                                                                return (
+                                                                    <Option
+                                                                        key={item.id}
+                                                                        value={item.id.toString()}
+                                                                    >
+                                                                        {item.name}
+                                                                    </Option>
+                                                                );
+                                                            },
+                                                        ),
+                                                )}
+
+                                                {isFetchingNextFleets && (
+                                                    <Option disabled>
+                                                        <p className="px-3 text-sm">loading</p>
+                                                    </Option>
+                                                )}
+                                            </AntdSelect>
+                                        </FormControl>
                                     </Space>
                                 );
                             }}
@@ -264,11 +344,11 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                             name="discount"
                             render={({ field: { onChange, onBlur, value, ref } }) => (
                                 <ConfigProvider locale={locale}>
-                                    <Space direction="vertical" size={12}>
+                                    <Space direction="vertical" size={12} className="basis-1/6">
                                         <FormLabel className="relative label-required">
                                             Diskon
                                         </FormLabel>
-                                        <FormControl>
+                                        <FormControl className="w-full">
                                             <Input
                                                 disabled={loading}
                                                 onChange={onChange}

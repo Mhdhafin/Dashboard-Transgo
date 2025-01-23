@@ -29,7 +29,19 @@ export const useGetInfinityDiscount = () => {
             const location = await axiosAuth.get(`/locations/${item.location_id}`);
             return { ...item, location: location.data };
         }));
-        data.data.items = itemsWithLocation;
+
+        console.log(itemsWithLocation);
+
+        const itemsWithFleetAndLocation = await Promise.all(itemsWithLocation.map(async (item: any) => {
+            if (item.fleet_id === 0) {
+                return { ...item, fleet: { name: "Semua Armada" } };
+            }
+
+            const fleet = await axiosAuth.get(`/fleets/${item.fleet_id}`);
+            return { ...item, fleet: fleet.data };
+        }));
+        
+        data.data.items = itemsWithFleetAndLocation;
         return data;
     }
 

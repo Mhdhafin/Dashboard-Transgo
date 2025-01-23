@@ -38,6 +38,13 @@ export const pendingColumns: ColumnDef<any>[] = [
         ),
     },
     {
+        accessorKey: "fleet",
+        header: "Fleet",
+        cell: ({ row }) => (
+            <span>{row.original.fleet.name}</span>
+        ),
+    },
+    {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
     },
@@ -70,6 +77,13 @@ export const completedColumns: ColumnDef<any>[] = [
         header: "Location",
         cell: ({ row }) => (
             <span>{row.original.location.name}</span>
+        ),
+    },
+    {
+        accessorKey: "fleet",
+        header: "Fleet",
+        cell: ({ row }) => (
+            <span>{row.original.fleet.name}</span>
         ),
     },
     {
