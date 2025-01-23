@@ -1,12 +1,13 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
+import { useGetDetailLocation } from "./useLocation";
 
 const baseEndpoint = "/discount"
 
 export const useGetDiscount = (params: any, options = {}) => {
     const axiosAuth = useAxiosAuth();
     const getDiscount = async () => {
-        return await axiosAuth.get(`${baseEndpoint}/by-date`, { params });
+        return await axiosAuth.get(`${baseEndpoint}/search`, { params });
     };
 
     return useQuery({
@@ -19,7 +20,22 @@ export const useGetDiscount = (params: any, options = {}) => {
 export const useGetInfinityDiscount = () => {
     const axiosAuth = useAxiosAuth();
     const getDiscount = async () => {
-        return axiosAuth.get(baseEndpoint, {});
+        const data = await axiosAuth.get(baseEndpoint, {});
+        const itemsWithLocation = await Promise.all(data.data.items.map(async (item: any) => {
+            if (item.fleet_type === 'all') {
+                item.fleet_type = "Semua Jenis Kendaraan";
+            }
+
+            if (item.location_id === 0) {
+                return { ...item, location: { name: "Semua Lokasi" } };
+            }
+
+            const location = await axiosAuth.get(`/locations/${item.location_id}`);
+            return { ...item, location: location.data };
+        }));
+
+        data.data.items = itemsWithLocation;
+        return data;
     }
 
     return useQuery({

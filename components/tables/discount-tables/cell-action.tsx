@@ -34,7 +34,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             onSuccess: () => {
                 toast({
                     variant: "success",
-                    title: "Request Task berhasil dihapus!",
+                    title: "Diskon berhasil dihapus!",
                 });
                 router.refresh();
                 router.push("/dashboard/discount");

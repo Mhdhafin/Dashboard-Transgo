@@ -17,13 +17,17 @@ import { Select as AntdSelect, ConfigProvider, DatePicker, Space, Input } from "
 import "dayjs/locale/id";
 import { Button } from "../ui/button";
 import { Percent } from "lucide-react";
+import { useGetInfinityLocation } from "@/hooks/api/useLocation";
+import { useDebounce } from "use-debounce";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const { RangePicker } = DatePicker;
 
 const formSchema = z.object({
     discount: z.coerce.number().min(1, { message: "Discount minimal is from 1" }).max(100, { message: "Discount must be between 0 and 100" }),
     range_date: z.tuple([z.any(), z.any()]),
-    description: z.string().min(3, { message: "Description must be at least 3 characters" }),
+    location_id: z.string().min(0).optional(),
+    fleet_type: z.string().min(0).optional()
 })
 
 type DiscountFormValues = z.infer<typeof formSchema>;
@@ -46,6 +50,14 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
     const lastPath = splitPath[splitPath.length - 1];
 
     const [loading, setLoading] = useState(false);
+    const [searchLocation, setSearchLocation] = useState("");
+    const [searchLocationDebounce] = useDebounce(searchLocation, 500);
+
+    const {
+        data: locations,
+        fetchNextPage: fetchNextLocations,
+        isFetchingNextPage: isFetchingNextLocations,
+    } = useGetInfinityLocation(searchLocationDebounce);
 
     const title = !isEdit ? "Edit Discount" : "Create Discount";
     const description = !isEdit
@@ -60,25 +72,43 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
     const { mutate: createDiscount } = usePostDiscount();
     const { mutate: updateDiscount } = useEditDiscount(discountId as string)
 
+    const fleet_type = [
+        { id: "all", name: "All" },
+        { id: "car", name: "Car" },
+        { id: "motorcycle", name: "Motorcycle" },
+    ];
+
     const defaultValues = initialData
         ? {
             discount: initialData?.discount,
             start_date: new Date(initialData?.start_date),
             end_date: new Date(initialData?.end_date),
-            description: initialData?.description,
+            location_id: initialData?.location?.id?.toString(),
+            fleet_type: initialData?.fleet?.id?.toString(),
+
         }
         : {
             discount: 0,
             start_date: "",
             end_date: "",
-            description: "diskon pertengahan tahun",
+            location_id: "",
+            fleet_type: "all",
         }
 
+        
     const form = useForm<DiscountFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues,
     });
 
+    const Option = AntdSelect;
+    const handleScrollLocation = (event: React.UIEvent<HTMLDivElement>) => {
+        const target = event.target as HTMLDivElement;
+        if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+            fetchNextLocations();
+        }
+    };
+  
     const disabledDate = (current: Dayjs | null): boolean => {
         if (lastPath === "edit") return false;
         return current ? current < dayjs().startOf("day") : false;;
@@ -90,8 +120,8 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             discount: data?.discount,
             start_date: new Date(data?.range_date[0]).toISOString(),
             end_date: new Date(data?.range_date[1]).toISOString(),
-            description: data?.description,
-        }
+            location_id: parseInt(data?.location_id as string),
+            fleet_type: data?.fleet_type as string
 
         if (initialData) {
             updateDiscount(payload, {
@@ -152,13 +182,13 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                 <form onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-8 w-full"
                 >
-                    <div className="flex flex-wrap flex-col md:!flex-row justify-between space-y-8 md:!space-x-8 md:!space-y-0">
+                    <div className="flex flex-wrap flex-col justify-between lg:!flex-row gap-4 md:!space-y-0">
                         <FormField
                             control={form.control}
                             name="range_date"
                             render={({ field: { onChange, onBlur, value, ref } }) => (
                                 <ConfigProvider locale={locale}>
-                                    <Space direction="vertical" size={12} className="flex-1">
+                                    <Space direction="vertical" size={12} className="basis-2/5">
                                         <FormLabel className="relative label-required">
                                             Tanggal Diskon
                                         </FormLabel>
@@ -179,15 +209,109 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
                         />
 
                         <FormField
+                            name="location_id"
+                            control={form.control}
+                            render={({ field }) => {
+                                return (
+                                    <Space size={12} direction="vertical" className="basis-1/6">
+                                        <FormLabel className="relative">
+                                            Lokasi
+                                        </FormLabel>
+                                        <FormControl className="w-full">
+                                            <AntdSelect
+                                                showSearch
+                                                value={field.value}
+                                                placeholder="Pilih Lokasi"
+                                                onSearch={setSearchLocation}
+                                                onChange={field.onChange}
+                                                onPopupScroll={(event) =>
+                                                    handleScrollLocation(event)
+                                                }
+                                                filterOption={false}
+                                                notFoundContent={
+                                                    isFetchingNextLocations ? (
+                                                        <p className="px-3 text-sm">loading</p>
+                                                    ) : null
+                                                }
+                                            >
+                                                {isEdit && (
+                                                    <Option
+                                                        value={initialData?.location?.id?.toString()}
+                                                    >
+                                                        {initialData?.location?.name}
+                                                    </Option>
+                                                )}
+                                                {locations?.pages.map((page: any, pageIndex: any) =>
+                                                    page.data.items.map((item: any, itemIndex: any) => {
+                                                        return (
+                                                            <Option
+                                                                key={item.id}
+                                                                value={item.id.toString()}
+                                                            >
+                                                                {item.name}
+                                                            </Option>
+                                                        );
+                                                    }),
+                                                )}
+
+                                                {isFetchingNextLocations && (
+                                                    <Option disabled>
+                                                        <p className="px-3 text-sm">loading</p>
+                                                    </Option>
+                                                )}
+                                            </AntdSelect>
+                                        </FormControl>
+                                    </Space>
+                                );
+                            }}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="fleet_type"
+                            render={({ field }) => (
+                                <FormItem className="basis-1/6">
+                                    <FormLabel className="relative">
+                                        Tipe
+                                    </FormLabel>
+                                    <Select
+                                        disabled={!isEdit || loading}
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl className="disabled:opacity-100">
+                                            <SelectTrigger>
+                                                <SelectValue
+                                                    defaultValue={field.value}
+                                                    placeholder="Pilih tipe"
+                                                />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {/* @ts-ignore  */}
+                                            {fleet_type.map((category) => (
+                                                <SelectItem key={category.id} value={category.id}>
+                                                    {category.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
                             control={form.control}
                             name="discount"
                             render={({ field: { onChange, onBlur, value, ref } }) => (
                                 <ConfigProvider locale={locale}>
-                                    <Space direction="vertical" size={12}>
+                                    <Space direction="vertical" size={12} className="basis-1/6">
                                         <FormLabel className="relative label-required">
                                             Diskon
                                         </FormLabel>
-                                        <FormControl>
+                                        <FormControl className="w-full">
                                             <Input
                                                 disabled={loading}
                                                 onChange={onChange}

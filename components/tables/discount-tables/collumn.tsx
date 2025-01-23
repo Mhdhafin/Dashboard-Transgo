@@ -31,6 +31,20 @@ export const pendingColumns: ColumnDef<any>[] = [
         ),
     },
     {
+        accessorKey: "location",
+        header: "Location",
+        cell: ({ row }) => (
+            <span>{row.original.location.name}</span>
+        ),
+    },
+    {
+        accessorKey: "fleet_type",
+        header: "Jenis Kendaraan",
+        cell: ({ row }) => (
+            <span>{row.original.fleet_type}</span>
+        ),
+    },
+    {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />,
     },
@@ -56,6 +70,20 @@ export const completedColumns: ColumnDef<any>[] = [
         header: "End Date",
         cell: ({ row }) => (
             <span>{row.original.end_date}</span>
+        ),
+    },
+    {
+        accessorKey: "location",
+        header: "Location",
+        cell: ({ row }) => (
+            <span>{row.original.location.name}</span>
+        ),
+    },
+    {
+        accessorKey: "fleet_type",
+        header: "Jenis Kendaraan",
+        cell: ({ row }) => (
+            <span>{row.original.fleet_type}</span>
         ),
     },
     {
