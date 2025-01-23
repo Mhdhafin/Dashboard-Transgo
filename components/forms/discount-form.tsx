@@ -11,7 +11,7 @@ import { useEditDiscount, useGetDiscount, usePostDiscount } from "@/hooks/api/us
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormLabel, FormMessage } from "../ui/form";
 import locale from "antd/locale/id_ID";
 import { Select as AntdSelect, ConfigProvider, DatePicker, Space, Input } from "antd";
 import "dayjs/locale/id";
@@ -27,7 +27,7 @@ const formSchema = z.object({
     discount: z.coerce.number().min(1, { message: "Discount minimal is from 1" }).max(100, { message: "Discount must be between 0 and 100" }),
     range_date: z.tuple([z.any(), z.any()]),
     location_id: z.string().min(0).optional(),
-    fleet_type: z.string().min(0).optional(),   
+    fleet_type: z.string().min(0).optional()
 })
 
 type DiscountFormValues = z.infer<typeof formSchema>;
@@ -85,6 +85,7 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             end_date: new Date(initialData?.end_date),
             location_id: initialData?.location?.id?.toString(),
             fleet_type: initialData?.fleet?.id?.toString(),
+
         }
         : {
             discount: 0,
@@ -107,7 +108,7 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             fetchNextLocations();
         }
     };
-
+  
     const disabledDate = (current: Dayjs | null): boolean => {
         if (lastPath === "edit") return false;
         return current ? current < dayjs().startOf("day") : false;;
@@ -121,7 +122,6 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             end_date: new Date(data?.range_date[1]).toISOString(),
             location_id: parseInt(data?.location_id as string),
             fleet_type: data?.fleet_type as string
-        }
 
         if (initialData) {
             updateDiscount(payload, {
