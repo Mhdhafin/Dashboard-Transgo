@@ -122,6 +122,7 @@ export const DiscountForm: React.FC<DiscountFormProps> = ({
             end_date: new Date(data?.range_date[1]).toISOString(),
             location_id: parseInt(data?.location_id as string),
             fleet_type: data?.fleet_type as string
+        }
 
         if (initialData) {
             updateDiscount(payload, {
