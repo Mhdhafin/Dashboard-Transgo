@@ -38,10 +38,10 @@ export const pendingColumns: ColumnDef<any>[] = [
         ),
     },
     {
-        accessorKey: "fleet",
-        header: "Fleet",
+        accessorKey: "fleet_type",
+        header: "Jenis Kendaraan",
         cell: ({ row }) => (
-            <span>{row.original.fleet.name}</span>
+            <span>{row.original.fleet_type}</span>
         ),
     },
     {
@@ -80,10 +80,10 @@ export const completedColumns: ColumnDef<any>[] = [
         ),
     },
     {
-        accessorKey: "fleet",
-        header: "Fleet",
+        accessorKey: "fleet_type",
+        header: "Jenis Kendaraan",
         cell: ({ row }) => (
-            <span>{row.original.fleet.name}</span>
+            <span>{row.original.fleet_type}</span>
         ),
     },
     {

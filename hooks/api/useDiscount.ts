@@ -22,6 +22,10 @@ export const useGetInfinityDiscount = () => {
     const getDiscount = async () => {
         const data = await axiosAuth.get(baseEndpoint, {});
         const itemsWithLocation = await Promise.all(data.data.items.map(async (item: any) => {
+            if (item.fleet_type === 'all') {
+                item.fleet_type = "Semua Jenis Kendaraan";
+            }
+
             if (item.location_id === 0) {
                 return { ...item, location: { name: "Semua Lokasi" } };
             }
@@ -30,18 +34,7 @@ export const useGetInfinityDiscount = () => {
             return { ...item, location: location.data };
         }));
 
-        console.log(itemsWithLocation);
-
-        const itemsWithFleetAndLocation = await Promise.all(itemsWithLocation.map(async (item: any) => {
-            if (item.fleet_id === 0) {
-                return { ...item, fleet: { name: "Semua Armada" } };
-            }
-
-            const fleet = await axiosAuth.get(`/fleets/${item.fleet_id}`);
-            return { ...item, fleet: fleet.data };
-        }));
-        
-        data.data.items = itemsWithFleetAndLocation;
+        data.data.items = itemsWithLocation;
         return data;
     }
 
