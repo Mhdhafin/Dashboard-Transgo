@@ -2,27 +2,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 import { useUser } from "@/context/UserContext";
 
-const baseEndpoint = "/orders";
+const baseEndpoint = "/reimburse";
 
-interface GetOrdersParams {
+interface GetReimburseParams {
   status: string;
   page: number;
   limit: number;
   q?: string;
   start_date?: string | Date | undefined;
   end_date?: string | Date | undefined;
-  order_by?: string | undefined;
-  order_column?: string | undefined;
+  reimburse_by?: string | undefined;
+  reimburse_column?: string | undefined;
 }
 
-export const useGetOrders = (
-  params: GetOrdersParams,
+export const useGetReimburses = (
+  params: GetReimburseParams,
   options = {},
   type: string,
 ) => {
   const axiosAuth = useAxiosAuth();
 
-  const getOrders = async () => {
+  const getReimburse = async () => {
     const { data } = await axiosAuth.get(baseEndpoint, {
       params,
     });
@@ -30,58 +30,58 @@ export const useGetOrders = (
   };
 
   return useQuery({
-    queryKey: ["orders", params, type],
-    queryFn: getOrders,
+    queryKey: ["reimburse", params, type],
+    queryFn: getReimburse,
     ...options,
   });
 };
 
-export const useGetDetailOrder = (id: number | string) => {
+export const useGetDetailReimburse = (id: number | string) => {
   const axiosAuth = useAxiosAuth();
 
-  const getDetailOrder = () => {
+  const getDetailReimburse = () => {
     return axiosAuth.get(`${baseEndpoint}/${id}`);
   };
 
   return useQuery({
-    queryKey: ["orders", id],
-    queryFn: getDetailOrder,
+    queryKey: ["reimburse", id],
+    queryFn: getDetailReimburse,
   });
 };
 
-export const usePostOrder = () => {
+export const usePostReimburse = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const postOrder = (body: any) => {
+  const postReimburse = (body: any) => {
     return axiosAuth.post(baseEndpoint, body);
   };
 
   return useMutation({
-    mutationFn: postOrder,
+    mutationFn: postReimburse,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
 
-export const useEditOrder = (id: string | number) => {
+export const useEditReimburse = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const editOrder = (body: any) => {
+  const editReimburse = (body: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
   };
 
   return useMutation({
-    mutationFn: editOrder,
+    mutationFn: editReimburse,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
 
-export const useOrderCalculate = () => {
+export const useReimburseCalculate = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
@@ -92,30 +92,30 @@ export const useOrderCalculate = () => {
   return useMutation({
     mutationFn: calculatePrice,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
 
-export const useOrdersStatusCount = () => {
+export const useReimburseStatusCount = () => {
   const { user } = useUser();
   const axiosAuth = useAxiosAuth();
   const getStatusCountFn = () => {
     return axiosAuth.get(`${baseEndpoint}/status/count`);
   };
   return useQuery({
-    queryKey: ["orders"],
+    queryKey: ["reimburse"],
     queryFn: getStatusCountFn,
     enabled: user?.role !== "owner",
   });
 };
 
-export const useDeleteOrder = (id: number, force: boolean) => {
+export const useDeleteReimburse = (id: number, force: boolean) => {
   const axiosAuth = useAxiosAuth();
 
   const queryClient = useQueryClient();
 
-  const deleteOrder = (id: number) => {
+  const deleteReimburse = (id: number) => {
     return axiosAuth.delete(`${baseEndpoint}/${id}`, {
       params: {
         force,
@@ -124,41 +124,41 @@ export const useDeleteOrder = (id: number, force: boolean) => {
   };
 
   return useMutation({
-    mutationFn: deleteOrder,
+    mutationFn: deleteReimburse,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
 
-export const useAcceptOrder = (id: string | number) => {
+export const useAcceptReimburse = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const acceptOrder = (body: any) => {
+  const acceptReimburse = (body: any) => {
     return axiosAuth.post(`${baseEndpoint}/${id}/accept`, body);
   };
 
   return useMutation({
-    mutationFn: acceptOrder,
+    mutationFn: acceptReimburse,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
 
-export const useRejectOrder = () => {
+export const useRejectReimburse = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const rejectOrder = ({ orderId, reason }: any) => {
-    return axiosAuth.post(`${baseEndpoint}/${orderId}/reject`, { reason });
+  const rejectReimburse = ({ reimburseId, reason }: any) => {
+    return axiosAuth.post(`${baseEndpoint}/${reimburseId}/reject`, { reason });
   };
 
   return useMutation({
-    mutationFn: rejectOrder,
+    mutationFn: rejectReimburse,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["reimburse"] });
     },
   });
 };
