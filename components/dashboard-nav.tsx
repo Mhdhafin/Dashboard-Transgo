@@ -156,7 +156,7 @@ export function DashboardNav({
                     {item.title === "Reimburse" &&
                       !isFetchingReimburseStatus && (
                         <div className="bg-red-500 text-sm font-medium min-w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
-                          {customerCount?.[0]?.count ?? 0}
+                          {reimburseCount?.[0]?.count ?? 0}
                         </div>
                       )}
                   </div>

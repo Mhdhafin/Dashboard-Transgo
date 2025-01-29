@@ -8,7 +8,7 @@ import {
   onProgressColumns,
   confirmedColumns,
   pendingColumns,
-} from "@/components/tables/order-tables/columns";
+} from "@/components/tables/reimburse-tables/columns";
 import { ReimburseTable } from "@/components/tables/reimburse-tables/reimburse-table";
 import { TabsContent } from "@/components/ui/tabs";
 import { useGetReimburses } from "@/hooks/api/useReimburse";
@@ -123,7 +123,7 @@ const ReimburseTableWrapper = () => {
       value: ReimburseStatus.CONFIRMED,
     },
     {
-      name: "Sedang Berjalan",
+      name: "Sedang DiProses",
       value: ReimburseStatus.ON_PROGRESS,
     },
     {

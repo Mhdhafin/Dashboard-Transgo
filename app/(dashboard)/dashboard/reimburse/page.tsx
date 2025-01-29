@@ -15,11 +15,10 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getOrders } from "@/client/orderClient";
 import { getReimburse } from "@/client/reimburseClient";
-import OrderTableWrapper from "../orders/order-table-wrapper";
+import ReimburseTableWrapper from "./reimburse-table-wrapper";
 
-const breadcrumbItems = [{ title: "Pesanan", link: "/dashboard/orders" }];
+const breadcrumbItems = [{ title: "Reimburse", link: "/dashboard/reimburse" }];
 type paramsProps = {
   searchParams: {
     [key: string]: string | undefined;
@@ -27,7 +26,7 @@ type paramsProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Pesanan | Transgo",
+  title: "Reimburse | Transgo",
   description: "Requests page",
 };
 
@@ -54,12 +53,13 @@ const page = async ({ searchParams }: paramsProps) => {
             className={cn(buttonVariants({ variant: "main" }))}
           >
             <Plus className="mr-2 h-4 w-4" />
+            Tambah Reimburse
           </Link>
         </div>
         <Separator />
         <Tabs defaultValue={defaultTab} className="space-y-4">
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <OrderTableWrapper />
+            <ReimburseTableWrapper />
           </HydrationBoundary>
         </Tabs>
       </div>
