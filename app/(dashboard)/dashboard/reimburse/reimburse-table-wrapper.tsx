@@ -5,9 +5,8 @@ import SearchInput from "@/components/search-input";
 import Spinner from "@/components/spinner";
 import {
   completedColumns,
-  onProgressColumns,
-  confirmedColumns,
-  pendingColumns,
+  on_progressColumns,
+  waitingColumns,
 } from "@/components/tables/reimburse-tables/columns";
 import { ReimburseTable } from "@/components/tables/reimburse-tables/reimburse-table";
 import { TabsContent } from "@/components/ui/tabs";
@@ -33,7 +32,7 @@ const ReimburseTableWrapper = () => {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const pageLimit = Number(searchParams.get("limit")) || 10;
-  const defaultTab = searchParams.get("status") ?? "pending";
+  const defaultTab = searchParams.get("status") ?? "waiting";
   const q = searchParams.get("q");
   const startDate = searchParams.get("start_date") || "";
   const endDate = searchParams.get("end_date") || "";
@@ -55,21 +54,20 @@ const ReimburseTableWrapper = () => {
     ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
   });
 
-  const { data: pendingData, isFetching: isFetchingPendingData } =
+  const { data: waitingData, isFetching: isFetchingWaitingData } =
     useGetReimburses(
-      getReimburseParams(ReimburseStatus.PENDING),
+      getReimburseParams(ReimburseStatus.WAITING),
       {
-        enabled: defaultTab === ReimburseStatus.PENDING,
+        enabled: defaultTab === ReimburseStatus.WAITING,
       },
-      ReimburseStatus.PENDING,
+      ReimburseStatus.WAITING,
     );
 
-  const { data: confirmedData, isFetching: isFetchingConfirmedData } =
-    useGetReimburses(
-      getReimburseParams(ReimburseStatus.CONFIRMED),
-      { enabled: defaultTab === ReimburseStatus.CONFIRMED },
-      ReimburseStatus.CONFIRMED,
-    );
+  const { data: doneData, isFetching: isFetchingDoneData } = useGetReimburses(
+    getReimburseParams(ReimburseStatus.DONE),
+    { enabled: defaultTab === ReimburseStatus.DONE },
+    ReimburseStatus.DONE,
+  );
 
   const { data: onProgressData, isFetching: isFetchingOnProgressData } =
     useGetReimburses(
@@ -77,13 +75,19 @@ const ReimburseTableWrapper = () => {
       { enabled: defaultTab === ReimburseStatus.ON_PROGRESS },
       ReimburseStatus.ON_PROGRESS,
     );
+  // const { data: rejectedData, isFetching: isFetchingRejectedData } =
+  //   useGetReimburses(
+  //     getReimburseParams(ReimburseStatus.REJECTED),
+  //     { enabled: defaultTab === ReimburseStatus.REJECTED },
+  //     ReimburseStatus.REJECTED,
+  //   );
 
-  const { data: completedData, isFetching: isFetchingCompletedData } =
-    useGetReimburses(
-      getReimburseParams(ReimburseStatus.DONE),
-      { enabled: defaultTab === ReimburseStatus.DONE },
-      ReimburseStatus.DONE,
-    );
+  // const { data: completedData, isFetching: isFetchingCompletedData } =
+  //   useGetReimburses(
+  //     getReimburseParams(ReimburseStatus.DONE),
+  //     { enabled: defaultTab === ReimburseStatus.DONE },
+  //     ReimburseStatus.DONE,
+  //   );
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null | undefined>) => {
@@ -115,12 +119,8 @@ const ReimburseTableWrapper = () => {
 
   const lists = [
     {
-      name: "Belum Disetujui",
-      value: ReimburseStatus.PENDING,
-    },
-    {
-      name: "Disetujui",
-      value: ReimburseStatus.CONFIRMED,
+      name: "Menunggu",
+      value: ReimburseStatus.WAITING,
     },
     {
       name: "Sedang DiProses",
@@ -229,19 +229,19 @@ const ReimburseTableWrapper = () => {
           <SearchInput
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
-            placeholder="Cari pesanan berdasarkan Pelanggan / Armada / Penanggung Jawab"
+            placeholder="Cari Reimburse"
           />
         </div>
       </div>
-      <TabsContent value={ReimburseStatus.PENDING} className="space-y-4">
-        {isFetchingPendingData && <Spinner />}
-        {!isFetchingPendingData && pendingData && (
+      <TabsContent value={ReimburseStatus.WAITING} className="space-y-4">
+        {isFetchingWaitingData && <Spinner />}
+        {!isFetchingWaitingData && waitingData && (
           <ReimburseTable
-            columns={pendingColumns}
-            data={pendingData.items}
+            columns={waitingColumns}
+            data={waitingData.items}
             searchKey="name"
-            totalUsers={pendingData.meta?.total_items}
-            pageCount={Math.ceil(pendingData.meta?.total_items / pageLimit)}
+            totalUsers={waitingData.meta?.total_items}
+            pageCount={Math.ceil(waitingData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
             sorting={sorting}
@@ -249,23 +249,8 @@ const ReimburseTableWrapper = () => {
           />
         )}
       </TabsContent>
-      <TabsContent value={ReimburseStatus.CONFIRMED} className="space-y-4">
-        {isFetchingConfirmedData && <Spinner />}
-        {!isFetchingConfirmedData && confirmedData && (
-          <ReimburseTable
-            columns={confirmedColumns}
-            sorting={sorting}
-            setSorting={setSorting}
-            data={confirmedData.items}
-            searchKey="name"
-            totalUsers={confirmedData.meta?.total_items}
-            pageCount={Math.ceil(confirmedData.meta?.total_items / pageLimit)}
-            pageNo={page}
-            searchQuery={searchQuery}
-          />
-        )}
-      </TabsContent>
-      <TabsContent value={ReimburseStatus.ON_PROGRESS} className="space-y-4">
+
+      {/* <TabsContent value={ReimburseStatus.ON_PROGRESS} className="space-y-4">
         {isFetchingOnProgressData && <Spinner />}
         {!isFetchingOnProgressData && onProgressData && (
           <ReimburseTable
@@ -280,8 +265,40 @@ const ReimburseTableWrapper = () => {
             searchQuery={searchQuery}
           />
         )}
+      </TabsContent> */}
+      <TabsContent value={ReimburseStatus.ON_PROGRESS} className="space-y-4">
+        {isFetchingOnProgressData && <Spinner />}
+        {!isFetchingOnProgressData && onProgressData && (
+          <ReimburseTable
+            columns={on_progressColumns}
+            sorting={sorting}
+            setSorting={setSorting}
+            data={onProgressData.items}
+            searchKey="name"
+            totalUsers={onProgressData.meta?.total_items}
+            pageCount={Math.ceil(onProgressData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
       </TabsContent>
       <TabsContent value={ReimburseStatus.DONE} className="space-y-4">
+        {isFetchingDoneData && <Spinner />}
+        {!isFetchingDoneData && doneData && (
+          <ReimburseTable
+            columns={completedColumns}
+            sorting={sorting}
+            setSorting={setSorting}
+            data={doneData.items}
+            searchKey="name"
+            totalUsers={doneData.meta?.total_items}
+            pageCount={Math.ceil(doneData.meta?.total_items / pageLimit)}
+            pageNo={page}
+            searchQuery={searchQuery}
+          />
+        )}
+      </TabsContent>
+      {/* <TabsContent value={ReimburseStatus.CONFIRMED} className="space-y-4">
         {isFetchingCompletedData && <Spinner />}
         {!isFetchingCompletedData && completedData && (
           <ReimburseTable
@@ -296,7 +313,7 @@ const ReimburseTableWrapper = () => {
             searchQuery={searchQuery}
           />
         )}
-      </TabsContent>
+      </TabsContent> */}
     </>
   );
 };

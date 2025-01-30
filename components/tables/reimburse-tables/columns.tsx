@@ -23,33 +23,52 @@ const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 dayjs.locale("id");
 
-export const pendingColumns: ColumnDef<any>[] = [
+export const waitingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+      <span className="text-sm font-semibold text-neutral-700">
+        Nama Driver
+      </span>
     ),
-    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    cell: ({ row }) => <span>{row.original?.driver?.name}</span>,
     enableSorting: false,
   },
   {
-    accessorKey: "fleet",
+    accessorKey: "nominal",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+      <span className="text-sm font-semibold text-neutral-700">Nominal</span>
     ),
-    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    cell: ({ row }) => <span>{row.original?.nominal}</span>,
     enableSorting: false,
   },
   {
-    accessorKey: "duration",
+    accessorKey: "location",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+      <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
     ),
+    cell: ({ row }) => <span>{row.original?.location}</span>,
     enableSorting: false,
+  },
+  {
+    accessorKey: "norek",
+
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">No.Rek</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.norek}</span>,
+    enableSorting: false,
+  },
+
+  {
+    accessorKey: "tanggal",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
+    ),
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
-          {row.original?.duration} Hari
+          {row.original?.tanggal}
         </HoverCardTrigger>
         <HoverCardContent
           onClick={(e) => {
@@ -59,7 +78,7 @@ export const pendingColumns: ColumnDef<any>[] = [
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
-              Tanggal Pengambilan
+              Tanggal
             </span>
           </div>
           <div className="pt-1">
@@ -67,11 +86,11 @@ export const pendingColumns: ColumnDef<any>[] = [
               {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
             </p>
             <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original.start_date).format("H:mm")} WIB
+              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
             </p>
           </div>
           <Separator className="my-4" />
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
               Tanggal Pengembilan
@@ -84,33 +103,19 @@ export const pendingColumns: ColumnDef<any>[] = [
             <p className="text-[14px] font-normal leading-5">
               Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
             </p>
-          </div>
+          </div> */}
         </HoverCardContent>
       </HoverCard>
-    ),
-  },
-  {
-    accessorKey: "is_with_driver",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Keterangan Sewa
-      </span>
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}
-      </span>
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "total_price",
+    accessorKey: "keterangan",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Total Harga
-      </span>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
     ),
-    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
+    cell: ({ row }) => <span>{row.original?.keterangan}</span>,
+    enableSorting: false,
   },
   {
     id: "actions",
@@ -126,13 +131,15 @@ export const pendingColumns: ColumnDef<any>[] = [
   },
 ];
 
-export const confirmedColumns: ColumnDef<any>[] = [
+export const on_progressColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+      <span className="text-sm font-semibold text-neutral-700">
+        Nama Driver
+      </span>
     ),
-    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    cell: ({ row }) => <span>{row.original?.driver?.name}</span>,
     enableSorting: false,
   },
   {
@@ -265,171 +272,52 @@ export const confirmedColumns: ColumnDef<any>[] = [
   },
 ];
 
-export const onProgressColumns: ColumnDef<any>[] = [
-  {
-    accessorKey: "name",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
-    ),
-    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: "fleet",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Armada</span>
-    ),
-    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: "duration",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
-    ),
-    cell: ({ row }) => (
-      <HoverCard>
-        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
-          {row.original?.duration} Hari
-        </HoverCardTrigger>
-        <HoverCardContent
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <div className="flex items-center">
-            <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
-            <span className="text-muted-foreground font-normal text-[12px] leading-4">
-              Tanggal Pengambilan
-            </span>
-          </div>
-          <div className="pt-1">
-            <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
-            </p>
-            <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
-            </p>
-          </div>
-          <Separator className="my-4" />
-          <div className="flex items-center">
-            <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
-            <span className="text-muted-foreground font-normal text-[12px] leading-4">
-              Tanggal Pengembilan
-            </span>
-          </div>
-          <div className="pt-1">
-            <p className="text-[14px] font-semibold leading-5">
-              {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
-            </p>
-            <p className="text-[14px] font-normal leading-5">
-              Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
-            </p>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "is_with_driver",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Keterangan Sewa
-      </span>
-    ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}
-      </span>
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "pic",
-    header: () => (
-      <HoverCard>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-neutral-700">
-            Penanggung Jawab
-          </span>
-          <HoverCardTrigger>
-            <Info />
-          </HoverCardTrigger>
-        </div>
-        <HoverCardContent className="w-full p-2" align="start">
-          <span className="font-semibold text-xs">
-            Ini adalah Penanggung Jawab Pengambilan
-          </span>
-        </HoverCardContent>
-      </HoverCard>
-    ),
-    cell: ({ row }) => (
-      <span>{row.original.end_request?.driver?.name ?? "-"}</span>
-    ),
-    enableSorting: false,
-  },
-  {
-    accessorKey: "total_price",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Total Harga
-      </span>
-    ),
-    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
-  },
-  {
-    accessorKey: "payment_status",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
-    ),
-    cell: ({ row }) => (
-      <span
-        className={cn(
-          getStatusVariant(row.original?.payment_status),
-          "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
-        )}
-      >
-        {getPaymentStatusLabel(row.original?.payment_status)}
-      </span>
-      // <span>{row.original.end_request?.driver?.name ?? "-"}</span>
-    ),
-    enableSorting: false,
-  },
-
-  {
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
-    enableSorting: false,
-  },
-];
-
 export const completedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+      <span className="text-sm font-semibold text-neutral-700">
+        Nama Driver
+      </span>
     ),
-    cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+    cell: ({ row }) => <span>{row.original?.drivers?.name}</span>,
     enableSorting: false,
   },
   {
-    accessorKey: "fleet",
+    accessorKey: "nominal",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Armada</span>
+      <span className="text-sm font-semibold text-neutral-700">Nominal</span>
     ),
-    cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+    cell: ({ row }) => <span>{row.original?.nominal}</span>,
     enableSorting: false,
   },
   {
-    accessorKey: "duration",
+    accessorKey: "location",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+      <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.location}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "norek",
+
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">No.Rek</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.norek}</span>,
+    enableSorting: false,
+  },
+
+  {
+    accessorKey: "tanggal",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
     ),
     cell: ({ row }) => (
       <HoverCard>
         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
-          {row.original?.duration} Hari
+          {row.original?.tanggal}
         </HoverCardTrigger>
         <HoverCardContent
           onClick={(e) => {
@@ -439,7 +327,7 @@ export const completedColumns: ColumnDef<any>[] = [
           <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
-              Tanggal Pengambilan
+              Tanggal
             </span>
           </div>
           <div className="pt-1">
@@ -451,7 +339,7 @@ export const completedColumns: ColumnDef<any>[] = [
             </p>
           </div>
           <Separator className="my-4" />
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
             <span className="text-muted-foreground font-normal text-[12px] leading-4">
               Tanggal Pengembilan
@@ -464,55 +352,137 @@ export const completedColumns: ColumnDef<any>[] = [
             <p className="text-[14px] font-normal leading-5">
               Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
             </p>
-          </div>
+          </div> */}
         </HoverCardContent>
       </HoverCard>
     ),
     enableSorting: false,
   },
   {
-    accessorKey: "is_with_driver",
+    accessorKey: "keterangan",
     header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Keterangan Sewa
-      </span>
+      <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
     ),
-    cell: ({ row }) => (
-      <span>
-        {row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}
-      </span>
-    ),
+    cell: ({ row }) => <span>{row.original?.keterangan}</span>,
     enableSorting: false,
   },
-  {
-    accessorKey: "total_price",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">
-        Total Harga
-      </span>
-    ),
-    cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
-  },
-  {
-    accessorKey: "payment_status",
-    header: () => (
-      <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
-    ),
-    cell: ({ row }) => (
-      <span
-        className={cn(
-          getStatusVariant(row.original?.payment_status),
-          "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
-        )}
-      >
-        {getPaymentStatusLabel(row.original?.payment_status)}
-      </span>
-    ),
-    enableSorting: false,
-  },
+
   {
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
     enableSorting: false,
   },
 ];
+
+// export const completedColumns: ColumnDef<any>[] = [
+//   {
+//     accessorKey: "name",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">Pelanggan</span>
+//     ),
+//     cell: ({ row }) => <span>{row.original?.customer?.name}</span>,
+//     enableSorting: false,
+//   },
+//   {
+//     accessorKey: "fleet",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">Armada</span>
+//     ),
+//     cell: ({ row }) => <span>{row.original?.fleet?.name}</span>,
+//     enableSorting: false,
+//   },
+//   {
+//     accessorKey: "duration",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">Waktu</span>
+//     ),
+//     cell: ({ row }) => (
+//       <HoverCard>
+//         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
+//           {row.original?.duration} Hari
+//         </HoverCardTrigger>
+//         <HoverCardContent
+//           onClick={(e) => {
+//             e.stopPropagation();
+//           }}
+//         >
+//           <div className="flex items-center">
+//             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+//             <span className="text-muted-foreground font-normal text-[12px] leading-4">
+//               Tanggal Pengambilan
+//             </span>
+//           </div>
+//           <div className="pt-1">
+//             <p className="text-[14px] font-semibold leading-5">
+//               {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
+//             </p>
+//             <p className="text-[14px] font-normal leading-5">
+//               Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
+//             </p>
+//           </div>
+//           <Separator className="my-4" />
+//           <div className="flex items-center">
+//             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+//             <span className="text-muted-foreground font-normal text-[12px] leading-4">
+//               Tanggal Pengembilan
+//             </span>
+//           </div>
+//           <div className="pt-1">
+//             <p className="text-[14px] font-semibold leading-5">
+//               {dayjs(row.original?.end_date).format("dddd, DD MMMM YYYY")}
+//             </p>
+//             <p className="text-[14px] font-normal leading-5">
+//               Jam {dayjs(row.original?.end_date).format("H:mm")} WIB
+//             </p>
+//           </div>
+//         </HoverCardContent>
+//       </HoverCard>
+//     ),
+//     enableSorting: false,
+//   },
+//   {
+//     accessorKey: "is_with_drivers",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">
+//         Keterangan Sewa
+//       </span>
+//     ),
+//     cell: ({ row }) => (
+//       <span>
+//         {row.original.is_with_driver ? "Dengan Supir" : "Lepas Kunci"}
+//       </span>
+//     ),
+//     enableSorting: false,
+//   },
+//   {
+//     accessorKey: "total_price",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">
+//         Total Harga
+//       </span>
+//     ),
+//     cell: ({ row }) => <span>{formatRupiah(row.original?.total_price)}</span>,
+//   },
+//   {
+//     accessorKey: "payment_status",
+//     header: () => (
+//       <span className="text-sm font-semibold text-neutral-700">Pembayaran</span>
+//     ),
+//     cell: ({ row }) => (
+//       <span
+//         className={cn(
+//           getStatusVariant(row.original?.payment_status),
+//           "text-xs font-medium flex items-center justify-center py-1 rounded-md text-center",
+//         )}
+//       >
+//         {getPaymentStatusLabel(row.original?.payment_status)}
+//       </span>
+//     ),
+//     enableSorting: false,
+//   },
+//   {
+//     id: "actions",
+//     cell: ({ row }) => <CellAction data={row.original} />,
+//     enableSorting: false,
+//   },
+// ];

@@ -22,10 +22,7 @@ export function getStatusVariant(status: string): string {
 }
 
 export enum ReimburseStatus {
-  PENDING = "pending",
   WAITING = "waiting",
-  CONFIRMED = "confirmed",
-  ON_GOING = "on_going",
   ON_PROGRESS = "on_progress",
   DONE = "done",
 }
@@ -39,11 +36,11 @@ export enum PaymentStatus {
 export function getPaymentStatusLabel(payment_status: string): string {
   switch (payment_status) {
     case PaymentStatus.PENDING:
-      return "Belum Disetujui";
+      return "Pending";
     case PaymentStatus.DONE:
-      return "Disetujui";
+      return "Berhasil DiBayar";
     case PaymentStatus.FAILED:
-      return "Gagal";
+      return "Gagal DiBayar";
     default:
       return "";
   }

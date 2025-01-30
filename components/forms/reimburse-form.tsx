@@ -240,7 +240,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         additionals: [],
       };
 
-  const form = useForm<OrderFormValues>({
+  const form = useForm<ReimburseFormValues>({
     resolver: zodResolver(schema),
     defaultValues,
   });
@@ -252,9 +252,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
 
   const dateField = form.watch("date");
   const durationField = form.watch("duration");
-  const isOutOfTownField = form.watch("is_out_of_town");
+  // const isOutOfTownField = form.watch("is_out_of_town");
   const isWithDriverField = form.watch("is_with_driver");
-  const insuranceField = form.watch("insurance_id");
+  // const insuranceField = form.watch("insurance_id");
   const startSelfPickUpField = form.watch("start_request.is_self_pickup");
   const startDriverField = form.watch("start_request.driver_id");
   const startDistanceField = form.watch("start_request.distance");
@@ -640,9 +640,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   }, [
     dateField,
     durationField,
-    isOutOfTownField,
+
     isWithDriverField,
-    insuranceField,
+
     startSelfPickUpField,
     startDriverField,
     startDistanceField,
@@ -783,8 +783,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               </Link>
             )}
             <div className="flex justify-between gap-3.5">
-              {initialData?.reimburse_status != ReimburseStatus.PENDING &&
-                initialData?.reimburse_status != ReimburseStatus.WAITING && (
+              {
+              initialData?.reimburse_status != ReimburseStatus.WAITING && (
                   <div
                     className={cn(
                       getStatusVariant(initialData?.payment_status),
@@ -811,7 +811,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         )}
       </div>
       <div className="flex gap-4 flex-col lg:!flex-row">
-        <Form {...form}>
+        {/* <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8 w-full basis-2/3"
@@ -913,9 +913,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 >
                                   {lastPath !== "create" && isEdit && (
                                     <Option
-                                      value={initialData?.driver?.id?.toString()}
+                                      value={initialData?.drivers?.id?.toString()}
                                     >
-                                      {initialData?.driver?.name}
+                                      {initialData?.drivers?.name}
                                     </Option>
                                   )}
                                   {drivers?.pages.map(
@@ -982,7 +982,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                               height: "40px",
                             }}
                             disabled
-                            value={initialData?.driver?.name ?? "-"}
+                            value={initialData?.drivers?.name ?? "-"}
                           />
                         </FormControl>
                         <Button
@@ -1009,70 +1009,100 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   )}
                 </div>
                 <div className="flex items-end">
-                  {lastPath !== "preview" && isEdit ? (
+                  {isEdit ? (
                     <FormField
-                      name="nominal"
                       control={form.control}
-                      render={({ field }) => {
-                        return (
-                          <div className="space-y-2 w-full">
+                      name="date"
+                      render={({ field }) => (
+                        <ConfigProvider locale={locale}>
+                          <Space
+                            size={8}
+                            direction="vertical"
+                            className="w-full"
+                          >
                             <FormLabel className="relative label-required">
-                              Nominal
+                              Tanggal
                             </FormLabel>
-                            <div className="flex">
-                              <FormControl>
-                                <AntdSelect
-                                  className={cn("mr-2 w-full")}
-                                  showSearch
-                                  placeholder="Nominal anda.."
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  // onSearch={setSearchCustomerTerm}
-                                  onChange={field.onChange}
-                                  // onPopupScroll={handleScrollCustomers}
-                                  filterOption={false}
-                                  // notFoundContent={
-                                  //   isFetchingNextCustomers ? (
-                                  //     <p className="px-3 text-sm">loading</p>
-                                  //   ) : null
-                                  // }
-                                  // append value attribute when field is not  empty
-                                  {...(!isEmpty(field.value) && {
-                                    value: field.value,
-                                  })}
-                                >
-                                  {/* {lastPath !== "create" && isEdit && (
-                                    <Option
-                                      value={initialData?.customer?.id?.toString()}
-                                    >
-                                      {initialData?.customer?.name}
-                                    </Option>
-                                  )} */}
-                                  {/* {customers?.pages.map(
-                                    (page: any, pageIndex: any) =>
-                                      page.data.items.map(
-                                        (item: any, itemIndex: any) => {
-                                          return (
-                                            <Option
-                                              key={item.id}
-                                              value={item.id.toString()}
-                                            >
-                                              {item.name}
-                                            </Option>
-                                          );
-                                        },
-                                      ),
-                                  )} */}
-
-                                  {/* {isFetchingNextCustomers && (
-                                    <Option disabled>
-                                      <p className="px-3 text-sm">loading</p>
-                                    </Option>
-                                  )} */}
-                                </AntdSelect>
-                              </FormControl>
-                              {/* <Button
+                            <FormControl>
+                              <DatePicker
+                                disabledDate={disabledDate}
+                                disabled={loading}
+                                className={cn("p h-[40px] w-full")}
+                                style={{
+                                  width: `${!isMinimized ? "340px" : "100%"}`,
+                                }}
+                                height={40}
+                                id="testing"
+                                onChange={field.onChange} // send value to hook form
+                                onBlur={field.onBlur} // notify when input is touched/blur
+                                value={
+                                  field.value
+                                    ? dayjs(field.value).locale("id")
+                                    : undefined
+                                }
+                                format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
+                                showTime
+                                placeholder="Pilih tanggal dan waktu reimburse"
+                                showNow={false}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                            {messages.date && (
+                              <FormMessage className="text-main">
+                                {messages.date}
+                              </FormMessage>
+                            )}
+                          </Space>
+                        </ConfigProvider>
+                      )}
+                    />
+                  ) : (
+                    <FormItem>
+                      <FormLabel>Tanggal</FormLabel>
+                      <FormControl className="disabled:opacity-100">
+                        <Input
+                          className={cn("w-full")}
+                          style={{
+                            height: "40px",
+                          }}
+                          disabled
+                          value={
+                            dayjs(initialData?.start_date)
+                              .locale("id")
+                              .format("HH:mm:ss - dddd, DD MMMM (YYYY)") ?? "-"
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                </div>
+              </div>
+              <div className={cn("gap-2 lg:gap-5 flex flex-col lg:flex-row")}>
+                {lastPath !== "preview" && isEdit ? (
+                  <FormField
+                    name="location"
+                    control={form.control}
+                    render={({ field }) => {
+                      return (
+                        <div className="space-y-2 w-full">
+                          <FormLabel className="relative label-required">
+                            Lokasi
+                          </FormLabel>
+                          <div className="flex">
+                            <FormControl className="disabled:opacity-100">
+                              <Textarea
+                                id="location"
+                                placeholder="Mohon isi secara lengkap"
+                                className={cn("mr-2 w-full")}
+                                rows={8}
+                                disabled={!isEdit || loading}
+                                onChange={field.onChange}
+                                // onPopupScroll={handleScrollCustomers}
+                                // filterOption={false}
+                              />
+                            </FormControl>
+                            {/* <Button
                                 className={cn(
                                   buttonVariants({ variant: "main" }),
                                   "w-[65px] h-[40px]",
@@ -1091,116 +1121,15 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                               >
                                 Lihat
                               </Button> */}
-                            </div>
-                            <FormMessage />
                           </div>
-                        );
-                      }}
-                    />
-                  ) : (
-                    <FormItem>
-                      <FormLabel
-                        className={cn(
-                          initialData?.customer?.status === "pending"
-                            ? "text-destructive"
-                            : "",
-                        )}
-                      >
-                        Nominal
-                      </FormLabel>
-                      <div className="flex">
-                        <FormControl className="disabled:opacity-100">
-                          <Input
-                            className={cn("mr-2")}
-                            style={{
-                              height: "40px",
-                            }}
-                            disabled
-                            value={initialData?.customer?.name ?? "-"}
-                          />
-                        </FormControl>
-                        {/* <Button
-                          className={cn(
-                            buttonVariants({ variant: "main" }),
-                            "w-[65px] h-[40px]",
-                          )}
-                          disabled={
-                            !form.getFieldState("customer").isDirty &&
-                            isEmpty(form.getValues("customer"))
-                          }
-                          type="button"
-                          onClick={() => {
-                            setOpenCustomerDetail(true);
-                            setOpenFleetDetail(false);
-                            setOpenDriverDetail(false);
-                            scrollDetail();
-                          }}
-                        >
-                          {initialData?.customer?.status == "pending"
-                            ? "Tinjau"
-                            : "Lihat"}
-                        </Button> */}
-                      </div>
-                      {/* {initialData?.customer?.status == "pending" && (
-                        <p
-                          className={cn(
-                            "text-[0.8rem] font-medium text-destructive",
-                          )}
-                        >
-                          Pelanggan belum verified
-                        </p>
-                      )} */}
-                    </FormItem>
-                  )}
-                </div>
-              </div>
-              <div className={cn("gap-2 lg:gap-5 flex flex-col lg:flex-row")}>
-                {isEdit ? (
-                  <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                      <ConfigProvider locale={locale}>
-                        <Space size={8} direction="vertical" className="w-full">
-                          <FormLabel className="relative label-required">
-                            Tanggal Sewa
-                          </FormLabel>
-                          <FormControl>
-                            <DatePicker
-                              disabledDate={disabledDate}
-                              disabled={loading}
-                              className={cn("p h-[40px] w-full")}
-                              style={{
-                                width: `${!isMinimized ? "340px" : "100%"}`,
-                              }}
-                              height={40}
-                              id="testing"
-                              onChange={field.onChange} // send value to hook form
-                              onBlur={field.onBlur} // notify when input is touched/blur
-                              value={
-                                field.value
-                                  ? dayjs(field.value).locale("id")
-                                  : undefined
-                              }
-                              format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
-                              showTime
-                              placeholder="Pilih tanggal dan waktu mulai"
-                              showNow={false}
-                            />
-                          </FormControl>
                           <FormMessage />
-                          {messages.date && (
-                            <FormMessage className="text-main">
-                              {messages.date}
-                            </FormMessage>
-                          )}
-                        </Space>
-                      </ConfigProvider>
-                    )}
+                        </div>
+                      );
+                    }}
                   />
                 ) : (
                   <FormItem>
-                    <FormLabel>Tanggal Sewa</FormLabel>
+                    <FormLabel>Lokasi</FormLabel>
                     <FormControl className="disabled:opacity-100">
                       <Input
                         className={cn("w-full")}
@@ -1218,7 +1147,81 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                     <FormMessage />
                   </FormItem>
                 )}
-                <FormField
+                {lastPath !== "preview" && isEdit ? (
+                  <FormItem>
+                    <FormLabel>No.Rek</FormLabel>
+                    <p
+                      className="border border-gray-200 rounded-md px-3 break-words"
+                      dangerouslySetInnerHTML={{
+                        __html: !isEmpty(defaultValues?.description)
+                          ? makeUrlsClickable(
+                              defaultValues?.description.replace(
+                                /\n/g,
+                                "<br />",
+                              ),
+                            )
+                          : "-",
+                      }}
+                    />
+                  </FormItem>
+                ) : (
+                  <FormField
+                    control={form.control}
+                    name="no.rek"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>No.Rek</FormLabel>
+                        <FormControl className="disabled:opacity-100">
+                          <Textarea
+                            id="no.rek"
+                            placeholder="Masukkan nomor rekening anda..."
+                            className="col-span-3"
+                            rows={3}
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              e.target.value = e.target.value.trimStart();
+                              field.onChange(e.target.value);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {messages.description && (
+                          <FormMessage className="text-main">
+                            {messages.description}
+                          </FormMessage>
+                        )}
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {/* <FormItem className="flex flex-col pt-[5px]">
+                  <FormLabel>Selesai sewa (otomatis)</FormLabel>
+                  <FormControl>
+                    <Input
+                      className={cn("w-full h-[40px]")}
+                      placeholder="Tanggal dan waktu selesai"
+                      value={end == "Invalid Date" ? "" : end}
+                      readOnly
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+                <FormItem className="flex flex-col pt-[5px]">
+                  <FormLabel>Selesai sewa (otomatis)</FormLabel>
+                  <FormControl>
+                    <Input
+                      className={cn("w-full h-[40px]")}
+                      placeholder="Tanggal dan waktu selesai"
+                      value={end == "Invalid Date" ? "" : end}
+                      readOnly
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem> */}
+                {/* <FormField
                   control={form.control}
                   name="duration"
                   render={({ field }) => (
@@ -1245,7 +1248,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         </FormControl>
                         <SelectContent className="h-36">
                           {/* @ts-ignore  */}
-                          {days.map((_, index) => (
+                {/* {days.map((_, index) => (
                             <SelectItem
                               key={index}
                               value={(index + 1).toString()}
@@ -1263,21 +1266,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                       )}
                     </FormItem>
                   )}
-                />
-
-                <FormItem className="flex flex-col pt-[5px]">
-                  <FormLabel>Selesai sewa (otomatis)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={cn("w-full h-[40px]")}
-                      placeholder="Tanggal dan waktu selesai"
-                      value={end == "Invalid Date" ? "" : end}
-                      readOnly
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                /> */}
               </div>
               {/* <div className={cn("lg:grid grid-cols-2 gap-5")}>
                 <FormField
@@ -1373,7 +1362,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   }}
                 />
               </div> */}
-              <Separator className={cn("mt-1")} />
+              {/* <Separator className={cn("mt-1")} /> */}
               {/* <DetailSection
                 title="Detail Pengambilan"
                 form={form}
@@ -1415,12 +1404,12 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               <div className={cn("space-y-8")}>
                 {showServicePrice && (
                   <FormField
-                    name="service_price"
+                    name="nominal"
                     control={form.control}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="relative label-required">
-                          Harga Layanan Driver
+                          Nominal Pengeluaran
                         </FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -1596,7 +1585,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 )} */}
               </div>
             </div>
-          </form>
+          </form> */}
 
           {/* sidebar */}
 
@@ -1626,13 +1615,13 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             />
           )} */}
 
-          {openDriverDetail && isFetchingDriver && (
+          {openDriverDetail && isFetchingDrivers && (
             <div className="flex justify-center items-center h-[100px] w-full">
               <Spinner />
             </div>
           )}
 
-          {openDriverDetail && !isFetchingDriver && (
+          {openDriverDetail && !isFetchingDrivers && (
             <DriverDetail
               innerRef={detailRef}
               data={driver?.data}
