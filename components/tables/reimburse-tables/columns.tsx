@@ -23,7 +23,7 @@ const duration = require("dayjs/plugin/duration");
 dayjs.extend(duration);
 dayjs.locale("id");
 
-export const waitingColumns: ColumnDef<any>[] = [
+export const pendingColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (

@@ -6,7 +6,7 @@ import Spinner from "@/components/spinner";
 import {
   completedColumns,
   on_progressColumns,
-  waitingColumns,
+  pendingColumns,
 } from "@/components/tables/reimburse-tables/columns";
 import { ReimburseTable } from "@/components/tables/reimburse-tables/reimburse-table";
 import { TabsContent } from "@/components/ui/tabs";
@@ -32,7 +32,7 @@ const ReimburseTableWrapper = () => {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
   const pageLimit = Number(searchParams.get("limit")) || 10;
-  const defaultTab = searchParams.get("status") ?? "waiting";
+  const defaultTab = searchParams.get("status") ?? "pending";
   const q = searchParams.get("q");
   const startDate = searchParams.get("start_date") || "";
   const endDate = searchParams.get("end_date") || "";
@@ -54,13 +54,13 @@ const ReimburseTableWrapper = () => {
     ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
   });
 
-  const { data: waitingData, isFetching: isFetchingWaitingData } =
+  const { data: pendingData, isFetching: isFetchingPendingData } =
     useGetReimburses(
-      getReimburseParams(ReimburseStatus.WAITING),
+      getReimburseParams(ReimburseStatus.PENDING),
       {
-        enabled: defaultTab === ReimburseStatus.WAITING,
+        enabled: defaultTab === ReimburseStatus.PENDING,
       },
-      ReimburseStatus.WAITING,
+      ReimburseStatus.PENDING,
     );
 
   const { data: doneData, isFetching: isFetchingDoneData } = useGetReimburses(
@@ -120,7 +120,7 @@ const ReimburseTableWrapper = () => {
   const lists = [
     {
       name: "Menunggu",
-      value: ReimburseStatus.WAITING,
+      value: ReimburseStatus.PENDING,
     },
     {
       name: "Sedang DiProses",
@@ -233,15 +233,15 @@ const ReimburseTableWrapper = () => {
           />
         </div>
       </div>
-      <TabsContent value={ReimburseStatus.WAITING} className="space-y-4">
-        {isFetchingWaitingData && <Spinner />}
-        {!isFetchingWaitingData && waitingData && (
+      <TabsContent value={ReimburseStatus.PENDING} className="space-y-4">
+        {isFetchingPendingData && <Spinner />}
+        {!isFetchingPendingData && pendingData && (
           <ReimburseTable
-            columns={waitingColumns}
-            data={waitingData.items}
+            columns={pendingColumns}
+            data={pendingData.items}
             searchKey="name"
-            totalUsers={waitingData.meta?.total_items}
-            pageCount={Math.ceil(waitingData.meta?.total_items / pageLimit)}
+            totalUsers={pendingData.meta?.total_items}
+            pageCount={Math.ceil(pendingData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
             sorting={sorting}

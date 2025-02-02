@@ -27,9 +27,14 @@ interface DriverDetailProps {
   innerRef?: any;
 }
 
-const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data, innerRef }) => {
+const DriverDetail: React.FC<DriverDetailProps> = ({
+  onClose,
+  data,
+  innerRef,
+}) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
+  // console.log("data", data);
 
   const onHandlePreview = (file: any) => {
     setContent(file);
@@ -39,12 +44,11 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data, innerRef }) 
   return (
     <div
       className="p-5 top-10 border rounded-md border-neutral-400 w-full basis-1/3"
-      id="detail-sidebar" ref={innerRef}
+      id="detail-sidebar"
+      ref={innerRef}
     >
       <div className="flex justify-between items-center mb-4">
-        <h4 className="text-center font-semibold text-xl">
-          Penangung Jawab Detail
-        </h4>
+        <h4 className="text-center font-semibold text-xl">Pengemudi Detail</h4>
         <Button
           type="button"
           className={cn(
@@ -65,7 +69,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({ onClose, data, innerRef }) 
               </div>
               <div className="flex flex-col ml-4">
                 <span className="font-normal text-xs text-neutral-500">
-                  Nama Penanggung Jawab
+                  Nama Pengemudi
                 </span>
                 <span className="font-medium text-sm text-black">
                   {data?.name ?? "-"}
