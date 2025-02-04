@@ -1,6 +1,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Cake,
+  Info,
   Mail,
   PersonStanding,
   Phone,
@@ -20,17 +21,28 @@ import {
 } from "@/components/ui/carousel";
 import { Card } from "@/components/ui/card";
 import { PreviewImage } from "@/components/modal/preview-image";
+import Spinner from "@/components/spinner";
 
 interface DriverDetailProps {
   onClose: () => void;
   data: any;
   innerRef?: any;
+  initialData: any;
+  type?: string;
+  confirmLoading: boolean;
+  handleOpenApprovalModal: () => void;
+  handleOpenRejectModal: () => void;
 }
 
 const DriverDetail: React.FC<DriverDetailProps> = ({
   onClose,
   data,
+  handleOpenApprovalModal,
+  handleOpenRejectModal,
   innerRef,
+  type,
+  initialData,
+  confirmLoading,
 }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
@@ -163,6 +175,57 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
                   }}
                 />
               </Card>
+            </div>
+          )}
+        </div>
+        <div className="mt-2 mx-auto">
+          {type === "preview" && initialData?.status === "pending" && (
+            <div className="flex flex-col gap-5   bottom-1">
+              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
+                <Info className="h-10 w-10" />
+                <p>
+                  Invoice akan tersedia saat pesanan telah dikonfirmasi.
+                  Pastikan semua data benar.
+                </p>
+              </div>
+              <Button
+                onClick={handleOpenRejectModal}
+                className="w-full bg-red-50 text-red-500 hover:bg-red-50/90"
+                type="button"
+              >
+                Tolak Pesanan
+              </Button>
+              <Button
+                onClick={handleOpenApprovalModal}
+                className="w-full  bg-main hover:bg-main/90"
+                type="button"
+              >
+                Konfirmasi Pesanan
+              </Button>
+            </div>
+          )}
+
+          {type === "create" && (
+            <div className="flex flex-col gap-5   bottom-1">
+              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
+                <Info className="h-10 w-10" />
+                <p>
+                  Invoice akan tersedia saat pesanan telah dikonfirmasi.
+                  Pastikan semua data benar.
+                </p>
+              </div>
+              <Button
+                onClick={handleOpenApprovalModal}
+                className="w-full  bg-main hover:bg-main/90"
+                type="button"
+                disabled={confirmLoading}
+              >
+                {confirmLoading ? (
+                  <Spinner className="h-5 w-5" />
+                ) : (
+                  "Konfirmasi Pesanan"
+                )}
+              </Button>
             </div>
           )}
         </div>

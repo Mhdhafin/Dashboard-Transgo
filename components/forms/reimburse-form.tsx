@@ -135,7 +135,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
   // const days: number[] = Array.from({ length: 30 });
-  // const [detail, setDetail] = useState<DetailPrice | null>(null);
+  const [detail, setDetail] = useState<DriverDetail | null>(null);
   const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
   const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
   // const [openCustomerDetail, setOpenCustomerDetail] = useState<boolean>(false);
@@ -835,65 +835,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             className="space-y-8 w-full basis-2/3"
           >
             <div className="relative space-y-8" id="parent">
-              {/* <FormField
-                name="is_with_driver"
-                control={form.control}
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Tabs
-                          defaultValue={
-                            defaultValues.is_with_driver
-                              ? "dengan_supir"
-                              : "lepas_kunci"
-                          }
-                          onValueChange={field.onChange}
-                          value={field.value ? "dengan_supir" : "lepas_kunci"}
-                          className="w-full lg:w-[235px]"
-                        >
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger
-                              disabled={!isEdit || loading}
-                              value="lepas_kunci"
-                              onClick={() =>
-                                form.setValue("is_with_driver", false)
-                              }
-                            >
-                              Lepas Kunci
-                            </TabsTrigger>
-                            <TabsTrigger
-                              disabled={!isEdit || loading}
-                              value="dengan_supir"
-                              onClick={() =>
-                                form.setValue("is_with_driver", true)
-                              }
-                            >
-                              Dengan Supir
-                            </TabsTrigger>
-                          </TabsList>
-                        </Tabs>
-                      </FormControl>
-                      <FormMessage />
-                      {messages.is_with_driver && (
-                        <FormMessage className="text-main">
-                          {messages.is_with_driver}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  );
-                }}
-              /> */}
-
-              {/*
-              perhitungan lebar content
-              di figma dengan lebar 1440px:
-                lebar 936px ====> ketika sidebar menu minimize
-                lebar 700px ====> ketika sidebar menu tidak minimize
-
-              di ukuran laya 1920px, kita perlu expand lebar si content sebesar 240px
-              apabila 1 baris form terdapat 2 input field, maka kita perlu expand sebanya 120px disetiap field
-              */}
               <div className={cn("lg:grid grid-cols-2 gap-[10px] items-start")}>
                 {/* <div className="flex items-end">
                   {isEdit ? (
@@ -1058,14 +999,14 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         return (
                           <div className="space-y-2 w-full">
                             <FormLabel className="relative label-required">
-                              Driver
+                              Nama Pengemudi
                             </FormLabel>
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
                                   className={cn("mr-2 w-full")}
                                   showSearch
-                                  placeholder="Pilih Driver"
+                                  placeholder="Nama Pengemudi..."
                                   style={{
                                     height: "40px",
                                   }}
@@ -1147,9 +1088,10 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             : "",
                         )}
                       >
-                        Pelanggan
+                        Nama Pengemudi
                       </FormLabel>
                       <div className="flex">
+                        {" "}
                         <FormControl className="disabled:opacity-100">
                           <Input
                             className={cn("mr-2")}
@@ -1170,12 +1112,12 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             isEmpty(form.getValues("driver"))
                           }
                           type="button"
-                          onClick={() => {
-                            // setOpenCustomerDetail(true);
-                            // setOpenFleetDetail(false);
-                            setOpenDriverDetail(true);
-                            scrollDetail();
-                          }}
+                          // onClick={() => {
+                          //   // setOpenCustomerDetail(true);
+                          //   // setOpenFleetDetail(false);
+                          //   setOpenDriverDetail(true);
+                          //   scrollDetail();
+                          // }}
                         >
                           {initialData?.driver?.status == "pending"
                             ? "Tinjau"
@@ -1195,143 +1137,58 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   )}
                 </div>
                 <div className="flex items-end">
-                  {isEdit ? (
-                    <FormField
-                      name="norek"
-                      control={form.control}
-                      render={({ field }) => {
-                        return (
-                          <div className="space-y-2 w-full">
-                            <FormLabel className="relative label-required">
-                              No. Rekening
-                            </FormLabel>
-                            <div className="flex">
-                              <FormControl>
-                                <Input
-                                  placeholder="No. Rekening Anda.."
-                                  className={cn("mr-2")}
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  // disabled
-                                  // value={initialData?.driver?.name ?? "-"}
-                                />
-                                {/* <AntdSelect
-                                  className={cn("mr-2 flex-1")}
-                                  showSearch
-                                  placeholder="Pilih Armada"
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  // onSearch={setSearchDriverTerm}
-                                  onChange={field.onChange}
-                                  onPopupScroll={handleScrollDrivers}
-                                  filterOption={false}
-                                  notFoundContent={
-                                    isFetchingNextDrivers ? (
-                                      <p className="px-3 text-sm">loading</p>
-                                    ) : null
-                                  }
-                                  // append value attribute when field is not  empty
-                                  {...(!isEmpty(field.value) && {
-                                    value: field.value,
-                                  })}
-                                >
-                                  {lastPath !== "create" && isEdit && (
-                                    <Option
-                                      value={initialData?.driver?.id?.toString()}
-                                    >
-                                      {initialData?.driver?.name}
-                                    </Option>
-                                  )}
-                                  {drivers?.pages.map(
-                                    (page: any, pageIndex: any) =>
-                                      page.data.items.map(
-                                        (item: any, itemIndex: any) => {
-                                          return (
-                                            <Option
-                                              key={item.id}
-                                              value={item.id.toString()}
-                                            >
-                                              {item.name}
-                                            </Option>
-                                          );
-                                        },
-                                      ),
-                                  )} */}
-
-                                {/* {isFetchingNextDrivers && (
-                                    <Option disabled>
-                                      <p className="px-3 text-sm">loading</p>
-                                    </Option>
-                                  )} */}
-                                {/* </AntdSelect> */}
-                              </FormControl>
-                              {/* <Button
-                                className={cn(
-                                  buttonVariants({ variant: "main" }),
-                                  "w-[65px] h-[40px]",
-                                )}
-                                disabled={
-                                  !form.getFieldState("fleet").isDirty &&
-                                  isEmpty(form.getValues("fleet"))
-                                }
-                                type="button"
-                                onClick={() => {
-                                  // setOpenFleetDetail(true);
-                                  // setOpenCustomerDetail(false);
-                                  setOpenDriverDetail(false);
-                                  scrollDetail();
-                                }}
-                              >
-                                Lihat
-                              </Button> */}
-                            </div>
-                            <FormMessage />
-                            {messages.driver && (
-                              <FormMessage className="text-main">
-                                {messages.driver}
-                              </FormMessage>
-                            )}
-                          </div>
-                        );
-                      }}
-                    />
-                  ) : (
+                  {!isEdit ? (
                     <FormItem>
-                      <FormLabel>No. Rekening</FormLabel>
-                      <div className="flex">
-                        <FormControl className="disabled:opacity-100">
-                          <Input
-                            className={cn("mr-2")}
-                            style={{
-                              height: "40px",
-                            }}
-                            // disabled
-                            // value={initialData?.driver?.name ?? "-"}
+                      <FormLabel>No. Rek</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          {/* <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                            Rp.
+                          </span> */}
+                          <NumericFormat
+                            disabled={!isEdit || loading}
+                            customInput={Input}
+                            type="text"
+                            className="pl-9 disabled:opacity-90"
+                            allowLeadingZeros
+                            thousandSeparator=","
+                            value={initialData?.norek}
                           />
-                        </FormControl>
-                        {/* <Button
-                          className={cn(
-                            buttonVariants({ variant: "main" }),
-                            "w-[65px] h-[40px]",
-                          )}
-                          disabled={
-                            !form.getFieldState("driver").isDirty &&
-                            isEmpty(form.getValues("driver"))
-                          }
-                          type="button"
-                          onClick={() => {
-                            // setOpenFleetDetail(true);
-                            // setOpenCustomerDetail(false);
-                            setOpenDriverDetail(true);
-                            scrollDetail();
-                          }}
-                        >
-                          Lihat
-                        </Button> */}
-                      </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name="norek"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="relative label-required">
+                            No. Rek
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              {/* <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                                Rp.
+                              </span> */}
+                              <NumericFormat
+                                disabled={!isEdit || loading}
+                                customInput={Input}
+                                type="text"
+                                className="pl-9 disabled:opacity-90"
+                                allowLeadingZeros
+                                thousandSeparator=","
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
                 </div>
               </div>
@@ -1512,7 +1369,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                     />
                   ) : (
                     <FormItem>
-                      <FormLabel>No. Rekening</FormLabel>
+                      <FormLabel>Nominal</FormLabel>
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
@@ -1617,7 +1474,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   ) : (
                     <FormField
                       control={form.control}
-                      name="address"
+                      name="description"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="relative label-required">
@@ -1936,27 +1793,27 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                           );
                         }}
                       />
-                      {isEdit && (
-                        <Button
-                          type="button"
-                          className={cn(
-                            buttonVariants({
-                              variant: "destructive",
-                              size: "icon",
-                            }),
-                            "p-0 h-10 w-full lg:w-10 flex-none bg-red-50 mb-2 lg:mb-0",
-                          )}
-                          onClick={() => {
-                            remove(index);
+                      // {isEdit && (
+                      //   <Button
+                      //     type="button"
+                      //     className={cn(
+                      //       buttonVariants({
+                      //         variant: "destructive",
+                      //         size: "icon",
+                      //       }),
+                      //       "p-0 h-10 w-full lg:w-10 flex-none bg-red-50 mb-2 lg:mb-0",
+                      //     )}
+                      //     onClick={() => {
+                      //       remove(index);
 
-                            const updatedAdditionals = [...additionalField];
-                            updatedAdditionals.splice(index, 1);
-                            form.setValue("additionals", updatedAdditionals);
-                          }}
-                        >
-                          <Trash2 className="w-5 h-5 text-red-500 hover:text-white" />
-                        </Button>
-                      )}
+                      //       const updatedAdditionals = [...additionalField];
+                      //       updatedAdditionals.splice(index, 1);
+                      //       form.setValue("additionals", updatedAdditionals);
+                      //     }}
+                      //   >
+                      //     <Trash2 className="w-5 h-5 text-red-500 hover:text-white" />
+                      //   </Button>
+                      // )}
                     </div>
                   ))}
                   {isEdit && (
@@ -2021,6 +1878,23 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 )}
               </div> */}
             </div>
+            {/* <div className="flex flex-col bottom-0">
+              {type === "edit" && initialData?.status !== "pending"}
+              {type === "create" && (
+                <Button
+                  // onClick={() => setOpenApprovalModal(true)}
+                  className="w-full  bg-main hover:bg-main/90"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Spinner className="h-5 w-5" />
+                  ) : (
+                    "Konfirmasi Reimburse"
+                  )}
+                </Button>
+              )}
+            </div> */}
           </form>
           {/* sidebar */}
           {/* {openCustomerDetail && isFetchingCustomer && (
@@ -2053,15 +1927,26 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               <Spinner />
             </div>
           )}
-          {openDriverDetail && !isFetchingDriver && (
-            <DriverDetail
-              innerRef={detailRef}
-              data={driver?.data}
-              onClose={() => setOpenDriverDetail(false)}
-            />
-          )}
-          {/* 
-          {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
+          {/* {openDriverDetail &&
+            !isFetchingDriver &&
+            type === "create" &&
+            lastPath ===
+              "preview"( */}
+          <DriverDetail
+            innerRef={detailRef}
+            data={driver?.data}
+            initialData={initialData}
+            form={form}
+            detail={detail}
+            handleOpenApprovalModal={() => setOpenApprovalModal(true)}
+            handleOpenRejectModal={() => setOpenRejectModal(true)}
+            confirmLoading={loading}
+            type={lastPath}
+            messages={messages}
+            // onClose={() => setOpenDriverDetail(false)}
+          />
+          ,{/* )} */}
+          {/* {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
             <PriceDetail
               innerRef={detailRef}
               initialData={initialData}
