@@ -3,19 +3,33 @@
  *
  */
 
-import { formSchema } from "../validation/reimburseSchema";
+// import { formSchema } from "../validation/reimburseSchema";
 import { z } from "zod";
+
+export const formSchema = z.object({
+  driver: z.string().min(1, "Tolong Pilih Nama Driver"), // Nama driver (wajib diisi)
+  amount: z
+    .string()
+    .regex(/^\d+$/, "Nominal harus berupa angka") // Nominal dalam bentuk string angka
+    .min(1, "Tolong masukkan nominal anda"),
+  bank_name: z.string().min(1, "Tolong Pilih Nama Bank"), // Nama bank
+  location: z.string().min(1, "Tolong Pilih Lokasi"), // Lokasi reimburse
+  account_number: z
+    .string()
+    .regex(/^\d+$/, "Nomor rekening harus berupa angka") // Nomor rekening (hanya angka)
+    .min(10, "Tolong masukkan nomor rekening anda"),
+  date: z.string().refine(
+    (val) => !isNaN(Date.parse(val)),
+    "Tolong masukkan tanggal ", // Validasi format tanggal
+  ),
+  time: z
+    .string()
+    .regex(/^([0-1]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:mm)"), // Validasi format waktu
+  description: z.string().optional(), // Keterangan tambahan (opsional)
+});
 
 export type ReimburseFormValues = z.infer<typeof formSchema> & {
   service_price: string;
-  start_request: {
-    distance: number;
-    address: string;
-  };
-  end_request: {
-    distance: number;
-    address: string;
-  };
 };
 
 export interface ReimburseFormProps {
@@ -23,30 +37,15 @@ export interface ReimburseFormProps {
   isEdit?: boolean | null;
 }
 
-export interface DetailPrice {
-  discount: number;
-  driver_price: number;
-  grand_total: number;
-  insurance_price: number;
-  rent_price: number;
-  service_price: number;
-  sub_total: number;
-  tax: number;
-  total: number;
-  total_driver_price: number;
-  total_rent_price: number;
-  total_weekend_price: number;
-  weekend_days: any[];
-  weekend_price: number;
-}
-
 export type Messages = {
   [key in keyof ReimburseFormValues]?: string;
 } & {
-  start_request?: {
-    [key in keyof ReimburseFormValues["start_request"]]?: string | undefined;
-  };
-  end_request?: {
-    [key in keyof ReimburseFormValues["end_request"]]?: string | undefined;
-  };
+  driver?: string;
+  bank_name?: string;
+  amount?: string;
+  location?: string;
+  account_number?: string;
+  date?: string;
+  time?: string;
+  description?: string;
 };

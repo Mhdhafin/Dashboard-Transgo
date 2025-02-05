@@ -61,16 +61,18 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
     >
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-center font-semibold text-xl">Pengemudi Detail</h4>
-        <Button
-          type="button"
-          className={cn(
-            buttonVariants({ variant: "secondary" }),
-            "w-[65px] h-[40px]",
-          )}
-          onClick={onClose}
-        >
-          Tutup
-        </Button>
+        {type !== "create" && (
+          <Button
+            type="button"
+            className={cn(
+              buttonVariants({ variant: "secondary" }),
+              "w-[65px] h-[40px]",
+            )}
+            onClick={onClose}
+          >
+            Tutup
+          </Button>
+        )}
       </div>
       <div className="flex flex-col justify-between ">
         <div>
@@ -223,7 +225,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
                 {confirmLoading ? (
                   <Spinner className="h-5 w-5" />
                 ) : (
-                  "Konfirmasi Pesanan"
+                  "Konfirmasi Reimburse"
                 )}
               </Button>
             </div>

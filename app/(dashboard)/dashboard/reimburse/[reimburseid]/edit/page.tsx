@@ -7,7 +7,7 @@ import { useSidebar } from "@/hooks/useSidebar";
 import { cn } from "@/lib/utils";
 import React from "react";
 
-export default function Page({ params }: { params: { reimburseId: number } }) {
+export default function Page({ params }: { params: { reimburseid: number } }) {
   const { isMinimized } = useSidebar();
 
   const breadcrumbItems = [
@@ -15,7 +15,7 @@ export default function Page({ params }: { params: { reimburseId: number } }) {
     { title: "Edit Reimburse", link: "/dashboard/reimburse/edit" },
   ];
 
-  const { data, isFetching } = useGetDetailReimburse(params.reimburseId);
+  const { data, isFetching } = useGetDetailReimburse(params.reimburseid);
 
   return (
     <div className="flex-1 space-y-4 p-5">

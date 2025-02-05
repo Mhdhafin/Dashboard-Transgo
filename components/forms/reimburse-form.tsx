@@ -25,15 +25,10 @@ import {
 import { useToast } from "../ui/use-toast";
 import { cn, convertTime, makeUrlsClickable } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-// import { useGetDetailFleet, useGetInfinityFleets } from "@/hooks/api/useFleet";
-import { isEmpty, isNull, isString } from "lodash";
+import { isEmpty, isNull, isString, set } from "lodash";
 import { useDebounce } from "use-debounce";
 import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-// import {
-//   useGetDetailCustomer,
-//   useGetInfinityCustomers,
-// } from "@/hooks/api/useCustomer";
 import {
   useGetDetailDriver,
   useGetInfinityDrivers,
@@ -44,21 +39,16 @@ import dayjs, { Dayjs } from "dayjs";
 import locale from "antd/locale/id_ID";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "../ui/label";
-// import { useGetInsurances } from "@/hooks/api/useInsurance";
 import {
   useAcceptReimburse,
   useEditReimburse,
-  // useReimburseCalculate,
   usePostReimburse,
   useRejectReimburse,
 } from "@/hooks/api/useReimburse";
 import { ApprovalModal } from "../modal/approval-modal";
 import { NumericFormat } from "react-number-format";
 import "dayjs/locale/id";
-// import FleetDetail from "./section/fleet-detail";
-// import CustomerDetail from "./section/customer-detail";
 import DriverDetail from "./section/driver-detail";
-import PriceDetail from "./section/price-detail";
 import Spinner from "../spinner";
 import { RejectModal } from "../modal/reject-modal";
 import Link from "next/link";
@@ -71,9 +61,7 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { PreviewImage } from "../modal/preview-image";
-
 import { Trash2 } from "lucide-react";
-// import { DetailPrice, OrderFormProps, OrderFormValues } from "./types/order";
 import { generateSchema } from "./validation/orderSchema";
 import {
   getPaymentStatusLabel,
@@ -81,8 +69,8 @@ import {
   ReimburseStatus,
 } from "@/app/(dashboard)/dashboard/reimburse/[reimburseid]/types/reimburse";
 import { useUser } from "@/context/UserContext";
-import { useReimburseCalculate } from "@/hooks/api/useReimburse";
 import { ReimburseFormProps, ReimburseFormValues } from "./types/reimburse";
+import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -91,7 +79,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   isEdit,
 }) => {
   const { user } = useUser();
-  const { reimburseId } = useParams();
+  const { reimburseid } = useParams();
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -99,7 +87,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const pathname = usePathname();
   const splitPath = pathname.split("/");
   const lastPath = splitPath[splitPath.length - 1];
-
   const title =
     lastPath === "preview"
       ? "Tinjau Reimburse"
@@ -119,30 +106,22 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const toastMessage = initialData
     ? "Reimburse berhasil diubah!"
     : "Reimburse berhasil dibuat";
+
   const action = initialData ? "Save changes" : "Create";
   const queryClient = useQueryClient();
   const { mutate: createReimburse } = usePostReimburse();
-  const { mutate: editReimburse } = useEditReimburse(reimburseId as string);
-  const { mutate: acceptReimburse } = useAcceptReimburse(reimburseId as string);
+  const { mutate: editReimburse } = useEditReimburse(reimburseid as string);
+  const { mutate: acceptReimburse } = useAcceptReimburse(reimburseid as string);
   const { mutate: rejectReimburse } = useRejectReimburse();
-  // const [searchCustomerTerm, setSearchCustomerTerm] = useState("");
-  // const [searchFleetTerm, setSearchFleetTerm] = useState("");
-  // const [searchCustomerDebounce] = useDebounce(searchCustomerTerm, 500);
-  // const [searchFleetDebounce] = useDebounce(searchFleetTerm, 500);
   const [searchDriverTerm, setSearchDriverTerm] = useState("");
+  const [searchLocationTerm, setSearchLocationTerm] = useState("");
   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
-  // const [switchValue, setSwitchValue] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
-  const [content, setContent] = useState(null);
-  // const days: number[] = Array.from({ length: 30 });
-  const [detail, setDetail] = useState<DriverDetail | null>(null);
+  const [searchLocationDebounce] = useDebounce(searchLocationTerm, 500);
+  // const [detail, setDetail] = useState<DriverDetail | null>(null);
   const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
   const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
-  // const [openCustomerDetail, setOpenCustomerDetail] = useState<boolean>(false);
-  // const [openFleetDetail, setOpenFleetDetail] = useState<boolean>(false);
   const [openDriverDetail, setOpenDriverDetail] = useState<boolean>(false);
-  const [showServicePrice, setShowServicePrice] = useState<boolean>(true);
-  const [type, setType] = useState<string>("");
+  // const [type, setType] = useState<string>("");
   const [schema, setSchema] = useState(() => generateSchema(true, true));
   const [messages, setMessages] = useState<any>({});
   const detailRef = React.useRef<HTMLDivElement>(null);
@@ -151,92 +130,31 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     detailRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // // const {
-  //   data: customers,
-  //   fetchNextPage: fetchNextCustomers,
-  //   hasNextPage: hasNextCustomers,
-  //   isFetchingNextPage: isFetchingNextCustomers,
-  // } = useGetInfinityCustomers(searchCustomerDebounce, "verified");
-
-  // const { data: insurances } = useGetInsurances();
-
-  // const manipulateInsurance = insurances?.data?.items?.map((item: any) => {
-  //   let newName;
-
-  //   switch (item.code) {
-  //     case "silver":
-  //       newName = `${item.name} (s.d. Rp 50 jt)`;
-  //       break;
-  //     case "gold":
-  //       newName = `${item.name} (s.d. Rp 100 jt)`;
-  //       break;
-  //     case "platinum":
-  //       newName = `${item.name} (Semua Kerusakan)`;
-  //       break;
-  //     default:
-  //       newName = item.name;
-  //       break;
-  //   }
-
-  //   return {
-  //     ...item,
-  //     name: newName,
-  //   };
-  // });
-
   const { isMinimized } = useSidebar();
   const defaultValues = initialData
     ? {
-        start_request: {
-          is_self_pickup: initialData?.start_request?.is_self_pickup,
-          address: initialData?.start_request?.address,
-          distance: initialData?.start_request?.distance ?? 0,
-          driver_id: initialData?.start_request?.driver?.id?.toString(),
+        reimburse: {
+          driver: initialData?.reimburse?.driver?.name || "", // Mengambil nama driver
+          amount: initialData?.reimburse?.amount?.toString() || "0", // Nominal reimburse
+          bank_name: initialData?.reimburse?.bank_name || "", // Nama bank
+          location: initialData?.reimburse?.location || "", // Lokasi reimburse
+          account_number: initialData?.reimburse?.account_number || "", // Nomor rekening
+          date: initialData?.reimburse?.date || "", // Tanggal reimburse
+          time: initialData?.reimburse?.time || "", // Waktu reimburse
+          description: initialData?.reimburse?.description || "", // Keterangan tambahan
         },
-        end_request: {
-          is_self_pickup: initialData?.end_request?.is_self_pickup,
-          address: initialData?.end_request?.address,
-          distance: initialData?.end_request?.distance ?? 0,
-          driver_id: initialData?.end_request?.driver?.id?.toString(),
-        },
-        customer: initialData?.customer?.id?.toString(),
-        fleet: initialData?.fleet?.id?.toString(),
-        description: initialData?.description,
-        is_with_driver: initialData?.is_with_driver,
-        is_out_of_town: initialData?.is_out_of_town,
-        date: initialData?.start_date,
-        duration: initialData?.duration?.toString(),
-        discount: initialData?.discount?.toString(),
-        insurance_id: initialData?.insurance
-          ? initialData?.insurance?.id.toString()
-          : "0",
-        service_price: initialData?.service_price.toString(),
-        additionals: initialData?.additional_services,
       }
     : {
-        start_request: {
-          is_self_pickup: true,
-          address: "",
-          distance: 0,
-          driver_id: "",
+        reimburse: {
+          driver: "", // Nama driver kosong
+          amount: "0", // Nominal default 0
+          bank_name: "", // Nama bank koso
+          location: "", // Lokasi kosong
+          account_number: "", // Nomor rekening kosong
+          date: "", // Tanggal kosong
+          time: "", // Waktu kosong
+          description: "", // Keterangan kosong
         },
-        end_request: {
-          is_self_pickup: true,
-          address: "",
-          distance: 0,
-          driver_id: "",
-        },
-        customer: "",
-        fleet: "",
-        description: "",
-        is_with_driver: false,
-        is_out_of_town: false,
-        date: "",
-        duration: "1",
-        discount: "0",
-        insurance_id: "0",
-        service_price: "",
-        additionals: [],
       };
 
   const form = useForm<ReimburseFormValues>({
@@ -244,98 +162,45 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "additionals",
-  });
-
-  const dateField = form.watch("date");
-  const durationField = form.watch("duration");
-  const isOutOfTownField = form.watch("is_out_of_town");
-  const isWithDriverField = form.watch("is_with_driver");
-  // const insuranceField = form.watch("insurance_id");
-  const startSelfPickUpField = form.watch("start_request.is_self_pickup");
-  const startDriverField = form.watch("start_request.driver_id");
-  const startDistanceField = form.watch("start_request.distance");
-  const startAddressField = form.watch("start_request.address");
-  const endSelfPickUpField = form.watch("end_request.is_self_pickup");
-  const endDriverField = form.watch("end_request.driver_id");
-  const endDistanceField = form.watch("end_request.distance");
-  const endAddressField = form.watch("end_request.address");
-  const discountField = form.watch("discount");
-  const descriptionField = form.watch("description");
-  const serviceField = form.watch("service_price");
-  const additionalField = form.watch("additionals");
-
-  const watchServicePrice = !(startSelfPickUpField && endSelfPickUpField);
-  const servicePrice = serviceField ?? 0;
+  // Reimburse Fields
+  const driverNameField = form.watch("driver"); // Nama driver
+  const amountField = form.watch("amount"); // Nominal/jumlah reimburse
+  const bankNameField = form.watch("bank_name"); // Nama bank
+  const locationField = form.watch("location"); // Lokasi reimburse
+  const accountNumberField = form.watch("account_number"); // Nomor rekening
+  const dateField = form.watch("date"); // Tanggal reimburse
+  const timeField = form.watch("time"); // Waktu reimburse
+  const descriptionField = form.watch("description"); // Keterangan tambahan (opsional)
 
   const { data: driver, isFetching: isFetchingDriver } = useGetDetailDriver(
     form.getValues("driver"),
   );
-  // const { data: fleetData, isFetching: isFetchingFleet } = useGetDetailFleet(
-  //   form.getValues("fleet"),
-  // );
-
-  // const { data: driver, isFetching: isFetchingDriver } = useGetDetailDriver(
-  //   type == "start"
-  //     ? form.getValues("start_request.driver_id")
-  //     : form.getValues("end_request.driver_id"),
-  // );
-
   const [end, setEnd] = useState("");
   const now = dayjs(form.getValues("date"));
   useEffect(() => {
     const end = now
-      .add(+form.getValues("duration"), "day")
+      // .add(+form.getValues("duration"), "day")
       .locale("id")
       .format("HH:mm:ss - dddd, DD MMMM (YYYY)");
     setEnd(end);
-  }, [now, form.getValues("duration")]);
+  }, [now]);
+
+  // , form.getValues("duration")
 
   const onSubmit = async (data: ReimburseFormValues) => {
     setLoading(true);
 
     const createPayload = (data: ReimburseFormValues) => ({
-      start_request: {
-        is_self_pickup: data.start_request.is_self_pickup == "1" ? true : false,
-        driver_id: +data.start_request.driver_id,
-        ...(!startSelfPickUpField && {
-          address: data.start_request.address,
-          distance: +data.start_request.distance,
-        }),
+      reimburse: {
+        driver: data.driver, // Menggunakan nama driver
+        amount: +data.amount.replace(/,/g, ""), // Mengubah nominal ke number, menghapus koma jika ada
+        bank_name: data.bank_name, // Nama bank
+        location: data.location, // Lokasi reimburse
+        account_number: data.account_number, // Nomor rekening
+        date: data.date, // Format tanggal (YYYY-MM-DD)
+        time: data.time, // Format waktu (HH:mm)
+        description: data.description || "", // Keterangan opsional
       },
-      end_request: {
-        is_self_pickup: data.end_request.is_self_pickup == "1" ? true : false,
-        driver_id: +data.end_request.driver_id,
-        ...(!endSelfPickUpField && {
-          distance: +data.end_request.distance,
-          address: data.end_request.address,
-        }),
-      },
-      // customer_id: +data.customer,
-      // fleet_id: +data.fleet,
-      description: data.description,
-      is_with_driver: data.is_with_driver,
-      is_out_of_town: data.is_out_of_town,
-      date: data.date.toISOString(),
-      duration: +data.duration,
-      discount: +data.discount,
-      insurance_id: +data.insurance_id === 0 ? null : +data.insurance_id,
-      ...(showServicePrice &&
-        data?.service_price && {
-          service_price: +data.service_price.replace(/,/g, ""),
-        }),
-      ...(fields.length !== 0 && {
-        additional_services: additionalField.map((field) => {
-          return {
-            name: field.name,
-            price: isString(field.price)
-              ? +field.price.replace(/,/g, "")
-              : field.price,
-          };
-        }),
-      }),
     });
 
     const handleSuccess = () => {
@@ -344,7 +209,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         variant: "success",
         title: toastMessage,
       });
-      // router.refresh();
+      router.refresh();
       router.push(`/dashboard/reimburse`);
     };
 
@@ -354,8 +219,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         variant: "destructive",
         title: `Uh oh! ${
           //@ts-ignore
-          error?.response?.data?.message == "Customer must be verified."
-            ? "Customer belum diverifikasi"
+          error?.response?.data?.message == "Driver must be verified."
+            ? "Driver belum diverifikasi"
             : //@ts-ignore
               error?.response?.data?.message
         }`,
@@ -386,13 +251,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     }
   };
 
-  // const Option = AntdSelect;
-  // const handleScrollCustomers = (event: React.UIEvent<HTMLDivElement>) => {
-  //   const target = event.target as HTMLDivElement;
-  //   if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-  //     fetchNextCustomers();
-  //   }
-  // };
+  const Option = AntdSelect;
 
   const {
     data: drivers,
@@ -400,6 +259,12 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     hasNextPage: hasNextDrivers,
     isFetchingNextPage: isFetchingNextDrivers,
   } = useGetInfinityDrivers(searchDriverDebounce);
+  const {
+    data: locations,
+    fetchNextPage: fetchNextLocations,
+    hasNextPage: hasNextLocations,
+    isFetchingNextPage: isFetchingNextLocations,
+  } = useGetInfinityLocation(searchLocationDebounce);
 
   const handleScrollDrivers = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
@@ -408,140 +273,136 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     }
   };
 
-  // const startRequest = initialData?.start_request;
-  // const startRequestLog = initialData?.start_request?.logs?.filter(
-  //   (log: any) => log.type === "end",
-  // );
-  // const endRequest = initialData?.end_request;
-  // const endRequestLog = initialData?.end_request?.logs?.filter(
-  //   (log: any) => log.type === "end",
-  // );
+  // useEffect(() => {
+  //   if (startSelfPickUpField && endSelfPickUpField) {
+  //     // Jika start_request.is_self_pickup dan end_request.is_self_pickup keduanya true
+  //     setSchema(generateSchema(true, true));
+  //     setShowServicePrice(false);
+  //   } else if (startSelfPickUpField) {
+  //     // Jika hanya start_request.is_self_pickup yang true
+  //     setSchema(generateSchema(true, false));
+  //     setShowServicePrice(true);
+  //   } else if (endSelfPickUpField) {
+  //     // Jika hanya end_request.is_self_pickup yang true
+  //     setSchema(generateSchema(false, true));
+  //     setShowServicePrice(true);
+  //   } else {
+  //     // Jika keduanya false
+  //     setSchema(generateSchema(false, false));
+  //     setShowServicePrice(true);
+  //   }
+  // }, [startSelfPickUpField, endSelfPickUpField]);
 
-  // const typeRequestLog = type === "start" ? startRequestLog : endRequestLog;
-  // const typeRequest = type === "start" ? startRequest : endRequest;
-
-  const detailMessages =
-    type === "start" ? messages?.start_request : messages?.end_request;
-
-  // const pengambilan = [
-  //   {
-  //     name: "Pelanggan Ambil Sendiri",
-  //     value: "1",
-  //   },
-  //   {
-  //     name: "Diantar Penanggung Jawab",
-  //     value: "0",
-  //   },
-  // ];
-
-  // const pengembalian = [
-  //   {
-  //     name: "Pelanggan Kembalikan Sendiri",
-  //     value: "1",
-  //   },
-  //   {
-  //     name: "Dijemput Penanggung Jawab",
-  //     value: "0",
-  //   },
-  // ];
-
-  const { mutate: calculatePrice } = useReimburseCalculate();
-
-  useEffect(() => {
-    if (startSelfPickUpField && endSelfPickUpField) {
-      // Jika start_request.is_self_pickup dan end_request.is_self_pickup keduanya true
-      setSchema(generateSchema(true, true));
-      setShowServicePrice(false);
-    } else if (startSelfPickUpField) {
-      // Jika hanya start_request.is_self_pickup yang true
-      setSchema(generateSchema(true, false));
-      setShowServicePrice(true);
-    } else if (endSelfPickUpField) {
-      // Jika hanya end_request.is_self_pickup yang true
-      setSchema(generateSchema(false, true));
-      setShowServicePrice(true);
-    } else {
-      // Jika keduanya false
-      setSchema(generateSchema(false, false));
-      setShowServicePrice(true);
-    }
-  }, [startSelfPickUpField, endSelfPickUpField]);
+  // useEffect(() => {
+  //   const payload = {
+  //     // customer_id: +(customerField ?? 0),
+  //     // fleet_id: +(fleetField ?? 0),
+  //     is_out_of_town: isOutOfTownField,
+  //     is_with_driver: isWithDriverField,
+  //     // insurance_id: +(insuranceField ?? 0),
+  //     start_request: {
+  //       is_self_pickup: startSelfPickUpField == "1" ? true : false,
+  //       driver_id: +(startDriverField ?? 0),
+  //       ...(!startSelfPickUpField && {
+  //         distance: +(startDistanceField ?? 0),
+  //         address: startAddressField,
+  //       }),
+  //     },
+  //     end_request: {
+  //       is_self_pickup: endSelfPickUpField == "1" ? true : false,
+  //       driver_id: +(endDriverField ?? 0),
+  //       ...(!endSelfPickUpField && {
+  //         distance: +(endDistanceField ?? 0),
+  //         address: endAddressField,
+  //       }),
+  //     },
+  //     description: descriptionField,
+  //     ...(!isEmpty(dateField) && {
+  //       date: dateField,
+  //       duration: +(durationField ?? 1),
+  //     }),
+  //     discount: +(discountField ?? 0),
+  //     ...(watchServicePrice && {
+  //       service_price: isString(serviceField)
+  //         ? +serviceField.replace(/,/g, "")
+  //         : serviceField,
+  //     }),
+  //     ...(fields.length !== 0 && {
+  //       additional_services: additionalField.map((field) => {
+  //         return {
+  //           name: field.name,
+  //           price: isString(field.price)
+  //             ? +field.price.replace(/,/g, "")
+  //             : field.price,
+  //         };
+  //       }),
+  //     }),
+  //   };
+  // }, [
+  //   additionalField,
+  //   // customerField,
+  //   // fleetField,
+  //   dateField,
+  //   durationField,
+  //   isOutOfTownField,
+  //   isWithDriverField,
+  //   // insuranceField,
+  //   startSelfPickUpField,
+  //   startDriverField,
+  //   startDistanceField,
+  //   startAddressField,
+  //   endSelfPickUpField,
+  //   endDriverField,
+  //   endDistanceField,
+  //   endAddressField,
+  //   discountField,
+  //   descriptionField,
+  //   showServicePrice,
+  //   servicePrice,
+  //   JSON.stringify(additionalField),
+  // ]);
 
   useEffect(() => {
     const payload = {
-      // customer_id: +(customerField ?? 0),
-      // fleet_id: +(fleetField ?? 0),
-      is_out_of_town: isOutOfTownField,
-      is_with_driver: isWithDriverField,
-      // insurance_id: +(insuranceField ?? 0),
-      start_request: {
-        is_self_pickup: startSelfPickUpField == "1" ? true : false,
-        driver_id: +(startDriverField ?? 0),
-        ...(!startSelfPickUpField && {
-          distance: +(startDistanceField ?? 0),
-          address: startAddressField,
-        }),
+      reimburse: {
+        driver: +(driverNameField ?? 0), // Nama driver
+        amount: isString(amountField) // Nominal/jumlah reimburse
+          ? +amountField.replace(/,/g, "")
+          : amountField,
+        location: locationField, // Lokasi reimburse
+        bank_name: bankNameField, // Nama bank
+        account_number: accountNumberField, // Nomor rekening
+        date: dateField, // Tanggal reimburse (format: YYYY-MM-DD)
+        time: timeField, // Waktu reimburse (format: HH:mm)
+        description: descriptionField || "", // Keterangan tambahan (opsional)
       },
-      end_request: {
-        is_self_pickup: endSelfPickUpField == "1" ? true : false,
-        driver_id: +(endDriverField ?? 0),
-        ...(!endSelfPickUpField && {
-          distance: +(endDistanceField ?? 0),
-          address: endAddressField,
-        }),
-      },
-      description: descriptionField,
-      ...(!isEmpty(dateField) && {
-        date: dateField,
-        duration: +(durationField ?? 1),
-      }),
-      discount: +(discountField ?? 0),
-      ...(watchServicePrice && {
-        service_price: isString(serviceField)
-          ? +serviceField.replace(/,/g, "")
-          : serviceField,
-      }),
-      ...(fields.length !== 0 && {
-        additional_services: additionalField.map((field) => {
-          return {
-            name: field.name,
-            price: isString(field.price)
-              ? +field.price.replace(/,/g, "")
-              : field.price,
-          };
-        }),
-      }),
+      // ...(watchServicePrice && {
+      //   // Jika ada service price yang aktif
+      //   service_price: isString(serviceField)
+      //     ? +serviceField.replace(/,/g, "")
+      //     : serviceField,
+      // }),
+      // ...(additionalField.length !== 0 && {
+      //   // Tambahan layanan jika ada
+      //   additional_services: additionalField.map((field) => ({
+      //     name: field.name,
+      //     price: isString(field.price)
+      //       ? +field.price.replace(/,/g, "")
+      //       : field.price,
+      //   })),
+      // }),
     };
 
-    // if (fleetField) {
-    //   calculatePrice(payload, {
-    //     onSuccess: (data) => {
-    //       setDetail(data.data);
-    //     },
-    //   });
-    // }
+    // setPayload(payload); // Simpan payload ke state (jika dibutuhkan)
   }, [
-    additionalField,
-    // customerField,
-    // fleetField,
+    driverNameField,
+    amountField,
+    locationField,
+    bankNameField,
+    accountNumberField,
     dateField,
-    durationField,
-    isOutOfTownField,
-    isWithDriverField,
-    // insuranceField,
-    startSelfPickUpField,
-    startDriverField,
-    startDistanceField,
-    startAddressField,
-    endSelfPickUpField,
-    endDriverField,
-    endDistanceField,
-    endAddressField,
-    discountField,
+    timeField,
     descriptionField,
-    showServicePrice,
-    servicePrice,
-    JSON.stringify(additionalField),
   ]);
 
   //   // disable date for past dates
@@ -556,7 +417,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const handleRejectReimburse = (reason: string) => {
     setRejectLoading(true);
     rejectReimburse(
-      { reimburseId, reason },
+      { reimburseid, reason },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["reimburse"] });
@@ -604,77 +465,105 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
 
   useEffect(() => {
     const newMessages = {
-      date: generateMessage(dateField, defaultValues.date),
-      duration: generateMessage(durationField, defaultValues.duration),
-      is_out_of_town: generateMessage(
-        isOutOfTownField,
-        defaultValues.is_out_of_town,
-      ),
-      is_with_driver: generateMessage(
-        isWithDriverField,
-        defaultValues.is_with_driver,
-      ),
-
-      start_request: {
-        is_self_pickup: generateMessage(
-          startSelfPickUpField,
-          defaultValues.start_request.is_self_pickup,
-        ),
-        driver_id: generateMessage(
-          startDriverField,
-          defaultValues.start_request.driver_id,
-        ),
-        distance: generateMessage(
-          startDistanceField,
-          defaultValues.start_request.distance,
-        ),
-        address: generateMessage(
-          startAddressField,
-          defaultValues.start_request.address,
-        ),
-      },
-      end_request: {
-        is_self_pickup: generateMessage(
-          endSelfPickUpField,
-          defaultValues.end_request.is_self_pickup,
-        ),
-        driver_id: generateMessage(
-          endDriverField,
-          defaultValues.end_request.driver_id,
-        ),
-        distance: generateMessage(
-          endDistanceField,
-          defaultValues.end_request.distance,
-        ),
-        address: generateMessage(
-          endAddressField,
-          defaultValues.end_request.address,
-        ),
-      },
-      discount: generateMessage(discountField, defaultValues.discount),
-      description: generateMessage(descriptionField, defaultValues.description),
-      service_price: generateMessage(serviceField, defaultValues.service_price),
+      driver: generateMessage(driverNameField, defaultValues.driver), // Nama Driver
+      amount: generateMessage(amountField, defaultValues.amount), // Nominal/Jumlah Reimburse
+      location: generateMessage(locationField, defaultValues.location), // Lokasi Reimburse
+      bank_name: generateMessage(bankNameField, defaultValues.bank_name), // Nama Bank
+      account_number: generateMessage(
+        accountNumberField,
+        defaultValues.account_number,
+      ), // Nomor Rekening
+      date: generateMessage(dateField, defaultValues.date), // Tanggal Reimburse
+      time: generateMessage(timeField, defaultValues.time), // Waktu Reimburse
+      description: generateMessage(descriptionField, defaultValues.description), // Keterangan Tambahan
     };
-
     if (lastPath !== "create") {
       setMessages(newMessages);
     }
   }, [
+    driverNameField,
+    amountField,
+    locationField,
+    bankNameField,
+    accountNumberField,
     dateField,
-    durationField,
-    isWithDriverField,
-    startSelfPickUpField,
-    startDriverField,
-    startDistanceField,
-    startAddressField,
-    endSelfPickUpField,
-    endDriverField,
-    endDistanceField,
-    endAddressField,
-    discountField,
+    timeField,
     descriptionField,
-    serviceField,
   ]);
+
+  // useEffect(() => {
+  //   const newMessages = {
+  //     date: generateMessage(dateField, defaultValues.date),
+  //     duration: generateMessage(durationField, defaultValues.duration),
+  //     is_out_of_town: generateMessage(
+  //       isOutOfTownField,
+  //       defaultValues.is_out_of_town,
+  //     ),
+  //     is_with_driver: generateMessage(
+  //       isWithDriverField,
+  //       defaultValues.is_with_driver,
+  //     ),
+
+  //     start_request: {
+  //       is_self_pickup: generateMessage(
+  //         startSelfPickUpField,
+  //         defaultValues.start_request.is_self_pickup,
+  //       ),
+  //       driver_id: generateMessage(
+  //         startDriverField,
+  //         defaultValues.start_request.driver_id,
+  //       ),
+  //       distance: generateMessage(
+  //         startDistanceField,
+  //         defaultValues.start_request.distance,
+  //       ),
+  //       address: generateMessage(
+  //         startAddressField,
+  //         defaultValues.start_request.address,
+  //       ),
+  //     },
+  //     end_request: {
+  //       is_self_pickup: generateMessage(
+  //         endSelfPickUpField,
+  //         defaultValues.end_request.is_self_pickup,
+  //       ),
+  //       driver_id: generateMessage(
+  //         endDriverField,
+  //         defaultValues.end_request.driver_id,
+  //       ),
+  //       distance: generateMessage(
+  //         endDistanceField,
+  //         defaultValues.end_request.distance,
+  //       ),
+  //       address: generateMessage(
+  //         endAddressField,
+  //         defaultValues.end_request.address,
+  //       ),
+  //     },
+  //     discount: generateMessage(discountField, defaultValues.discount),
+  //     description: generateMessage(descriptionField, defaultValues.description),
+  //     service_price: generateMessage(serviceField, defaultValues.service_price),
+  //   };
+
+  //   if (lastPath !== "create") {
+  //     setMessages(newMessages);
+  //   }
+  // }, [
+  //   dateField,
+  //   durationField,
+  //   isWithDriverField,
+  //   startSelfPickUpField,
+  //   startDriverField,
+  //   startDistanceField,
+  //   startAddressField,
+  //   endSelfPickUpField,
+  //   endDriverField,
+  //   endDistanceField,
+  //   endAddressField,
+  //   discountField,
+  //   descriptionField,
+  //   serviceField,
+  // ]);
   const approvalModalTitle =
     lastPath === "edit"
       ? "Apakah Anda Yakin Ingin Mengedit Pesanan ini?"
@@ -731,7 +620,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               )}
               {lastPath !== "edit" && (
                 <Link
-                  href={`/dashboard/reimburse/${reimburseId}/edit`}
+                  href={`/dashboard/reimburse/${reimburseid}/edit`}
                   onClick={(e) => {
                     if (user?.role !== "admin") {
                       e.preventDefault();
@@ -792,7 +681,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
 
             {lastPath !== "edit" && (
               <Link
-                href={`/dashboard/reimburse/${reimburseId}/edit`}
+                href={`/dashboard/reimburse/${reimburseid}/edit`}
                 className={cn(
                   buttonVariants({ variant: "outline" }),
                   "text-black",
@@ -836,160 +725,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
           >
             <div className="relative space-y-8" id="parent">
               <div className={cn("lg:grid grid-cols-2 gap-[10px] items-start")}>
-                {/* <div className="flex items-end">
-                  {isEdit ? (
-                    <FormField
-                      name={`${type}_request.driver_id`}
-                      control={form.control}
-                      render={({ field }) => (
-                        <Space
-                          size={12}
-                          direction="vertical"
-                          className="w-full"
-                        >
-                          <FormLabel className="relative label-required">
-                            Nama Pengemudi
-                          </FormLabel>
-                          <div className="flex">
-                            <FormControl>
-                              <AntdSelect
-                                defaultValue={
-                                  type === "start"
-                                    ? initialData?.start_request?.driver?.name
-                                    : initialData?.end_request?.driver?.name
-                                }
-                                showSearch
-                                placeholder="Pilih Nama Pengemudi"
-                                className={cn("mr-2 w-full")}
-                                style={{
-                                  // width: `${isMinimized ? "385px" : "267px"}`,
-                                  height: "40px",
-                                }}
-                                onSearch={setSearchDriverTerm}
-                                onChange={field.onChange}
-                                onPopupScroll={handleScrollDrivers}
-                                filterOption={false}
-                                notFoundContent={
-                                  isFetchingNextDrivers ? (
-                                    <p className="px-3 text-sm">loading</p>
-                                  ) : null
-                                }
-                                // append value attribute when field is not  empty
-                                {...(!isEmpty(field.value) && {
-                                  value: field.value,
-                                })}
-                                // disabled={switchValue}
-                              >
-                                {lastPath !== "preview" &&
-                                  lastPath !== "create" &&
-                                  isEdit && (
-                                    <Option
-                                      value={
-                                        type == "start"
-                                          ? initialData?.start_request?.driver?.id?.toString()
-                                          : initialData?.end_request?.driver?.id?.toString()
-                                      }
-                                    >
-                                      {type == "start"
-                                        ? initialData?.start_request?.driver
-                                            ?.name
-                                        : initialData?.end_request?.driver
-                                            ?.name}
-                                    </Option>
-                                  )}
-                                {drivers?.pages.map(
-                                  (page: any, pageIndex: any) =>
-                                    page.data.items.map(
-                                      (item: any, itemIndex: any) => {
-                                        return (
-                                          <Option
-                                            key={item.id}
-                                            value={item.id.toString()}
-                                          >
-                                            {item.name}
-                                          </Option>
-                                        );
-                                      },
-                                    ),
-                                )}
-
-                                {isFetchingNextDrivers && (
-                                  <Option disabled>
-                                    <p className="px-3 text-sm">loading</p>
-                                  </Option>
-                                )}
-                              </AntdSelect>
-                            </FormControl>
-                            <Button
-                              className={cn(
-                                buttonVariants({ variant: "main" }),
-                                "max-w-[65px] h-[40px]",
-                              )}
-                              disabled={
-                                !form.getFieldState(`${type}_request.driver_id`)
-                                  .isDirty &&
-                                isEmpty(
-                                  form.getValues(`${type}_request.driver_id`),
-                                )
-                              }
-                              type="button"
-                              onClick={() => {
-                                setOpenDriverDetail(true);
-                              }}
-                            >
-                              Lihat
-                            </Button>
-                          </div>
-                          <FormMessage />
-                          {detailMessages?.driver_id && (
-                            <FormMessage className="text-main">
-                              {detailMessages?.driver_id}
-                            </FormMessage>
-                          )}
-                        </Space>
-                      )}
-                    />
-                  ) : (
-                    <FormItem>
-                      <FormLabel>Penanggung Jawab</FormLabel>
-                      <div className="flex">
-                        <FormControl className="disabled:opacity-100">
-                          <Input
-                            className={cn("mr-2")}
-                            style={{
-                              // width: `${isMinimized ? "385px" : "267px"}`,
-                              height: "40px",
-                            }}
-                            disabled={!isEdit || loading}
-                            value={
-                              type === "start"
-                                ? initialData?.start_request?.driver?.name
-                                : initialData?.end_request?.driver?.name
-                            }
-                          />
-                        </FormControl>
-                        <Button
-                          className={cn(
-                            buttonVariants({ variant: "main" }),
-                            "max-w-[65px] h-[40px]",
-                          )}
-                          disabled={
-                            !form.getFieldState(`${type}_request.driver_id`)
-                              .isDirty &&
-                            isEmpty(form.getValues(`${type}_request.driver_id`))
-                          }
-                          type="button"
-                          onClick={() => {
-                            setOpenDriverDetail(true);
-                          }}
-                        >
-                          Lihat
-                        </Button>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                </div> */}
                 <div className="flex items-end">
                   {lastPath !== "preview" && isEdit ? (
                     <FormField
@@ -1112,12 +847,10 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             isEmpty(form.getValues("driver"))
                           }
                           type="button"
-                          // onClick={() => {
-                          //   // setOpenCustomerDetail(true);
-                          //   // setOpenFleetDetail(false);
-                          //   setOpenDriverDetail(true);
-                          //   scrollDetail();
-                          // }}
+                          onClick={() => {
+                            setOpenDriverDetail(true);
+                            scrollDetail();
+                          }}
                         >
                           {initialData?.driver?.status == "pending"
                             ? "Tinjau"
@@ -1139,12 +872,12 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 <div className="flex items-end">
                   {!isEdit ? (
                     <FormItem>
-                      <FormLabel>No. Rek</FormLabel>
+                      <FormLabel>Nominal</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          {/* <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                          <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
                             Rp.
-                          </span> */}
+                          </span>
                           <NumericFormat
                             disabled={!isEdit || loading}
                             customInput={Input}
@@ -1161,17 +894,17 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   ) : (
                     <FormField
                       control={form.control}
-                      name="norek"
+                      name="amount"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="relative label-required">
-                            No. Rek
+                            Nominal
                           </FormLabel>
                           <FormControl>
                             <div className="relative">
-                              {/* <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                              <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
                                 Rp.
-                              </span> */}
+                              </span>
                               <NumericFormat
                                 disabled={!isEdit || loading}
                                 customInput={Input}
@@ -1189,6 +922,191 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         </FormItem>
                       )}
                     />
+                  )}
+                </div>
+              </div>
+              <div className={cn("lg:grid grid-cols-2 gap-[10px] items-start")}>
+                <div className="flex items-end">
+                  {lastPath !== "preview" && isEdit ? (
+                    <FormField
+                      name="bank_name"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <div className="space-y-2 w-full">
+                            <FormLabel className="relative label-required">
+                              Nama Bank
+                            </FormLabel>
+                            <div className="flex">
+                              <FormControl>
+                                <AntdSelect
+                                  className={cn("mr-2 w-full")}
+                                  showSearch
+                                  placeholder="Nama Bank..."
+                                  style={{
+                                    height: "40px",
+                                  }}
+                                  // onSearch={setSearchDriverTerm}
+                                  // onChange={field.onChange}
+                                  // onPopupScroll={handleScrollDrivers}
+                                  // filterOption={false}
+                                  // notFoundContent={
+                                  //   isFetchingNextDrivers ? (
+                                  //     <p className="px-3 text-sm">loading</p>
+                                  //   ) : null
+                                  // }
+                                  // append value attribute when field is not  empty
+                                  {...(!isEmpty(field.value) && {
+                                    value: field.value,
+                                  })}
+                                >
+                                  {lastPath !== "create" && isEdit && (
+                                    <>
+                                      <Option value="BCA">BCA</Option>
+                                      <Option value="BNI">BNI</Option>
+                                      <Option value="BRI">BRI</Option>
+                                      <Option value="Mandiri">Mandiri</Option>
+                                    </>
+                                  )}
+
+                                  {lastPath === "create" && (
+                                    <>
+                                      <Option value="BCA">BCA</Option>
+                                      <Option value="BNI">BNI</Option>
+                                      <Option value="BRI">BRI</Option>
+                                      <Option value="Mandiri">Mandiri</Option>
+                                    </>
+                                  )}
+                                </AntdSelect>
+                              </FormControl>
+                            </div>
+                            <FormMessage />
+                          </div>
+                        );
+                      }}
+                    />
+                  ) : (
+                    <FormItem>
+                      <FormLabel
+                        className={cn(
+                          initialData?.bank_name?.status === "pending"
+                            ? "text-destructive"
+                            : "",
+                        )}
+                      >
+                        Nama Bank
+                      </FormLabel>
+                      <div className="flex">
+                        {" "}
+                        <FormControl className="disabled:opacity-100">
+                          <Input
+                            className={cn("mr-2")}
+                            style={{
+                              height: "40px",
+                            }}
+                            disabled
+                            value={initialData?.bank_name}
+                          />
+                        </FormControl>
+                      </div>
+                    </FormItem>
+                  )}
+                </div>
+                <div className="flex items-end">
+                  {lastPath !== "preview" && isEdit ? (
+                    <FormField
+                      name="driver"
+                      control={form.control}
+                      render={({ field }) => {
+                        return (
+                          <div className="space-y-2 w-full">
+                            <FormLabel className="relative label-required">
+                              Lokasi
+                            </FormLabel>
+                            <div className="flex">
+                              <FormControl>
+                                <AntdSelect
+                                  className={cn("mr-2 w-full")}
+                                  showSearch
+                                  placeholder="Lokasi..."
+                                  style={{
+                                    height: "40px",
+                                  }}
+                                  onSearch={setSearchLocationTerm}
+                                  onChange={field.onChange}
+                                  // onPopupScroll={handleScrollLocations}
+                                  filterOption={false}
+                                  notFoundContent={
+                                    isFetchingNextLocations ? (
+                                      <p className="px-3 text-sm">loading</p>
+                                    ) : null
+                                  }
+                                  // append value attribute when field is not  empty
+                                  {...(!isEmpty(field.value) && {
+                                    value: field.value,
+                                  })}
+                                >
+                                  {lastPath !== "create" && isEdit && (
+                                    <Option
+                                      value={initialData?.location?.id?.toString()}
+                                    >
+                                      {initialData?.location?.name}
+                                    </Option>
+                                  )}
+                                  {locations?.pages.map(
+                                    (page: any, pageIndex: any) =>
+                                      page.data.items.map(
+                                        (item: any, itemIndex: any) => {
+                                          return (
+                                            <Option
+                                              key={item.id}
+                                              value={item.id.toString()}
+                                            >
+                                              {item.name}
+                                            </Option>
+                                          );
+                                        },
+                                      ),
+                                  )}
+
+                                  {isFetchingNextLocations && (
+                                    <Option disabled>
+                                      <p className="px-3 text-sm">loading</p>
+                                    </Option>
+                                  )}
+                                </AntdSelect>
+                              </FormControl>
+                            </div>
+                            <FormMessage />
+                          </div>
+                        );
+                      }}
+                    />
+                  ) : (
+                    <FormItem>
+                      <FormLabel
+                        className={cn(
+                          initialData?.location?.status === "pending"
+                            ? "text-destructive"
+                            : "",
+                        )}
+                      >
+                        Lokasi
+                      </FormLabel>
+                      <div className="flex">
+                        {" "}
+                        <FormControl className="disabled:opacity-100">
+                          <Input
+                            className={cn("mr-2")}
+                            style={{
+                              height: "40px",
+                            }}
+                            disabled
+                            value={initialData?.location?.name ?? "-"}
+                          />
+                        </FormControl>
+                      </div>
+                    </FormItem>
                   )}
                 </div>
               </div>
@@ -1267,100 +1185,29 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 <div className="flex items-end">
                   {isEdit ? (
                     <FormField
-                      name="date"
+                      name="account_number"
                       control={form.control}
                       render={({ field }) => {
                         return (
                           <div className="space-y-2 w-full">
                             <FormLabel className="relative label-required">
-                              Nominal
+                              No. Rek
                             </FormLabel>
                             <div className="flex">
                               <FormControl>
                                 <Input
-                                  placeholder="Nominal anda..."
+                                  placeholder="No. Rekening anda..."
                                   className={cn("mr-2")}
                                   style={{
                                     height: "40px",
                                   }}
-                                  // disabled
-                                  // value={initialData?.driver?.name ?? "-"}
                                 />
-                                {/* <AntdSelect
-                                  className={cn("mr-2 flex-1")}
-                                  showSearch
-                                  placeholder="Pilih Armada"
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  // onSearch={setSearchDriverTerm}
-                                  onChange={field.onChange}
-                                  onPopupScroll={handleScrollDrivers}
-                                  filterOption={false}
-                                  notFoundContent={
-                                    isFetchingNextDrivers ? (
-                                      <p className="px-3 text-sm">loading</p>
-                                    ) : null
-                                  }
-                                  // append value attribute when field is not  empty
-                                  {...(!isEmpty(field.value) && {
-                                    value: field.value,
-                                  })}
-                                >
-                                  {lastPath !== "create" && isEdit && (
-                                    <Option
-                                      value={initialData?.driver?.id?.toString()}
-                                    >
-                                      {initialData?.driver?.name}
-                                    </Option>
-                                  )}
-                                  {drivers?.pages.map(
-                                    (page: any, pageIndex: any) =>
-                                      page.data.items.map(
-                                        (item: any, itemIndex: any) => {
-                                          return (
-                                            <Option
-                                              key={item.id}
-                                              value={item.id.toString()}
-                                            >
-                                              {item.name}
-                                            </Option>
-                                          );
-                                        },
-                                      ),
-                                  )} */}
-
-                                {/* {isFetchingNextDrivers && (
-                                    <Option disabled>
-                                      <p className="px-3 text-sm">loading</p>
-                                    </Option>
-                                  )} */}
-                                {/* </AntdSelect> */}
                               </FormControl>
-                              {/* <Button
-                                className={cn(
-                                  buttonVariants({ variant: "main" }),
-                                  "w-[65px] h-[40px]",
-                                )}
-                                disabled={
-                                  !form.getFieldState("fleet").isDirty &&
-                                  isEmpty(form.getValues("fleet"))
-                                }
-                                type="button"
-                                onClick={() => {
-                                  // setOpenFleetDetail(true);
-                                  // setOpenCustomerDetail(false);
-                                  setOpenDriverDetail(false);
-                                  scrollDetail();
-                                }}
-                              >
-                                Lihat
-                              </Button> */}
                             </div>
                             <FormMessage />
-                            {messages.reimburse && (
+                            {messages.account_number && (
                               <FormMessage className="text-main">
-                                {messages.reimburse}
+                                {messages.account_number}
                               </FormMessage>
                             )}
                           </div>
@@ -1369,7 +1216,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                     />
                   ) : (
                     <FormItem>
-                      <FormLabel>Nominal</FormLabel>
+                      <FormLabel>No. Rek</FormLabel>
                       <div className="flex">
                         <FormControl className="disabled:opacity-100">
                           <Input
@@ -1377,29 +1224,10 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             style={{
                               height: "40px",
                             }}
-                            // disabled
-                            // value={initialData?.driver?.name ?? "-"}
+                            disabled
+                            value={initialData?.account_number ?? "-"}
                           />
                         </FormControl>
-                        {/* <Button
-                          className={cn(
-                            buttonVariants({ variant: "main" }),
-                            "w-[65px] h-[40px]",
-                          )}
-                          disabled={
-                            !form.getFieldState("driver").isDirty &&
-                            isEmpty(form.getValues("driver"))
-                          }
-                          type="button"
-                          onClick={() => {
-                            // setOpenFleetDetail(true);
-                            // setOpenCustomerDetail(false);
-                            setOpenDriverDetail(true);
-                            scrollDetail();
-                          }}
-                        >
-                          Lihat
-                        </Button> */}
                       </div>
                     </FormItem>
                   )}
@@ -1409,66 +1237,19 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 <div className="flex items-end">
                   {!isEdit ? (
                     <FormItem>
-                      <FormLabel>Lokasi</FormLabel>
-                      <p
-                        className="border border-gray-200 rounded-md px-3 py-1 break-words"
-                        // dangerouslySetInnerHTML={{
-                        //   __html: !isEmpty(defaultValues?.address)
-                        //     ? makeUrlsClickable(
-                        //         defaultValues?.address?.replace(
-                        //           /\n/g,
-                        //           "<br />",
-                        //         ),
-                        //       )
-                        //     : "-",
-                        // }}
-                      />
-                    </FormItem>
-                  ) : (
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="relative label-required">
-                            Lokasi
-                          </FormLabel>
-                          <FormControl className="disabled:opacity-100">
-                            <Textarea
-                              id="description"
-                              placeholder="Deskripsi Lokasi..."
-                              className="col-span-4"
-                              rows={4}
-                              disabled={!isEdit || loading}
-                              value={field.value ?? ""}
-                              onChange={(e) => {
-                                e.target.value = e.target.value.trimStart();
-                                field.onChange(e.target.value);
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
-                <div className="flex items-end">
-                  {!isEdit ? (
-                    <FormItem>
                       <FormLabel>Keterangan</FormLabel>
                       <p
                         className="border border-gray-200 rounded-md px-3 py-1 break-words"
-                        // dangerouslySetInnerHTML={{
-                        //   __html: !isEmpty(defaultValues?.address)
-                        //     ? makeUrlsClickable(
-                        //         defaultValues?.address?.replace(
-                        //           /\n/g,
-                        //           "<br />",
-                        //         ),
-                        //       )
-                        //     : "-",
-                        // }}
+                        dangerouslySetInnerHTML={{
+                          __html: !isEmpty(defaultValues?.description)
+                            ? makeUrlsClickable(
+                                defaultValues?.description?.replace(
+                                  /\n/g,
+                                  "<br />",
+                                ),
+                              )
+                            : "-",
+                        }}
                       />
                     </FormItem>
                   ) : (
@@ -1501,427 +1282,11 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   )}
                 </div>
               </div>
-              {/* <FormField
-                  control={form.control}
-                  name="duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Lama Hari
-                      </FormLabel>
-                      <Select
-                        disabled={!isEdit || loading}
-                        onValueChange={field.onChange}
-                        defaultValue={defaultValues.duration}
-                        value={field.value}
-                      >
-                        <FormControl
-                          className={cn(
-                            "disabled:opacity-100",
-                            "w-full",
-                            "h-[40px]",
-                          )}
-                        >
-                          <SelectTrigger className="">
-                            <SelectValue placeholder="asdf" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="h-36"> */}
-              {/* @ts-ignore  */}
-              {/* {days.map((_, index) => (
-                            <SelectItem
-                              key={index}
-                              value={(index + 1).toString()}
-                            >
-                              {index + 1} Hari
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                      {messages.duration && (
-                        <FormMessage className="text-main">
-                          {messages.duration}
-                        </FormMessage>
-                      )}
-                    </FormItem>
-                  )}
-                /> */}
 
-              {/* <FormItem className="flex flex-col pt-[5px]">
-                  <FormLabel>Selesai sewa (otomatis)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={cn("w-full h-[40px]")}
-                      placeholder="Tanggal dan waktu selesai"
-                      value={end == "Invalid Date" ? "" : end}
-                      readOnly
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem> */}
-              {/* <div className={cn("lg:grid grid-cols-2 gap-5")}>
-                {/* <FormField
-                  control={form.control}
-                  name="is_out_of_town"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel className="relative label-required">
-                          Pemakaian
-                        </FormLabel>
-                        <FormControl>
-                          <Tabs
-                            onValueChange={field.onChange}
-                            value={
-                              field.value == false ? "dalam_kota" : "luar_kota"
-                            }
-                          >
-                            <TabsList className="grid w-full grid-cols-2 h-[40px]">
-                              <TabsTrigger
-                                disabled={!isEdit || loading}
-                                value="dalam_kota"
-                                onClick={() =>
-                                  form.setValue("is_out_of_town", false)
-                                }
-                                className="h-[30px]"
-                              >
-                                Dalam Kota
-                              </TabsTrigger>
-                              <TabsTrigger
-                                disabled={!isEdit || loading}
-                                value="luar_kota"
-                                onClick={() =>
-                                  form.setValue("is_out_of_town", true)
-                                }
-                                className="h-[30px]"
-                              >
-                                Luar Kota
-                              </TabsTrigger>
-                            </TabsList>
-                          </Tabs>
-                        </FormControl>
-                        <FormMessage />
-                        {messages.is_out_of_town && (
-                          <FormMessage className="text-main">
-                            {messages.is_out_of_town}
-                          </FormMessage>
-                        )}
-                      </FormItem>
-                    );
-                  }}
-                /> */}
-              {/* <FormField
-                  control={form.control}
-                  name="insurance_id"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel className="relative label-required">
-                          Asuransi
-                        </FormLabel>
-                        <Select
-                          disabled={!isEdit || loading}
-                          onValueChange={field.onChange}
-                          value={field.value || "0"}
-                        >
-                          <FormControl className="disabled:opacity-100 h-[40px]">
-                            <SelectTrigger>
-                              <SelectValue defaultValue="0" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="0">Tidak Ada</SelectItem>
-                            {/* @ts-ignore  */}
-              {/* {manipulateInsurance?.map((insurance) => (
-                              <SelectItem
-                                key={insurance.id}
-                                value={insurance.id.toString()}
-                              >
-                                {insurance.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        {messages.insurance_id && (
-                          <FormMessage className="text-main">
-                            {messages.insurance_id}
-                          </FormMessage>
-                        )}
-                      </FormItem>
-                    );
-                  }}
-                />  */}
-              {/* </div> */}
               <Separator className={cn("mt-1")} />
-              {/* <DetailSection
-                title="Detail Pengambilan"
-                form={form}
-                initialData={initialData}
-                defaultValues={defaultValues}
-                loading={loading}
-                isEdit={isEdit}
-                // lists={pengambilan}
-                type="start"
-                handleButton={() => {
-                  // setOpenCustomerDetail(false);
-                  // setOpenFleetDetail(false);
-                  setOpenDriverDetail(true);
-                  setType("start");
-                  scrollDetail();
-                }}
-                lastPath={lastPath}
-                messages={messages}
-              /> */}
-              {/* <DetailSection
-                title="Detail Pengembalian"
-                form={form}
-                initialData={initialData}
-                defaultValues={defaultValues}
-                loading={loading}
-                isEdit={isEdit}
-                lists={pengembalian}
-                type="end"
-                handleButton={() => {
-                  setOpenCustomerDetail(false);
-                  setOpenFleetDetail(false);
-                  setOpenDriverDetail(true);
-                  setType("end");
-                  scrollDetail();
-                }}
-                lastPath={lastPath}
-                messages={messages}
-              />
-              {/* <div className={cn("space-y-8")}>
-                {showServicePrice && (
-                  <FormField
-                    name="service_price"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="relative label-required">
-                          Harga Layanan Driver
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
-                              Rp.
-                            </span>
-                            <NumericFormat
-                              disabled={!isEdit || loading}
-                              customInput={Input}
-                              type="text"
-                              className="pl-9 disabled:opacity-90"
-                              allowLeadingZeros
-                              thousandSeparator=","
-                              value={field.value}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                        {messages.service_price && (
-                          <FormMessage className="text-main">
-                            {messages.service_price}
-                          </FormMessage>
-                        )}
-                      </FormItem>
-                    )}
-                  />
-                )}
-
-                <div className="flex flex-col">
-                  {fields.map((field_item, index) => (
-                    <div key={index} className="lg:flex gap-4 items-end mb-4">
-                      <FormField
-                        name={`additionals.${index}.name`}
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormLabel className="relative label-required">
-                                Deskripsi Layanan
-                              </FormLabel>
-                              <FormControl className="disabled:opacity-100 h-[40px]">
-                                <Input
-                                  key={field_item.id}
-                                  disabled={!isEdit || loading}
-                                  placeholder="Deskripsi Layanan"
-                                  value={field.value ?? ""}
-                                  onChange={field.onChange}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                      <FormField
-                        key={field_item.id}
-                        name={`additionals.${index}.price`}
-                        control={form.control}
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormLabel className="relative label-required">
-                                Harga Layanan
-                              </FormLabel>
-                              <FormControl className="disabled:opacity-100">
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
-                                    Rp.
-                                  </span>
-                                  <NumericFormat
-                                    key={field_item.id}
-                                    disabled={!isEdit || loading}
-                                    customInput={Input}
-                                    type="text"
-                                    className="h-[40px] pl-9 disabled:opacity-90"
-                                    allowLeadingZeros
-                                    thousandSeparator=","
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    onBlur={field.onBlur}
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                      // {isEdit && (
-                      //   <Button
-                      //     type="button"
-                      //     className={cn(
-                      //       buttonVariants({
-                      //         variant: "destructive",
-                      //         size: "icon",
-                      //       }),
-                      //       "p-0 h-10 w-full lg:w-10 flex-none bg-red-50 mb-2 lg:mb-0",
-                      //     )}
-                      //     onClick={() => {
-                      //       remove(index);
-
-                      //       const updatedAdditionals = [...additionalField];
-                      //       updatedAdditionals.splice(index, 1);
-                      //       form.setValue("additionals", updatedAdditionals);
-                      //     }}
-                      //   >
-                      //     <Trash2 className="w-5 h-5 text-red-500 hover:text-white" />
-                      //   </Button>
-                      // )}
-                    </div>
-                  ))}
-                  {isEdit && (
-                    <div className="justify-end flex">
-                      <Button
-                        type="button"
-                        className={cn(buttonVariants({ variant: "secondary" }))}
-                        onClick={() => append({ name: "", price: "0" })}
-                      >
-                        + Add Item
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                {!isEdit ? (
-                  <FormItem>
-                    <FormLabel>Permintaan Khusus</FormLabel>
-                    <p
-                      className="border border-gray-200 rounded-md px-3 break-words"
-                      dangerouslySetInnerHTML={{
-                        __html: !isEmpty(defaultValues?.description)
-                          ? makeUrlsClickable(
-                              defaultValues?.description.replace(
-                                /\n/g,
-                                "<br />",
-                              ),
-                            )
-                          : "-",
-                      }}
-                    />
-                  </FormItem>
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Permintaan Khusus</FormLabel>
-                        <FormControl className="disabled:opacity-100">
-                          <Textarea
-                            id="alamat"
-                            placeholder="Masukkan permintaan khusus pelanggan di sini...."
-                            className="col-span-3"
-                            rows={3}
-                            value={field.value || ""}
-                            onChange={(e) => {
-                              e.target.value = e.target.value.trimStart();
-                              field.onChange(e.target.value);
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        {messages.description && (
-                          <FormMessage className="text-main">
-                            {messages.description}
-                          </FormMessage>
-                        )}
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </div> */}
             </div>
-            {/* <div className="flex flex-col bottom-0">
-              {type === "edit" && initialData?.status !== "pending"}
-              {type === "create" && (
-                <Button
-                  // onClick={() => setOpenApprovalModal(true)}
-                  className="w-full  bg-main hover:bg-main/90"
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <Spinner className="h-5 w-5" />
-                  ) : (
-                    "Konfirmasi Reimburse"
-                  )}
-                </Button>
-              )}
-            </div> */}
           </form>
           {/* sidebar */}
-          {/* {openCustomerDetail && isFetchingCustomer && (
-            <div className="flex justify-center items-center h-[100px] w-full">
-              <Spinner />
-            </div>
-          )}
-          {openCustomerDetail && !isFetchingCustomer && (
-            <CustomerDetail
-              innerRef={detailRef}
-              data={customerData?.data}
-              onClose={() => setOpenCustomerDetail(false)}
-            />
-          )}
-          {openFleetDetail && isFetchingFleet && (
-            <div className="flex justify-center items-center h-[100px] w-full">
-              <Spinner />
-            </div>
-          )}
-
-          {openFleetDetail && !isFetchingFleet && (
-            <FleetDetail
-              innerRef={detailRef}
-              data={fleetData?.data}
-              onClose={() => setOpenFleetDetail(false)}
-            />
-          )} */}
           {openDriverDetail && isFetchingDriver && (
             <div className="flex justify-center items-center h-[100px] w-full">
               <Spinner />
@@ -1936,402 +1301,14 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             innerRef={detailRef}
             data={driver?.data}
             initialData={initialData}
-            form={form}
-            detail={detail}
             handleOpenApprovalModal={() => setOpenApprovalModal(true)}
             handleOpenRejectModal={() => setOpenRejectModal(true)}
             confirmLoading={loading}
             type={lastPath}
-            messages={messages}
             // onClose={() => setOpenDriverDetail(false)}
           />
-          ,{/* )} */}
-          {/* {!openCustomerDetail && !openFleetDetail && !openDriverDetail && (
-            <PriceDetail
-              innerRef={detailRef}
-              initialData={initialData}
-              isEdit={isEdit ?? false}
-              showServicePrice={showServicePrice}
-              showAdditional={additionalField?.length !== 0}
-              form={form}
-              detail={detail}
-              handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-              handleOpenRejectModal={() => setOpenRejectModal(true)}
-              confirmLoading={loading}
-              type={lastPath}
-              messages={messages}
-            />
-          )} */}
         </Form>
       </div>
     </>
   );
 };
-
-// interface List {
-//   name: string;
-//   value: string;
-// }
-
-// interface DetailSectionProps {
-//   title: string;
-//   form: any;
-//   isEdit?: boolean | null;
-//   initialData: any;
-//   defaultValues: any;
-//   loading: boolean;
-//   lists: List[];
-//   type: "start" | "end";
-//   handleButton: () => void;
-//   lastPath: string;
-//   messages?: any;
-// }
-
-// const DetailSection: React.FC<DetailSectionProps> = ({
-//   title,
-//   form,
-//   isEdit,
-//   initialData,
-//   defaultValues,
-//   loading,
-//   lists,
-//   type,
-//   handleButton,
-//   lastPath,
-//   messages,
-// }) => {
-//   const [searchDriverTerm, setSearchDriverTerm] = useState("");
-//   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
-//   const { isMinimized } = useSidebar();
-
-//   const {
-//     data: drivers,
-//     fetchNextPage: fetchNextDrivers,
-//     hasNextPage: hasNextDrivers,
-//     isFetchingNextPage: isFetchingNextDrivers,
-//   } = useGetInfinityDrivers(searchDriverDebounce);
-
-//   const handleScrollDrivers = (event: React.UIEvent<HTMLDivElement>) => {
-//     const target = event.target as HTMLDivElement;
-//     if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-//       fetchNextDrivers();
-//     }
-//   };
-//   const startRequest = initialData?.start_request;
-//   const startRequestLog = initialData?.start_request?.logs?.filter(
-//     (log: any) => log.type === "end",
-//   );
-//   const endRequest = initialData?.end_request;
-//   const endRequestLog = initialData?.end_request?.logs?.filter(
-//     (log: any) => log.type === "end",
-//   );
-
-//   const typeRequestLog = type === "start" ? startRequestLog : endRequestLog;
-//   const typeRequest = type === "start" ? startRequest : endRequest;
-
-//   const detailMessages =
-//     type === "start" ? messages?.start_request : messages?.end_request;
-
-//   const watchedFields = form.watch([
-//     "start_request.is_self_pickup",
-//     "start_request.driver_id",
-//     "start_request.distance",
-//     "start_request.address",
-//     "end_request.is_self_pickup",
-//     "end_request.driver_id",
-//     "end_request.distance",
-//     "end_request.address",
-//   ]);
-
-//   const Option = AntdSelect;
-//   useEffect(() => {
-//     if (switchValue) {
-//       form.setValue("end_request.is_self_pickup", watchedFields[0]);
-//       form.setValue("end_request.driver_id", watchedFields[1]);
-//       form.setValue("end_request.distance", watchedFields[2]);
-//       form.setValue("end_request.address", watchedFields[3]);
-//     }
-//   }, [...watchedFields, switchValue]);
-
-// return (
-//   <>
-//     <div className="space-y-4">
-//       <div className="lg:flex justify-between">
-//         <h3 className="mb-4">{title}</h3>
-//         {type === "end" && lastPath !== "detail" && (
-//           <div className="flex gap-2">
-//             <Label htmlFor="same-field" className="font-normal text-sm">
-//               Samakan data seperti Pengambilan
-//             </Label>
-//             <Switch
-//               id="same-field"
-//               checked={switchValue}
-//               onCheckedChange={() => setSwitchValue(!switchValue)}
-//             />
-//           </div>
-//         )}
-//       </div>
-//       {/* Layanan */}
-//       <div className={cn("gap-5")}>
-//         <FormField
-//           control={form.control}
-//           name={`${type}_request.is_self_pickup`}
-//           render={({ field }) => {
-//             return (
-//               <FormItem className="flex flex-col">
-//                 <FormLabel className="relative label-required w-fit">
-//                   Layanan
-//                 </FormLabel>
-//                 <FormControl>
-//                   <Tabs
-//                     defaultValue={field.value == true ? "1" : "0"}
-//                     value={field.value == true ? "1" : "0"}
-//                     onValueChange={field.onChange}
-//                   >
-//                     {/* <TabsList className="grid w-full grid-rows-2 lg:grid-cols-2 lg:grid-rows-none h-[100px] lg:h-[40px]">
-//                       {lists.map((list, index) => {
-//                         return (
-//                           <TabsTrigger
-//                             disabled={!isEdit || loading || switchValue}
-//                             key={index}
-//                             value={list.value}
-//                             onClick={() => {
-//                               form.setValue(
-//                                 `${type}_request.is_self_pickup`,
-//                                 list.value == "0" ? false : true,
-//                               );
-//                             }}
-//                             className="h-[40px] lg:h-[30px]"
-//                           >
-//                             {list.name}
-//                           </TabsTrigger>
-//                         );
-//                       })}
-//                     </TabsList> */}
-//                   </Tabs>
-//                 </FormControl>
-//                 <FormMessage />
-//                 {detailMessages?.is_self_pickup && (
-//                   <FormMessage className="text-main">
-//                     {detailMessages?.is_self_pickup}
-//                   </FormMessage>
-//                 )}
-//               </FormItem>
-//             );
-//           }}
-//         />
-//       </div>
-//       {/* Penanggung Jawab */}
-//       <div className="flex gap-2"></div>
-//       {!form.getValues(`${type}_request.is_self_pickup`) && (
-//         <div className={cn("flex gap-2 items-end")}>
-//           <FormField
-//             name={`${type}_request.distance`}
-//             control={form.control}
-//             render={({ field }) => {
-//               return (
-//                 <FormItem>
-//                   <FormLabel className="relative label-required">
-//                     Jarak
-//                   </FormLabel>
-//                   <FormControl>
-//                     <Input
-//                       min={0}
-//                       disabled={!isEdit || loading || switchValue}
-//                       type="number"
-//                       placeholder="Masukkan jarak (contoh 10 Km)"
-//                       className={cn("h-[40px]")}
-//                       onChange={field.onChange}
-//                       onBlur={field.onBlur}
-//                       // append value attribute when this field is not empty
-//                       value={field.value}
-//                     />
-//                   </FormControl>
-//                   <FormMessage />
-//                   {detailMessages?.distance && (
-//                     <FormMessage className="text-main">
-//                       {detailMessages?.distance}
-//                     </FormMessage>
-//                   )}
-//                 </FormItem>
-//               );
-//             }}
-//           />
-//         </div>
-//       )}
-//       {/* Alamat */}
-//       <div>
-//         {!isEdit ? (
-//           <FormItem>
-//             <FormLabel>Alamat</FormLabel>
-//             <p
-//               className="border border-gray-200 rounded-md px-3 py-1 break-words"
-//               dangerouslySetInnerHTML={{
-//                 __html: !isEmpty(
-//                   type === "start"
-//                     ? defaultValues?.start_request?.address
-//                     : defaultValues?.end_request?.address,
-//                 )
-//                   ? makeUrlsClickable(
-//                       type === "start"
-//                         ? defaultValues?.start_request?.address.replace(
-//                             /\n/g,
-//                             "<br />",
-//                           )
-//                         : defaultValues?.end_request?.address.replace(
-//                             /\n/g,
-//                             "<br />",
-//                           ),
-//                     )
-//                   : "-",
-//               }}
-//             />
-//           </FormItem>
-//         ) : (
-//           !form.getValues(`${type}_request.is_self_pickup`) && (
-//             <FormField
-//               control={form.control}
-//               name={`${type}_request.address`}
-//               render={({ field }) => (
-//                 <FormItem>
-//                   <FormLabel className="relative label-required">
-//                     Alamat
-//                   </FormLabel>
-//                   <FormControl className="disabled:opacity-100">
-//                     <Textarea
-//                       id="alamat"
-//                       placeholder="Masukkan alamat lengkap...."
-//                       className="col-span-3"
-//                       rows={3}
-//                       disabled={!isEdit || loading || switchValue}
-//                       value={field.value || ""}
-//                       onChange={field.onChange}
-//                     />
-//                   </FormControl>
-//                   <FormMessage />
-//                   {detailMessages?.address && (
-//                     <FormMessage className="text-main">
-//                       {detailMessages?.address}
-//                     </FormMessage>
-//                   )}
-//                 </FormItem>
-//               )}
-//             />
-//           )
-//         )}
-//       </div>
-//       {lastPath === "detail" && (
-//         <>
-//           {/* Bukti Serah Terima */}
-//           <div>
-//             <FormItem>
-//               <FormLabel>Bukti Serah Terima</FormLabel>
-//               <Carousel>
-//                 <CarouselContent className="-ml-1">
-//                   {isEmpty(typeRequestLog?.[0]?.photos) && (
-//                     <div className="ml-1">
-//                       <p className="text-base font-normal">
-//                         Belum selesai dilakukan
-//                       </p>
-//                     </div>
-//                   )}
-//                   {typeRequestLog?.[0]?.photos?.length > 0 &&
-//                     typeRequestLog?.[0]?.photos?.map(
-//                       (photo: any, index: any) => (
-//                         <CarouselItem
-//                           key={index}
-//                           className="pl-1 md:basis-1/2 lg:basis-1/3"
-//                         >
-//                           <div className="p-1">
-//                             {/* <Card>
-//                             <CardContent className="flex aspect-square items-center justify-center p-6 relative  w-[300px] h-[202px]">
-//                               <Image
-//                                 className="border object-cover cursor-pointer rounded-lg"
-//                                 alt={"test"}
-//                                 src={photo?.photo}
-//                                 fill
-//                               />
-//                             </CardContent>
-//                           </Card> */}
-//                             <div
-//                               key={index}
-//                               className=" w-full h-[300px] flex-shrink-0 flex aspect-square items-center justify-center relative "
-//                             >
-//                               <img
-//                                 src={photo.photo}
-//                                 alt={`Slide ${index}`}
-//                                 className="border object-cover cursor-pointer rounded-lg w-full h-full"
-//                                 onClick={() => {
-//                                   setOpen(true);
-//                                   onHandlePreview(photo?.photo);
-//                                 }}
-//                               />
-//                             </div>
-//                           </div>
-//                         </CarouselItem>
-//                       ),
-//                     )}
-//                 </CarouselContent>
-//                 {typeRequestLog?.[0]?.photos?.length > 2 && (
-//                   <>
-//                     <CarouselPrevious
-//                       type="button"
-//                       className="-left-1 top-1/2 -translate-y-1/2 bg-accent"
-//                     />
-//                     <CarouselNext
-//                       type="button"
-//                       className="-right-1 top-1/2 -translate-y-1/2 bg-accent"
-//                     />
-//                   </>
-//                 )}
-//               </Carousel>
-//             </FormItem>
-//           </div>
-//           {/* Durasi */}
-//           <div>
-//             <FormItem>
-//               <FormLabel>Durasi</FormLabel>
-//               <FormControl>
-//                 <Input
-//                   className={cn("w-full")}
-//                   placeholder="Tanggal dan waktu selesai"
-//                   value={
-//                     typeRequest?.progress_duration_second
-//                       ? convertTime(typeRequest?.progress_duration_second)
-//                       : "--"
-//                   }
-//                   readOnly
-//                   disabled
-//                 />
-//               </FormControl>
-//             </FormItem>
-//           </div>
-//           {/* Catatan Driver */}
-//           <div>
-//             <FormItem>
-//               <FormLabel>Catatan Driver</FormLabel>
-//               <FormControl>
-//                 <Input
-//                   className={cn("w-full")}
-//                   placeholder="Tanggal dan waktu selesai"
-//                   value={typeRequestLog?.[0]?.description ?? "-"}
-//                   readOnly
-//                   disabled
-//                 />
-//               </FormControl>
-//             </FormItem>
-//           </div>
-//         </>
-//       )}
-//     </div>
-
-//     <Separator className={cn("mt-1")} />
-
-//     <PreviewImage
-//       isOpen={open}
-//       onClose={() => setOpen(false)}
-//       content={content}
-//     />
-//   </>
-// );
-// };
