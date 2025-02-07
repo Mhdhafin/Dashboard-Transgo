@@ -51,12 +51,12 @@ export const pendingColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "norek",
+    accessorKey: "noRekening",
 
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">No.Rek</span>
     ),
-    cell: ({ row }) => <span>{row.original?.norek}</span>,
+    cell: ({ row }) => <span>{row.original?.noRekening}</span>,
     enableSorting: false,
   },
 
@@ -110,11 +110,11 @@ export const pendingColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "keterangan",
+    accessorKey: "description",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
     ),
-    cell: ({ row }) => <span>{row.original?.keterangan}</span>,
+    cell: ({ row }) => <span>{row.original?.description}</span>,
     enableSorting: false,
   },
   {
@@ -131,7 +131,7 @@ export const pendingColumns: ColumnDef<any>[] = [
   },
 ];
 
-export const on_progressColumns: ColumnDef<any>[] = [
+export const confirmedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "name",
     header: () => (

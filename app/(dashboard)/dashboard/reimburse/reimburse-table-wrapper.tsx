@@ -5,7 +5,7 @@ import SearchInput from "@/components/search-input";
 import Spinner from "@/components/spinner";
 import {
   completedColumns,
-  on_progressColumns,
+  confirmedColumns,
   pendingColumns,
 } from "@/components/tables/reimburse-tables/columns";
 import { ReimburseTable } from "@/components/tables/reimburse-tables/reimburse-table";
@@ -69,11 +69,11 @@ const ReimburseTableWrapper = () => {
     ReimburseStatus.DONE,
   );
 
-  const { data: onProgressData, isFetching: isFetchingOnProgressData } =
+  const { data: confirmedData, isFetching: isFetchingConfirmedData } =
     useGetReimburses(
-      getReimburseParams(ReimburseStatus.ON_PROGRESS),
-      { enabled: defaultTab === ReimburseStatus.ON_PROGRESS },
-      ReimburseStatus.ON_PROGRESS,
+      getReimburseParams(ReimburseStatus.CONFIRMED),
+      { enabled: defaultTab === ReimburseStatus.CONFIRMED },
+      ReimburseStatus.CONFIRMED,
     );
   // const { data: rejectedData, isFetching: isFetchingRejectedData } =
   //   useGetReimburses(
@@ -123,8 +123,8 @@ const ReimburseTableWrapper = () => {
       value: ReimburseStatus.PENDING,
     },
     {
-      name: "Sedang DiProses",
-      value: ReimburseStatus.ON_PROGRESS,
+      name: "Terkonfirmasi",
+      value: ReimburseStatus.CONFIRMED,
     },
     {
       name: "Selesai",
@@ -266,17 +266,17 @@ const ReimburseTableWrapper = () => {
           />
         )}
       </TabsContent> */}
-      <TabsContent value={ReimburseStatus.ON_PROGRESS} className="space-y-4">
-        {isFetchingOnProgressData && <Spinner />}
-        {!isFetchingOnProgressData && onProgressData && (
+      <TabsContent value={ReimburseStatus.CONFIRMED} className="space-y-4">
+        {isFetchingConfirmedData && <Spinner />}
+        {!isFetchingConfirmedData && confirmedData && (
           <ReimburseTable
-            columns={on_progressColumns}
+            columns={confirmedColumns}
             sorting={sorting}
             setSorting={setSorting}
-            data={onProgressData.items}
+            data={confirmedData.items}
             searchKey="name"
-            totalUsers={onProgressData.meta?.total_items}
-            pageCount={Math.ceil(onProgressData.meta?.total_items / pageLimit)}
+            totalUsers={confirmedData.meta?.total_items}
+            pageCount={Math.ceil(confirmedData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
           />

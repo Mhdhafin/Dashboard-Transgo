@@ -125,6 +125,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const [schema, setSchema] = useState(() => generateSchema(true, true));
   const [messages, setMessages] = useState<any>({});
   const detailRef = React.useRef<HTMLDivElement>(null);
+  const [banks, setBanks] = useState(["BNI", "BRI", "BCA", "MANDIRI"]);
 
   const scrollDetail = () => {
     detailRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -249,6 +250,32 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         handleResponse(payload, createReimburse);
         break;
     }
+  };
+
+  const saveBankToDatabase = async (newBank) => {
+    try {
+      setLoading(true);
+      // Kirim request ke backend untuk menyimpan bank baru
+      const response = await axios.post("/reimburse", { name: newBank });
+      if (response.data.success) {
+        // Jika berhasil, tambahkan bank baru ke daftar opsi
+        setBanks([...banks, newBank]);
+      }
+    } catch (error) {
+      messages.error("Gagal menambahkan bank. Silakan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (values) => {
+    values.forEach((value) => {
+      if (!banks.includes(value)) {
+        saveBankToDatabase(value);
+      }
+    });
+
+    field.onChange(values);
   };
 
   const Option = AntdSelect;
@@ -789,25 +816,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                   )}
                                 </AntdSelect>
                               </FormControl>
-                              <Button
-                                className={cn(
-                                  buttonVariants({ variant: "main" }),
-                                  "w-[65px] h-[40px]",
-                                )}
-                                disabled={
-                                  !form.getFieldState("driver").isDirty &&
-                                  isEmpty(form.getValues("driver"))
-                                }
-                                type="button"
-                                onClick={() => {
-                                  // setOpenCustomerDetail(true);
-                                  // setOpenFleetDetail(false);
-                                  setOpenDriverDetail(true);
-                                  scrollDetail();
-                                }}
-                              >
-                                Lihat
-                              </Button>
                             </div>
                             <FormMessage />
                           </div>
@@ -857,15 +865,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             : "Lihat"}
                         </Button>
                       </div>
-                      {/* {initialData?.driver?.status == "pending" && (
-                        <p
-                          className={cn(
-                            "text-[0.8rem] font-medium text-destructive",
-                          )}
-                        >
-                          Pelanggan belum verified
-                        </p>
-                      )} */}
                     </FormItem>
                   )}
                 </div>
@@ -885,7 +884,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             className="pl-9 disabled:opacity-90"
                             allowLeadingZeros
                             thousandSeparator=","
-                            value={initialData?.norek}
                           />
                         </div>
                       </FormControl>
@@ -912,7 +910,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 className="pl-9 disabled:opacity-90"
                                 allowLeadingZeros
                                 thousandSeparator=","
-                                value={field.value}
+                                value={initialData?.amount}
                                 onChange={field.onChange}
                                 onBlur={field.onBlur}
                               />
@@ -927,7 +925,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               </div>
               <div className={cn("lg:grid grid-cols-2 gap-[10px] items-start")}>
                 <div className="flex items-end">
-                  {lastPath !== "preview" && isEdit ? (
+                  {isEdit ? (
                     <FormField
                       name="bank_name"
                       control={form.control}
@@ -942,7 +940,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 <AntdSelect
                                   className={cn("mr-2 w-full")}
                                   showSearch
+                                  mode="tags"
                                   placeholder="Nama Bank..."
+                                  onChange={handleChange}
                                   style={{
                                     height: "40px",
                                   }}
@@ -962,19 +962,24 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 >
                                   {lastPath !== "create" && isEdit && (
                                     <>
-                                      <Option value="BCA">BCA</Option>
+                                      {banks.map((bank) => (
+                                        <Option key={bank} value={bank}>
+                                          {bank}
+                                        </Option>
+                                      ))}
+                                      {/* <Option value="BCA">BCA</Option>
                                       <Option value="BNI">BNI</Option>
                                       <Option value="BRI">BRI</Option>
-                                      <Option value="Mandiri">Mandiri</Option>
+                                      <Option value="Mandiri">Mandiri</Option> */}
                                     </>
                                   )}
 
                                   {lastPath === "create" && (
                                     <>
-                                      <Option value="BCA">BCA</Option>
+                                      {/* <Option value="BCA">BCA</Option>
                                       <Option value="BNI">BNI</Option>
                                       <Option value="BRI">BRI</Option>
-                                      <Option value="Mandiri">Mandiri</Option>
+                                      <Option value="Mandiri">Mandiri</Option> */}
                                     </>
                                   )}
                                 </AntdSelect>
@@ -1015,7 +1020,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 <div className="flex items-end">
                   {lastPath !== "preview" && isEdit ? (
                     <FormField
-                      name="driver"
+                      name="location"
                       control={form.control}
                       render={({ field }) => {
                         return (
@@ -1033,8 +1038,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                     height: "40px",
                                   }}
                                   onSearch={setSearchLocationTerm}
-                                  onChange={field.onChange}
-                                  // onPopupScroll={handleScrollLocations}
                                   filterOption={false}
                                   notFoundContent={
                                     isFetchingNextLocations ? (
@@ -1054,8 +1057,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                     </Option>
                                   )}
                                   {locations?.pages.map(
-                                    (page: any, pageIndex: any) =>
-                                      page.data.items.map(
+                                    (pageParam: any, pageIndex: any) =>
+                                      pageParam.data.items.map(
                                         (item: any, itemIndex: any) => {
                                           return (
                                             <Option
@@ -1067,12 +1070,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                           );
                                         },
                                       ),
-                                  )}
-
-                                  {isFetchingNextLocations && (
-                                    <Option disabled>
-                                      <p className="px-3 text-sm">loading</p>
-                                    </Option>
                                   )}
                                 </AntdSelect>
                               </FormControl>
@@ -1201,6 +1198,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                   style={{
                                     height: "40px",
                                   }}
+                                  disabled
                                 />
                               </FormControl>
                             </div>
