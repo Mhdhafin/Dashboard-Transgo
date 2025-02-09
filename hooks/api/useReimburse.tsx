@@ -2,15 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 import { useUser } from "@/context/UserContext";
 
-const baseEndpoint = "/reimburse";
+const baseEndpoint = "/driver-reimburses";
 
 interface GetReimburseParams {
   status: string;
   page: number;
   limit: number;
   q?: string;
-  start_date?: string | Date | undefined;
-  end_date?: string | Date | undefined;
+  date?: string | Date | undefined;
+  // end_date?: string | Date | undefined;
   reimburse_by?: string | undefined;
   reimburse_column?: string | undefined;
 }

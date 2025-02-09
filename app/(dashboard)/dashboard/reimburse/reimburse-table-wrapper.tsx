@@ -34,8 +34,8 @@ const ReimburseTableWrapper = () => {
   const pageLimit = Number(searchParams.get("limit")) || 10;
   const defaultTab = searchParams.get("status") ?? "pending";
   const q = searchParams.get("q");
-  const startDate = searchParams.get("start_date") || "";
-  const endDate = searchParams.get("end_date") || "";
+  const Date = searchParams.get("date") || "";
+  // const endDate = searchParams.get("enddate") || "";
   const reimburseColumn = searchParams.get("reimburse_column") || "";
   const reimburseBy = searchParams.get("reimburse_by") || "";
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -48,8 +48,8 @@ const ReimburseTableWrapper = () => {
     page: page,
     q: searchDebounce,
     status: status,
-    ...(startDate ? { start_date: startDate } : {}),
-    ...(endDate ? { end_date: endDate } : {}),
+    ...(Date ? { date: Date } : {}),
+    // ...(endDate ? { enddate: endDate } : {}),
     ...(reimburseBy ? { reimburse_by: reimburseBy } : {}),
     ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
   });
@@ -137,10 +137,10 @@ const ReimburseTableWrapper = () => {
       router.push(
         `${pathname}?${createQueryString({
           status: defaultTab,
-          start_date: dayjs(dateRange?.from)
+          date: dayjs(dateRange?.from)
             .locale("id")
             .format("YYYY-MM-DDT00:00:00Z"),
-          end_date: dayjs(dateRange?.to)
+          enddate: dayjs(dateRange?.to)
             .locale("id")
             .format("YYYY-MM-DDT23:00:00Z"),
         })}`,
@@ -149,8 +149,8 @@ const ReimburseTableWrapper = () => {
       router.push(
         `${pathname}?${createQueryString({
           status: defaultTab,
-          start_date: null,
-          end_date: null,
+          date: null,
+          enddate: null,
         })}`,
       );
     }

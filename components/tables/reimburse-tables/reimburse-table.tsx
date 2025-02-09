@@ -75,8 +75,8 @@ export function ReimburseTable<TData, TValue>({
   // Search params
   const page = searchParams?.get("page") ?? "1";
   const status = searchParams?.get("status") ?? "pending";
-  const start_date = searchParams?.get("start_date");
-  const end_date = searchParams?.get("end_date");
+  const date = searchParams?.get("date");
+  // const end_date = searchParams?.get("end_date");
 
   const reimburseColumn = searchParams?.get("reimburse_column");
   const reimburseBy = searchParams?.get("reimburse_by");
@@ -121,8 +121,7 @@ export function ReimburseTable<TData, TValue>({
         page: pageIndex + 1,
         limit: pageSize,
         q: searchDebounce || undefined,
-        start_date: start_date || undefined,
-        end_date: end_date || undefined,
+        date: date || undefined,
         reimburse_by: reimburseBy || undefined,
         reimburse_column: reimburseColumn || undefined,
       })}`,
@@ -133,8 +132,26 @@ export function ReimburseTable<TData, TValue>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize]);
 
+  // const table = useReactTable({
+  //   data,
+  //   columns,
+  //   pageCount: pageCount ?? -1,
+  //   getCoreRowModel: getCoreRowModel(),
+  //   getFilteredRowModel: getFilteredRowModel(),
+  //   state: {
+  //     sorting,
+  //     pagination: { pageIndex, pageSize },
+  //   },
+  //   onPaginationChange: setPagination,
+  //   onSortingChange: setSorting,
+  //   getPaginationRowModel: getPaginationRowModel(),
+  //   manualPagination: true,
+  //   manualFiltering: true,
+  //   manualSorting: true,
+  //   getSortedRowModel: getSortedRowModel(),
+  // });
   const table = useReactTable({
-    data,
+    data: data ?? [], // Berikan nilai default jika data undefined/null
     columns,
     pageCount: pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),
