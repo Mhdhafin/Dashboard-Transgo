@@ -131,7 +131,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const saveBanksToDatabase = async (newBanks: string[]) => {
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/driver-reimburses`,
+        `${process.env.NEXT_PUBLIC_API_URL}/reimburse`,
         { banks: newBanks },
       );
 

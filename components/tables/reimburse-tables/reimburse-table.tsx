@@ -151,7 +151,7 @@ export function ReimburseTable<TData, TValue>({
   //   getSortedRowModel: getSortedRowModel(),
   // });
   const table = useReactTable({
-    data: data ?? [], // Berikan nilai default jika data undefined/null
+    data, // Berikan nilai default jika data undefined/null
     columns,
     pageCount: pageCount ?? -1,
     getCoreRowModel: getCoreRowModel(),

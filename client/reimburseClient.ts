@@ -1,5 +1,5 @@
 import client from "./apiClient";
 
 export const getReimburse = () => {
-  return client.get("/driver-reimburses");
+  return client.get("/reimburse");
 };
