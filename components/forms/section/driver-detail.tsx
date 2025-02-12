@@ -61,7 +61,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
     >
       <div className="flex justify-between items-center mb-4">
         <h4 className="text-center font-semibold text-xl">Pengemudi Detail</h4>
-        {type !== "create" && type !== "edit" && (
+        {type !== "create" && type !== "preview" && type !== "edit" && (
           <Button
             type="button"
             className={cn(
@@ -207,30 +207,68 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
             </div>
           )}
 
-          {type === "create" ||
-            (type === "edit" && (
-              <div className="flex flex-col gap-5   bottom-1">
-                <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
-                  <Info className="h-10 w-10" />
-                  <p>
-                    Invoice akan tersedia saat pesanan telah dikonfirmasi.
-                    Pastikan semua data benar.
-                  </p>
-                </div>
-                <Button
-                  onClick={handleOpenApprovalModal}
-                  className="w-full  bg-main hover:bg-main/90"
-                  type="button"
-                  disabled={confirmLoading}
-                >
-                  {confirmLoading ? (
-                    <Spinner className="h-5 w-5" />
-                  ) : (
-                    "Konfirmasi Reimburse"
-                  )}
-                </Button>
+          {type === "create" && (
+            <div className="flex flex-col gap-5   bottom-1">
+              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
+                <Info className="h-10 w-10" />
+                <p>
+                  Invoice akan tersedia saat pesanan telah dikonfirmasi.
+                  Pastikan semua data benar.
+                </p>
               </div>
-            ))}
+              <Button
+                onClick={handleOpenApprovalModal}
+                className="w-full  bg-main hover:bg-main/90"
+                type="button"
+                disabled={confirmLoading}
+              >
+                {confirmLoading ? (
+                  <Spinner className="h-5 w-5" />
+                ) : (
+                  "Konfirmasi Reimburse"
+                )}
+              </Button>
+            </div>
+          )}
+
+          {(type === "detail" || type === "edit") &&
+            initialData?.status !== "pending" &&
+            initialData?.payment_pdf_url &&
+            initialData?.payment_link && (
+              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1   bottom-1">
+                <div className="flex gap-4">
+                  <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
+                    <Icons.pdf />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-neutral-700">
+                      {initialData?.invoice_number}
+                    </span>
+                    <span className="text-sm font-medium text-neutral-700">
+                      PDF
+                    </span>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-slate-200 p-2">
+                  <a
+                    href={`https://${initialData?.payment_link}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Link2 className="text-[#1F61D9]" />
+                  </a>
+                </div>
+                <div className="p-2 border border-slate-200 rounded-lg">
+                  <a
+                    href={`https://${initialData?.payment_pdf_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <EyeIcon />
+                  </a>
+                </div>
+              </div>
+            )}
         </div>
       </div>
       <PreviewImage

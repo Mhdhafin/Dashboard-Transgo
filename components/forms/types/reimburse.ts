@@ -2,31 +2,18 @@
  * file ini berisi type yang akan digunakan di Reimburse Module
  *
  */
-
-// import { formSchema } from "../validation/reimburseSchema";
 import { z } from "zod";
 
-export const formSchema = z.object({
-  driver: z.string().min(1, "Tolong Pilih Nama Driver"), // Nama driver (wajib diisi)
-  nominal: z
-    .string()
-    .regex(/^\d+$/, "Nominal harus berupa angka") // Nominal dalam bentuk string angka
-    .min(1, "Tolong masukkan nominal anda"),
-  bank_name: z.string().min(1, "Tolong Pilih Nama Bank"), // Nama bank
-  location: z.string().min(1, "Tolong Pilih Lokasi"), // Lokasi reimburse
-  noRekening: z
-    .string()
-    .regex(/^\d+$/, "Nomor rekening harus berupa angka") // Nomor rekening (hanya angka)
-    .min(10, "Tolong masukkan nomor rekening anda"),
-  date: z.string().refine(
-    (val) => !isNaN(Date.parse(val)),
-    "Tolong masukkan tanggal ", // Validasi format tanggal
-  ),
-  description: z.string().optional(), // Keterangan tambahan (opsional)
-});
+import { formSchema } from "../validation/reimburseSchema";
 
 export type ReimburseFormValues = z.infer<typeof formSchema> & {
-  service_price: string;
+  nominal: number;
+  bank: string;
+  noRekening: string;
+  driver: number;
+  location: number;
+  date: Date;
+  description: string;
 };
 
 export interface ReimburseFormProps {
@@ -36,13 +23,13 @@ export interface ReimburseFormProps {
 }
 
 export type Messages = {
-  [key in keyof ReimburseFormValues]?: string;
+  [key in keyof ReimburseFormValues]?: string | number | Date;
 } & {
-  driver?: string;
-  bank_name?: string;
-  nominal?: string;
-  location?: string;
-  noRekening?: string;
-  date?: string;
-  description?: string;
+  nominal: number;
+  bank: string;
+  noRekening: string;
+  driver: number;
+  location: number;
+  date: Date;
+  description: string;
 };

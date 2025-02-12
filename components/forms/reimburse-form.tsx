@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useParams, useRouter, usePathname } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import {
+  getPaymentStatusLabel,
+  getStatusVariant,
+  ReimburseStatus,
+} from "@/app/(dashboard)/dashboard/reimburse/[reimburseid]/types/reimburse";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
@@ -13,65 +13,45 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "../ui/use-toast";
-import { cn, convertTime, makeUrlsClickable } from "@/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
-import { isEmpty, isNull, isString, set } from "lodash";
-import { useDebounce } from "use-debounce";
-import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { useUser } from "@/context/UserContext";
 import {
   useGetDetailDriver,
   useGetInfinityDrivers,
 } from "@/hooks/api/useDriver";
-import { Textarea } from "../ui/textarea";
-import { useSidebar } from "@/hooks/useSidebar";
-import dayjs, { Dayjs } from "dayjs";
-import locale from "antd/locale/id_ID";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "../ui/label";
+import { useGetInfinityLocation } from "@/hooks/api/useLocation";
 import {
   useAcceptReimburse,
   useEditReimburse,
   usePostReimburse,
   useRejectReimburse,
 } from "@/hooks/api/useReimburse";
-import { ApprovalModal } from "../modal/approval-modal";
-import { NumericFormat } from "react-number-format";
+import { useSidebar } from "@/hooks/useSidebar";
+import { cn, makeUrlsClickable } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Select as AntdSelect, ConfigProvider, DatePicker, Space } from "antd";
+import locale from "antd/locale/id_ID";
+import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/id";
-import DriverDetail from "./section/driver-detail";
-import Spinner from "../spinner";
-import { RejectModal } from "../modal/reject-modal";
+import { isEmpty, isString } from "lodash";
 import Link from "next/link";
-import Image from "next/image";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-import { PreviewImage } from "../modal/preview-image";
-import { Trash2 } from "lucide-react";
-import { generateSchema } from "./validation/orderSchema";
-import {
-  getPaymentStatusLabel,
-  getStatusVariant,
-  ReimburseStatus,
-} from "@/app/(dashboard)/dashboard/reimburse/[reimburseid]/types/reimburse";
-import { useUser } from "@/context/UserContext";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
+import { useDebounce } from "use-debounce";
+import { ApprovalModal } from "../modal/approval-modal";
+import { RejectModal } from "../modal/reject-modal";
+import Spinner from "../spinner";
+import { Textarea } from "../ui/textarea";
+import { useToast } from "../ui/use-toast";
+import DriverDetail from "./section/driver-detail";
 import { ReimburseFormProps, ReimburseFormValues } from "./types/reimburse";
-import { useGetInfinityLocation } from "@/hooks/api/useLocation";
-import axios from "axios";
+import { generateSchema } from "./validation/orderSchema";
+import { formSchema } from "./validation/reimburseSchema";
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -114,10 +94,11 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const { mutate: editReimburse } = useEditReimburse(reimburseid as string);
   const { mutate: acceptReimburse } = useAcceptReimburse(reimburseid as string);
   const { mutate: rejectReimburse } = useRejectReimburse();
+  const [searchLocation, setSearchLocation] = useState("");
   const [searchDriverTerm, setSearchDriverTerm] = useState("");
-  const [searchLocationTerm, setSearchLocationTerm] = useState("");
+  // const [searchLocationTerm, setSearchLocationTerm] = useState("");
   const [searchDriverDebounce] = useDebounce(searchDriverTerm, 500);
-  const [searchLocationDebounce] = useDebounce(searchLocationTerm, 500);
+  const [searchLocationDebounce] = useDebounce(searchLocation, 500);
   // const [detail, setDetail] = useState<DriverDetail | null>(null);
   const [openApprovalModal, setOpenApprovalModal] = useState<boolean>(false);
   const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
@@ -126,28 +107,28 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const [schema, setSchema] = useState(() => generateSchema(true, true));
   const [messages, setMessages] = useState<any>({});
   const detailRef = React.useRef<HTMLDivElement>(null);
-  const [banks, setBanks] = useState(["BRI", "BCA", "Mandiri", "BNI", "DKI"]);
+  // const [banks, setBanks] = useState(["BRI", "BCA", "Mandiri", "BNI", "DKI"]);
 
-  const saveBanksToDatabase = async (newBanks: string[]) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/reimburse`,
-        { banks: newBanks },
-      );
+  // const saveBanksToDatabase = async (newBanks: string[]) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/driver-reimburses`,
+  //       { banks: newBanks },
+  //     );
 
-      setBanks([...banks, ...newBanks]);
+  //     setBanks([...banks, ...newBanks]);
 
-      console.log("data berhasil di simpan", response.data);
-    } catch (error) {
-      console.error("Terjadi kesalahan saat menyimpan data:", error);
-    }
-  };
+  //     console.log("data berhasil di simpan", response.data);
+  //   } catch (error) {
+  //     console.error("Terjadi kesalahan saat menyimpan data:", error);
+  //   }
+  // };
 
-  const handleBankChange = (value: string[], field: any) => {
-    setBanks(value); // Simpan nilai terpilih ke state
-    saveBanksToDatabase(value); // Kirim data ke API
-    field.onChange(value);
-  };
+  // const handleBankChange = (value: string[], field: any) => {
+  //   setBanks(value); // Simpan nilai terpilih ke state
+  //   saveBanksToDatabase(value); // Kirim data ke API
+  //   field.onChange(value);
+  // };
 
   const scrollDetail = () => {
     detailRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -156,46 +137,42 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const { isMinimized } = useSidebar();
   const defaultValues = initialData
     ? {
-        reimburse: {
-          driver: initialData?.reimburse?.driver?.id?.toString(), // Mengambil nama driver
-          nominal: initialData?.reimburse?.nominal?.toString() || "0", // Nominal reimburse
-          bank_name: initialData?.reimburse?.bank_name || "", // Nama bank
-          location: initialData?.reimburse?.location?.id?.toString(), // Lokasi reimburse
-          noRekening: initialData?.reimburse?.noRekening || "", // Nomor rekening
-          date: initialData?.reimburse?.date || "", // Tanggal reimburse
-          description: initialData?.reimburse?.description || "", // Keterangan tambahan
-        },
+        driver: initialData?.driver?.id?.toString(), // Mengambil nama driver
+        nominal: initialData?.nominal?.toString() || "", // Nominal reimburse
+        bank: initialData?.bank || "", // Nama bank
+        location: initialData?.location?.id?.toString(), // Lokasi reimburse
+        noRekening: initialData?.noRekening || "", // Nomor rekening
+        date: initialData?.date || "", // Tanggal reimburse
+        description: initialData?.description || "", // Keterangan tambahan
       }
     : {
-        reimburse: {
-          driver: "", // Nama driver kosong
-          nominal: "0", // Nominal default 0
-          bank_name: "", // Nama bank koso
-          location: "", // Lokasi kosong
-          noRekening: "", // Nomor rekening kosong
-          date: "", // Tanggal kosong
-
-          description: "", // Keterangan kosong
-        },
+        driver: "", // Nama driver kosong
+        nominal: "", // Nominal default 0
+        bank: "", // Nama bank koso
+        location: "", // Lokasi kosong
+        noRekening: "", // Nomor rekening kosong
+        date: "", // Tanggal kosong
+        description: "", // Keterangan kosong
       };
 
   const form = useForm<ReimburseFormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(formSchema),
     defaultValues,
   });
 
   // Reimburse Fields
   const driverNameField = form.watch("driver"); // Nama driver
   const nominalField = form.watch("nominal"); // Nominal/jumlah reimburse
-  const bankNameField = form.watch("bank_name"); // Nama bank
+  const bankNameField = form.watch("bank"); // Nama bank
   const locationField = form.watch("location"); // Lokasi reimburse
   const accountNumberField = form.watch("noRekening"); // Nomor rekening
   const dateField = form.watch("date"); // Tanggal reimburse
   const descriptionField = form.watch("description"); // Keterangan tambahan (opsional)
 
-  const { data: driver, isFetching: isFetchingDriver } = useGetDetailDriver(
+  const { data: driverData, isFetching: isFetchingDriver } = useGetDetailDriver(
     form.getValues("driver"),
   );
+
   const [end, setEnd] = useState("");
   const now = dayjs(form.getValues("date"));
   useEffect(() => {
@@ -212,16 +189,16 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     setLoading(true);
 
     const createPayload = (data: ReimburseFormValues) => ({
-      reimburse: {
-        driver: data.driver, // Menggunakan nama driver
-        nominal: +data.nominal.replace(/,/g, ""), // Mengubah nominal ke number, menghapus koma jika ada
-        bank_name: data.bank_name, // Nama bank
-        location: data.location, // Lokasi reimburse
-        noRekening: data.noRekening, // Nomor rekening
-        date: data.date, // Format tanggal (YYYY-MM-DD)
-        description: data.description || "", // Keterangan opsional
-      },
+      driver_id: data.driver, // Menggunakan nama driver
+      nominal: data.nominal, // Mengubah nominal ke number, menghapus koma jika ada
+      bank: data.bank, // Nama bank
+      location_id: data.location, // Lokasi reimburse
+      noRekening: data.noRekening, // Nomor rekening
+      date: data.date, // Format tanggal (YYYY-MM-DD)
+      description: data.description || "", // Keterangan opsional
     });
+
+    console.log(createPayload(data));
 
     const handleSuccess = () => {
       queryClient.invalidateQueries({ queryKey: ["reimburse"] });
@@ -293,126 +270,36 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (startSelfPickUpField && endSelfPickUpField) {
-  //     // Jika start_request.is_self_pickup dan end_request.is_self_pickup keduanya true
-  //     setSchema(generateSchema(true, true));
-  //     setShowServicePrice(false);
-  //   } else if (startSelfPickUpField) {
-  //     // Jika hanya start_request.is_self_pickup yang true
-  //     setSchema(generateSchema(true, false));
-  //     setShowServicePrice(true);
-  //   } else if (endSelfPickUpField) {
-  //     // Jika hanya end_request.is_self_pickup yang true
-  //     setSchema(generateSchema(false, true));
-  //     setShowServicePrice(true);
-  //   } else {
-  //     // Jika keduanya false
-  //     setSchema(generateSchema(false, false));
-  //     setShowServicePrice(true);
-  //   }
-  // }, [startSelfPickUpField, endSelfPickUpField]);
-
-  // useEffect(() => {
-  //   const payload = {
-  //     // customer_id: +(customerField ?? 0),
-  //     // fleet_id: +(fleetField ?? 0),
-  //     is_out_of_town: isOutOfTownField,
-  //     is_with_driver: isWithDriverField,
-  //     // insurance_id: +(insuranceField ?? 0),
-  //     start_request: {
-  //       is_self_pickup: startSelfPickUpField == "1" ? true : false,
-  //       driver_id: +(startDriverField ?? 0),
-  //       ...(!startSelfPickUpField && {
-  //         distance: +(startDistanceField ?? 0),
-  //         address: startAddressField,
-  //       }),
-  //     },
-  //     end_request: {
-  //       is_self_pickup: endSelfPickUpField == "1" ? true : false,
-  //       driver_id: +(endDriverField ?? 0),
-  //       ...(!endSelfPickUpField && {
-  //         distance: +(endDistanceField ?? 0),
-  //         address: endAddressField,
-  //       }),
-  //     },
-  //     description: descriptionField,
-  //     ...(!isEmpty(dateField) && {
-  //       date: dateField,
-  //       duration: +(durationField ?? 1),
-  //     }),
-  //     discount: +(discountField ?? 0),
-  //     ...(watchServicePrice && {
-  //       service_price: isString(serviceField)
-  //         ? +serviceField.replace(/,/g, "")
-  //         : serviceField,
-  //     }),
-  //     ...(fields.length !== 0 && {
-  //       additional_services: additionalField.map((field) => {
-  //         return {
-  //           name: field.name,
-  //           price: isString(field.price)
-  //             ? +field.price.replace(/,/g, "")
-  //             : field.price,
-  //         };
-  //       }),
-  //     }),
-  //   };
-  // }, [
-  //   additionalField,
-  //   // customerField,
-  //   // fleetField,
-  //   dateField,
-  //   durationField,
-  //   isOutOfTownField,
-  //   isWithDriverField,
-  //   // insuranceField,
-  //   startSelfPickUpField,
-  //   startDriverField,
-  //   startDistanceField,
-  //   startAddressField,
-  //   endSelfPickUpField,
-  //   endDriverField,
-  //   endDistanceField,
-  //   endAddressField,
-  //   discountField,
-  //   descriptionField,
-  //   showServicePrice,
-  //   servicePrice,
-  //   JSON.stringify(additionalField),
-  // ]);
+  const handleScroll = (
+    event: React.UIEvent<HTMLDivElement>,
+    type: "location",
+  ) => {
+    const target = event.target as HTMLDivElement;
+    if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+      fetchNextLocations();
+    }
+  };
 
   useEffect(() => {
     const payload = {
-      reimburse: {
-        driver: +(driverNameField ?? 0), // Nama driver
-        nominal: isString(nominalField) // Nominal/jumlah reimburse
-          ? +nominalField.replace(/,/g, "")
-          : nominalField,
-        location: locationField, // Lokasi reimburse
-        bank_name: bankNameField, // Nama bank
-        noRekening: accountNumberField, // Nomor rekening
-        date: dateField, // Tanggal reimburse (format: YYYY-MM-DD)
-        description: descriptionField || "", // Keterangan tambahan (opsional)
-      },
-      // ...(watchServicePrice && {
-      //   // Jika ada service price yang aktif
-      //   service_price: isString(serviceField)
-      //     ? +serviceField.replace(/,/g, "")
-      //     : serviceField,
-      // }),
-      // ...(additionalField.length !== 0 && {
-      //   // Tambahan layanan jika ada
-      //   additional_services: additionalField.map((field) => ({
-      //     name: field.name,
-      //     price: isString(field.price)
-      //       ? +field.price.replace(/,/g, "")
-      //       : field.price,
-      //   })),
-      // }),
+      driver_id: +(driverNameField ?? 0), // Nama driver
+      nominal: isString(nominalField) // Nominal/jumlah reimburse
+        ? +nominalField
+        : nominalField,
+      location_id: locationField, // Lokasi reimburse
+      bank: bankNameField, // Nama bank
+      noRekening: accountNumberField, // Nomor rekening
+      date: dateField, // Tanggal reimburse (format: YYYY-MM-DD)
+      description: descriptionField || "",
     };
 
-    // setPayload(payload); // Simpan payload ke state (jika dibutuhkan)
+    // if (driverNameField) {
+    //   createReimburse(payload, {
+    //     onSuccess: (data) => {
+    //       setOpenDriverDetail(data.data);
+    //     },
+    //   });
+    // }
   }, [
     driverNameField,
     nominalField,
@@ -469,13 +356,13 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const errors = form.formState.errors;
   useEffect(() => {
     if (!isEmpty(errors)) {
+      // console.log(errors);
       toast({
         variant: "destructive",
         title: "Harap isi semua field yang wajib diisi sebelum konfirmasi",
       });
-
-      setOpenApprovalModal(false);
     }
+    setOpenApprovalModal(false);
   }, [errors]);
 
   const generateMessage = (currentValue: any, defaultValue: any) =>
@@ -483,27 +370,18 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
 
   useEffect(() => {
     const newMessages = {
-      driver: generateMessage(
-        driverNameField,
-        defaultValues?.reimburse?.driver,
-      ), // Nama Driver
-      nominal: generateMessage(nominalField, defaultValues?.reimburse?.nominal), // Nominal/Jumlah Reimburse
-      location: generateMessage(
-        locationField,
-        defaultValues?.reimburse?.location,
-      ), // Lokasi Reimburse
-      bank_name: generateMessage(
-        bankNameField,
-        defaultValues?.reimburse?.bank_name,
-      ), // Nama Bank
+      driver: generateMessage(driverNameField, defaultValues?.driver), // Nama Driver
+      nominal: generateMessage(nominalField, defaultValues?.nominal), // Nominal/Jumlah Reimburse
+      location: generateMessage(locationField, defaultValues?.location), // Lokasi Reimburse
+      bank: generateMessage(bankNameField, defaultValues?.bank), // Nama Bank
       noRekening: generateMessage(
         accountNumberField,
-        defaultValues?.reimburse?.noRekening,
+        defaultValues?.noRekening,
       ), // Nomor Rekening
-      date: generateMessage(dateField, defaultValues?.reimburse?.date), // Tanggal Reimburse
+      date: generateMessage(dateField, defaultValues?.date), // Tanggal Reimburse
       description: generateMessage(
         descriptionField,
-        defaultValues?.reimburse?.description,
+        defaultValues?.description,
       ), // Keterangan Tambahan
     };
     if (lastPath !== "create") {
@@ -519,79 +397,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     descriptionField,
   ]);
 
-  // useEffect(() => {
-  //   const newMessages = {
-  //     date: generateMessage(dateField, defaultValues.date),
-  //     duration: generateMessage(durationField, defaultValues.duration),
-  //     is_out_of_town: generateMessage(
-  //       isOutOfTownField,
-  //       defaultValues.is_out_of_town,
-  //     ),
-  //     is_with_driver: generateMessage(
-  //       isWithDriverField,
-  //       defaultValues.is_with_driver,
-  //     ),
-
-  //     start_request: {
-  //       is_self_pickup: generateMessage(
-  //         startSelfPickUpField,
-  //         defaultValues.start_request.is_self_pickup,
-  //       ),
-  //       driver_id: generateMessage(
-  //         startDriverField,
-  //         defaultValues.start_request.driver_id,
-  //       ),
-  //       distance: generateMessage(
-  //         startDistanceField,
-  //         defaultValues.start_request.distance,
-  //       ),
-  //       address: generateMessage(
-  //         startAddressField,
-  //         defaultValues.start_request.address,
-  //       ),
-  //     },
-  //     end_request: {
-  //       is_self_pickup: generateMessage(
-  //         endSelfPickUpField,
-  //         defaultValues.end_request.is_self_pickup,
-  //       ),
-  //       driver_id: generateMessage(
-  //         endDriverField,
-  //         defaultValues.end_request.driver_id,
-  //       ),
-  //       distance: generateMessage(
-  //         endDistanceField,
-  //         defaultValues.end_request.distance,
-  //       ),
-  //       address: generateMessage(
-  //         endAddressField,
-  //         defaultValues.end_request.address,
-  //       ),
-  //     },
-  //     discount: generateMessage(discountField, defaultValues.discount),
-  //     description: generateMessage(descriptionField, defaultValues.description),
-  //     service_price: generateMessage(serviceField, defaultValues.service_price),
-  //   };
-
-  //   if (lastPath !== "create") {
-  //     setMessages(newMessages);
-  //   }
-  // }, [
-  //   dateField,
-  //   durationField,
-  //   isWithDriverField,
-  //   startSelfPickUpField,
-  //   startDriverField,
-  //   startDistanceField,
-  //   startAddressField,
-  //   endSelfPickUpField,
-  //   endDriverField,
-  //   endDistanceField,
-  //   endAddressField,
-  //   discountField,
-  //   descriptionField,
-  //   serviceField,
-  // ]);
   const approvalModalTitle =
     lastPath === "edit"
       ? "Apakah Anda Yakin Ingin Mengedit Pesanan ini?"
@@ -635,7 +440,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                       "text-black",
                     )}
                   >
-                    Reset berdasarkan data Pelanggan
+                    Reset berdasarkan data driver
                   </Button>
                   <Button
                     onClick={() => setOpenApprovalModal(true)}
@@ -695,7 +500,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                     "text-black",
                   )}
                 >
-                  Reset berdasarkan data Pelanggan
+                  Reset berdasarkan data Driver
                 </Button>
                 <Button
                   onClick={() => setOpenApprovalModal(true)}
@@ -741,7 +546,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             disabled={!form.formState.isDirty}
             className={cn(buttonVariants({ variant: "outline" }), "text-black")}
           >
-            Reset berdasarkan data Pelanggan
+            Reset berdasarkan data Driver
           </Button>
         )}
       </div>
@@ -846,7 +651,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             value={initialData?.driver?.name ?? "-"}
                           />
                         </FormControl>
-                        <Button
+                        {/* <Button
                           className={cn(
                             buttonVariants({ variant: "main" }),
                             "w-[65px] h-[40px]",
@@ -864,33 +669,22 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                           {initialData?.driver?.status == "pending"
                             ? "Tinjau"
                             : "Lihat"}
-                        </Button>
+                        </Button> */}
                       </div>
+                      {initialData?.driver?.status == "pending" && (
+                        <p
+                          className={cn(
+                            "text-[0.8rem] font-medium text-destructive",
+                          )}
+                        >
+                          Pengemudi belum verified
+                        </p>
+                      )}
                     </FormItem>
                   )}
                 </div>
                 <div className="flex items-end">
-                  {!isEdit ? (
-                    <FormItem>
-                      <FormLabel>Nominal</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
-                            Rp.
-                          </span>
-                          <NumericFormat
-                            disabled={!isEdit || loading}
-                            customInput={Input}
-                            type="text"
-                            className="pl-9 disabled:opacity-90"
-                            allowLeadingZeros
-                            thousandSeparator=","
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  ) : (
+                  {lastPath !== "preview" && isEdit ? (
                     <FormField
                       control={form.control}
                       name="nominal"
@@ -910,8 +704,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 type="text"
                                 className="pl-9 disabled:opacity-90"
                                 allowLeadingZeros
-                                thousandSeparator=","
                                 value={initialData?.nominal}
+                                // thousandSeparator=","
                                 onChange={field.onChange}
                                 onBlur={field.onBlur}
                               />
@@ -921,6 +715,28 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         </FormItem>
                       )}
                     />
+                  ) : (
+                    <FormItem>
+                      <FormLabel>Nominal</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 z-10 -translate-y-1/2 ">
+                            Rp.
+                          </span>
+
+                          <NumericFormat
+                            disabled={isEdit || loading}
+                            customInput={Input}
+                            type="text"
+                            className="pl-9 disabled:opacity-90"
+                            allowLeadingZeros
+                            value={initialData?.nominal ?? "-"}
+                            // thousandSeparator=","
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 </div>
               </div>
@@ -928,7 +744,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                 <div className="flex items-end">
                   {isEdit ? (
                     <FormField
-                      name="bank_name"
+                      name="bank"
                       control={form.control}
                       render={({ field }) => {
                         return (
@@ -941,16 +757,14 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 <AntdSelect
                                   className={cn("mr-2 w-full")}
                                   showSearch
-                                  mode="tags"
+                                  // mode="tags"
+                                  value={initialData?.bank}
                                   placeholder="Nama Bank..."
                                   onChange={field.onChange}
                                   style={{
                                     height: "40px",
                                   }}
-                                  // onSearch={setSearchDriverTerm}
-                                  // onChange={field.onChange}
-                                  // onPopupScroll={handleScrollDrivers}
-                                  // filterOption={false}
+                                  filterOption={false}
                                   // notFoundContent={
                                   //   isFetchingNextDrivers ? (
                                   //     <p className="px-3 text-sm">loading</p>
@@ -963,21 +777,31 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 >
                                   {lastPath !== "create" && isEdit && (
                                     <>
-                                      {banks.map((bank) => (
+                                      {/* {banks.map((bank) => (
                                         <Option key={bank} value={bank}>
                                           {bank}
                                         </Option>
-                                      ))}
+                                      ))} */}
+                                      <Option value="BCA">BCA</Option>
+                                      <Option value="BRI">BRI</Option>
+                                      <Option value="BNI">BNI</Option>
+                                      <Option value="MANDIRI">MANDIRI</Option>
+                                      <Option value="DKI">DKI</Option>
                                     </>
                                   )}
 
                                   {lastPath === "create" && (
                                     <>
-                                      {banks.map((bank) => (
+                                      {/* {banks.map((bank) => (
                                         <Option key={bank} value={bank}>
                                           {bank}
                                         </Option>
-                                      ))}
+                                      ))} */}
+                                      <Option value="BCA">BCA</Option>
+                                      <Option value="BRI">BRI</Option>
+                                      <Option value="BNI">BNI</Option>
+                                      <Option value="MANDIRI">MANDIRI</Option>
+                                      <Option value="DKI">DKI</Option>
                                     </>
                                   )}
                                 </AntdSelect>
@@ -992,7 +816,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                     <FormItem>
                       <FormLabel
                         className={cn(
-                          initialData?.bank_name?.status === "pending"
+                          initialData?.bank?.status === "pending"
                             ? "text-destructive"
                             : "",
                         )}
@@ -1007,8 +831,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             style={{
                               height: "40px",
                             }}
-                            disabled
-                            value={initialData?.bank_name}
+                            // disabled
+                            // value={initialData?.bank}
                           />
                         </FormControl>
                       </div>
@@ -1029,14 +853,16 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             <div className="flex">
                               <FormControl>
                                 <AntdSelect
-                                  className={cn("mr-2 w-full")}
                                   showSearch
-                                  placeholder="Lokasi..."
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  onSearch={setSearchLocationTerm}
-                                  filterOption={false}
+                                  value={field.value}
+                                  placeholder="Pilih Lokasi"
+                                  style={{ width: "100%" }}
+                                  onSearch={setSearchLocation}
+                                  onChange={field.onChange}
+                                  onPopupScroll={(event) =>
+                                    handleScroll(event, "location")
+                                  }
+                                  // filterOption={false}
                                   notFoundContent={
                                     isFetchingNextLocations ? (
                                       <p className="px-3 text-sm">loading</p>
@@ -1055,8 +881,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                     </Option>
                                   )}
                                   {locations?.pages.map(
-                                    (pageParam: any, pageIndex: any) =>
-                                      pageParam.data.items.map(
+                                    (page: any, pageIndex: any) =>
+                                      page.data.items.map(
                                         (item: any, itemIndex: any) => {
                                           return (
                                             <Option
@@ -1068,6 +894,11 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                           );
                                         },
                                       ),
+                                  )}
+                                  {isFetchingNextLocations && (
+                                    <Option disabled>
+                                      <p className="px-3 text-sm">loading</p>
+                                    </Option>
                                   )}
                                 </AntdSelect>
                               </FormControl>
@@ -1133,6 +964,52 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                 }
                                 height={40}
                                 id="testing"
+                                // onChange={() => {}}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                value={
+                                  field.value
+                                    ? dayjs(field.value).locale("id")
+                                    : undefined
+                                }
+                                format={"HH:mm:ss - dddd, DD MMMM (YYYY)"}
+                                showTime
+                                placeholder="Pilih tanggal dan waktu mulai"
+                                showNow={false}
+                                inputReadOnly
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </Space>
+                        </ConfigProvider>
+                      )}
+                    />
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name="date"
+                      render={({ field }) => (
+                        <ConfigProvider locale={locale}>
+                          <Space
+                            size={8}
+                            direction="vertical"
+                            className="w-full"
+                          >
+                            <FormLabel className="relative label-required">
+                              Tanggal
+                            </FormLabel>
+                            <FormControl>
+                              <DatePicker
+                                disabledDate={disabledDate}
+                                disabled={loading}
+                                className={cn("p h-[40px] w-full")}
+                                style={
+                                  {
+                                    // width: `${!isMinimized ? "340px" : "100%"}`,
+                                  }
+                                }
+                                height={40}
+                                id="testing"
                                 onChange={field.onChange} // send value to hook form
                                 onBlur={field.onBlur} // notify when input is touched/blur
                                 value={
@@ -1151,71 +1028,42 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         </ConfigProvider>
                       )}
                     />
-                  ) : (
+                  )}
+                </div>
+                <div className="flex items-end">
+                  {!isEdit ? (
                     <FormItem>
-                      <FormLabel>Tanggal </FormLabel>
+                      <FormLabel>No. Rekening</FormLabel>
                       <FormControl className="disabled:opacity-100">
                         <Input
-                          className={cn("w-full")}
-                          style={{
-                            height: "40px",
-                          }}
-                          disabled
-                          value={
-                            dayjs(initialData?.start_date)
-                              .locale("id")
-                              .format("HH:mm:ss - dddd, DD MMMM (YYYY)") ?? "-"
-                          }
+                          disabled={!isEdit || loading}
+                          value={initialData?.noRekening ?? "-"}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
-                  )}
-                </div>
-                <div className="flex items-end">
-                  {isEdit ? (
-                    <FormField
-                      name="noRekening"
-                      control={form.control}
-                      render={({ field }) => {
-                        return (
-                          <div className="space-y-2 w-full">
-                            <FormLabel className="relative label-required">
-                              No. Rek
-                            </FormLabel>
-                            <div className="flex">
-                              <FormControl>
-                                <Input
-                                  placeholder="No. Rekening anda..."
-                                  className={cn("mr-2")}
-                                  style={{
-                                    height: "40px",
-                                  }}
-                                  // disabled
-                                />
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </div>
-                        );
-                      }}
-                    />
                   ) : (
-                    <FormItem>
-                      <FormLabel>No. Rek</FormLabel>
-                      <div className="flex">
-                        <FormControl className="disabled:opacity-100">
-                          <Input
-                            className={cn("mr-2")}
-                            style={{
-                              height: "40px",
-                            }}
-                            disabled
-                            value={initialData?.noRekening ?? "-"}
-                          />
-                        </FormControl>
-                      </div>
-                    </FormItem>
+                    <FormField
+                      control={form.control}
+                      name="noRekening"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>No. Rekening</FormLabel>
+                          <FormControl className="disabled:opacity-100">
+                            <Input
+                              disabled={!isEdit || loading}
+                              placeholder="No. Rekening"
+                              value={field.value ?? ""}
+                              onChange={(e) => {
+                                e.target.value = e.target.value.trimStart();
+                                field.onChange(e.target.value);
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
                 </div>
               </div>
@@ -1227,11 +1075,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                       <p
                         className="border border-gray-200 rounded-md px-3 py-1 break-words"
                         dangerouslySetInnerHTML={{
-                          __html: !isEmpty(
-                            defaultValues?.reimburse?.description,
-                          )
+                          __html: !isEmpty(defaultValues?.description)
                             ? makeUrlsClickable(
-                                defaultValues?.reimburse?.description.replace(
+                                defaultValues?.description.replace(
                                   /\n/g,
                                   "<br />",
                                 ),
@@ -1276,18 +1122,16 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
           </form>
           {/* sidebar */}
 
-          <>
-            <DriverDetail
-              innerRef={detailRef}
-              data={driver?.data}
-              initialData={initialData}
-              handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-              handleOpenRejectModal={() => setOpenRejectModal(true)}
-              confirmLoading={loading}
-              type={lastPath}
-              onClose={() => setOpenDriverDetail(true)}
-            />
-          </>
+          <DriverDetail
+            innerRef={detailRef}
+            data={driverData?.data}
+            initialData={initialData}
+            handleOpenApprovalModal={() => setOpenApprovalModal(true)}
+            handleOpenRejectModal={() => setOpenRejectModal(true)}
+            confirmLoading={loading}
+            type={lastPath}
+            onClose={() => setOpenDriverDetail(false)}
+          />
 
           {/* {openDriverDetail &&
             !isFetchingDriver &&

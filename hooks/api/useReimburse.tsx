@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosAuth from "../axios/use-axios-auth";
 import { useUser } from "@/context/UserContext";
+import { ReimburseStatus } from "@/app/(dashboard)/dashboard/reimburse/[reimburseid]/types/reimburse";
 
-const baseEndpoint = "/reimburse";
+const baseEndpoint = "/driver-reimburses";
 
 interface GetReimburseParams {
   status: string;
@@ -26,8 +27,8 @@ export const useGetReimburses = (
     const { data } = await axiosAuth.get(baseEndpoint, {
       params,
     });
-    console.log(data);
-    // return data;
+    // console.log(data);
+    return data;
   };
 
   return useQuery({
@@ -135,9 +136,10 @@ export const useDeleteReimburse = (id: number, force: boolean) => {
 export const useAcceptReimburse = (id: string | number) => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
-
   const acceptReimburse = (body: any) => {
-    return axiosAuth.post(`${baseEndpoint}/${id}/accept`, body);
+    return axiosAuth.patch(`${baseEndpoint}/${id}/status`, {
+      status: "confirmed",
+    });
   };
 
   return useMutation({
@@ -153,7 +155,7 @@ export const useRejectReimburse = () => {
   const queryClient = useQueryClient();
 
   const rejectReimburse = ({ reimburseId, reason }: any) => {
-    return axiosAuth.post(`${baseEndpoint}/${reimburseId}/reject`, { reason });
+    return axiosAuth.patch(`${baseEndpoint}/${reimburseId}/reject`, { reason });
   };
 
   return useMutation({
