@@ -23,6 +23,7 @@ export function getStatusVariant(status: string): string {
 
 export enum ReimburseStatus {
   PENDING = "pending",
+  REJECTED = "rejected",
   CONFIRMED = "confirmed",
   DONE = "done",
 }

@@ -524,14 +524,14 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               </Link>
             )}
             <div className="flex justify-between gap-3.5">
-              {initialData?.reimburse_status != ReimburseStatus.PENDING && (
+              {initialData?.status !== ReimburseStatus.PENDING && (
                 <div
                   className={cn(
-                    getStatusVariant(initialData?.payment_status),
+                    getStatusVariant(initialData?.status),
                     "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
                   )}
                 >
-                  {getPaymentStatusLabel(initialData?.payment_status)}
+                  {getPaymentStatusLabel(initialData?.status)}
                 </div>
               )}
               <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
@@ -1122,17 +1122,18 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
           </form>
           {/* sidebar */}
 
+          {/* {lastPath === "create" && lastPath === "preview" && ( */}
           <DriverDetail
             innerRef={detailRef}
             data={driverData?.data}
             initialData={initialData}
             handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-            handleOpenRejectModal={() => setOpenRejectModal(true)}
+            handleOpenRejectModal={() => setOpenRejectModal(tPrue)}
             confirmLoading={loading}
             type={lastPath}
             onClose={() => setOpenDriverDetail(false)}
           />
-
+          {/* )} */}
           {/* {openDriverDetail &&
             !isFetchingDriver &&
             type === "create" &&

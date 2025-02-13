@@ -154,8 +154,10 @@ export const useRejectReimburse = () => {
   const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
 
-  const rejectReimburse = ({ reimburseId, reason }: any) => {
-    return axiosAuth.patch(`${baseEndpoint}/${reimburseId}/reject`, { reason });
+  const rejectReimburse = ({ reimburseid, reason }: any) => {
+    return axiosAuth.patch(`${baseEndpoint}/${reimburseid}/status`, {
+      status: "rejected",
+    });
   };
 
   return useMutation({

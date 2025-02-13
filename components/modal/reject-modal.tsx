@@ -59,7 +59,8 @@ export const RejectModal: React.FC<ModalProps> = ({
             id="reason"
             rows={4}
             name="reason"
-            onChange={(e) => setReason(e.target.value)}
+            // onChange={(e) => setReason(e.target.value)}
+            onChange={() => {}}
           />
         </div>
         <div className="space-x-2 flex items-center justify-end w-full">
@@ -74,7 +75,7 @@ export const RejectModal: React.FC<ModalProps> = ({
             Kembali
           </Button>
           <Button
-            disabled={loading || !reason.trim()}
+            disabled={loading}
             className="bg-red-50 text-red-500 hover:bg-red-100"
             type="button"
             onClick={(e) => {

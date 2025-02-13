@@ -96,6 +96,14 @@ export const pendingColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: "bank",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Nama Bank</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.bank}</span>,
+    enableSorting: false,
+  },
+  {
     accessorKey: "description",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
@@ -195,6 +203,14 @@ export const confirmedColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: "bank",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Nama Bank</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.bank}</span>,
+    enableSorting: false,
+  },
+  {
     accessorKey: "description",
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
@@ -278,6 +294,14 @@ export const completedColumns: ColumnDef<any>[] = [
         </HoverCardContent>
       </HoverCard>
     ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "bank",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Nama Bank</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.bank}</span>,
     enableSorting: false,
   },
   {
