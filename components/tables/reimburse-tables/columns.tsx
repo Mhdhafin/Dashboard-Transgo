@@ -149,11 +149,7 @@ export const confirmedColumns: ColumnDef<any>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
     ),
-    cell: ({ row }) => (
-      <span>
-        {row.original?.location?.name ? "Dengan Supir" : "Lepas Kunci"}
-      </span>
-    ),
+    cell: ({ row }) => <span>{row.original?.location?.name}</span>,
     enableSorting: false,
   },
 
@@ -249,11 +245,7 @@ export const completedColumns: ColumnDef<any>[] = [
     header: () => (
       <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
     ),
-    cell: ({ row }) => (
-      <span>
-        {row.original?.location?.name ? "Dengan Supir" : "Lepas Kunci"}
-      </span>
-    ),
+    cell: ({ row }) => <span>{row.original?.location?.name}</span>,
     enableSorting: false,
   },
 

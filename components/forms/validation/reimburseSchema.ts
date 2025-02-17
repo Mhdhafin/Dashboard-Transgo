@@ -23,3 +23,17 @@ export const formSchema = z.object({
   date: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
   description: z.string().min(10, { message: "Keterangan wajib di isi!" }),
 });
+
+export const editSchema = z.object({
+  nominal: z.coerce
+    .number()
+    .min(1, { message: "Tolong masukkan nominal anda" }),
+  bank: z.string().min(1, { message: "Tolong masukkan nama bank" }),
+  noRekening: z
+    .string()
+    .min(5, { message: "Tolong masukkan nomor rekening anda" }),
+  driver: z.coerce.number().min(1, { message: "Driver ID wajib diisi" }),
+  location: z.coerce.number().min(1, { message: "Lokasi wajib diisi" }),
+  date: z.coerce.date({ required_error: "Tolong masukkan Waktu" }),
+  description: z.string().min(10, { message: "Keterangan wajib di isi!" }),
+});

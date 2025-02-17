@@ -22,6 +22,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { PreviewImage } from "@/components/modal/preview-image";
 import Spinner from "@/components/spinner";
+import { useUser } from "@/context/UserContext";
 
 interface DriverDetailProps {
   onClose: () => void;
@@ -30,7 +31,6 @@ interface DriverDetailProps {
   initialData: any;
   type?: string;
   confirmLoading: boolean;
-  handleRole: string;
   handleOpenApprovalModal: () => void;
   handleOpenRejectModal: () => void;
 }
@@ -38,7 +38,6 @@ interface DriverDetailProps {
 const DriverDetail: React.FC<DriverDetailProps> = ({
   onClose,
   data,
-  handleRole,
   handleOpenApprovalModal,
   handleOpenRejectModal,
   innerRef,
@@ -48,6 +47,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(null);
+  const { user } = useUser();
   // console.log("data", data);
 
   const onHandlePreview = (file: any) => {
@@ -184,7 +184,7 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
         </div>
         <div className="mt-2 mx-auto">
           {type === "preview" &&
-            handleRole === "drivers" &&
+            user?.role !== "driver" &&
             initialData?.status === "pending" && (
               <div className="flex flex-col gap-5   bottom-1">
                 <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">

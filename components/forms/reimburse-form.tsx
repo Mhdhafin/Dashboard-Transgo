@@ -80,7 +80,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     lastPath === "preview"
       ? "Tinjau reimburse baru dari driver"
       : lastPath === "edit"
-      ? "Edit reimburse jika ada salah inputan"
+      ? "Edit status reimburse"
       : lastPath === "detail"
       ? ""
       : "Tambah reimburse baru untuk driver";
@@ -524,14 +524,14 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               </Link>
             )}
             <div className="flex justify-between gap-3.5">
-              {initialData?.status !== ReimburseStatus.PENDING && (
+              {initialData?.payment_status !== ReimburseStatus.PENDING && (
                 <div
                   className={cn(
-                    getStatusVariant(initialData?.status),
+                    getStatusVariant(initialData?.payment_status),
                     "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
                   )}
                 >
-                  {getPaymentStatusLabel(initialData?.status)}
+                  {getPaymentStatusLabel(initialData?.payment_status)}
                 </div>
               )}
               <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
@@ -758,6 +758,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                                   className={cn("mr-2 w-full")}
                                   showSearch
                                   // mode="tags"
+                                  disabled={lastPath === "preview"}
                                   value={initialData?.bank}
                                   placeholder="Nama Bank..."
                                   onChange={field.onChange}
@@ -1051,7 +1052,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                           <FormLabel>No. Rekening</FormLabel>
                           <FormControl className="disabled:opacity-100">
                             <Input
-                              disabled={!isEdit || loading}
+                              disabled={lastPath === "preview"}
                               placeholder="No. Rekening"
                               value={field.value ?? ""}
                               onChange={(e) => {
@@ -1101,7 +1102,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                               placeholder="Isi keteragan anda dengan lengkap..."
                               className="col-span-4"
                               rows={6}
-                              disabled={!isEdit || loading}
+                              disabled={lastPath === "preview"}
                               value={field.value ?? ""}
                               onChange={(e) => {
                                 e.target.value = e.target.value.trimStart();
@@ -1130,7 +1131,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             handleOpenApprovalModal={() => setOpenApprovalModal(true)}
             handleOpenRejectModal={() => setOpenRejectModal(true)}
             confirmLoading={loading}
-            handleRole={user}
             type={lastPath}
             onClose={() => setOpenDriverDetail(false)}
           />

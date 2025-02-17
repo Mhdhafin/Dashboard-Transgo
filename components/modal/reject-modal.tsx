@@ -59,8 +59,7 @@ export const RejectModal: React.FC<ModalProps> = ({
             id="reason"
             rows={4}
             name="reason"
-            // onChange={(e) => setReason(e.target.value)}
-            onChange={() => {}}
+            onChange={(e) => setReason(e.target.value)}
           />
         </div>
         <div className="space-x-2 flex items-center justify-end w-full">
