@@ -154,7 +154,8 @@ export function DashboardNav({
                         </div>
                       )}
                     {item.title === "Reimburse" &&
-                      !isFetchingReimburseStatus && (
+                      !isFetchingReimburseStatus &&
+                      user?.role !== "driver" && (
                         <div className="bg-red-500 text-sm font-medium min-w-[24px] h-[24px] text-center flex items-center justify-center rounded-lg text-white">
                           {reimburseCount?.[0]?.count ?? 0}
                         </div>

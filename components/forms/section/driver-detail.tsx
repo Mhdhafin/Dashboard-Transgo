@@ -30,6 +30,7 @@ interface DriverDetailProps {
   initialData: any;
   type?: string;
   confirmLoading: boolean;
+  handleRole: string;
   handleOpenApprovalModal: () => void;
   handleOpenRejectModal: () => void;
 }
@@ -37,6 +38,7 @@ interface DriverDetailProps {
 const DriverDetail: React.FC<DriverDetailProps> = ({
   onClose,
   data,
+  handleRole,
   handleOpenApprovalModal,
   handleOpenRejectModal,
   innerRef,
@@ -181,38 +183,40 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
           )}
         </div>
         <div className="mt-2 mx-auto">
-          {type === "preview" && initialData?.status === "pending" && (
-            <div className="flex flex-col gap-5   bottom-1">
-              <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
-                <Info className="h-10 w-10" />
-                <p>
-                  Invoice akan tersedia saat pesanan telah dikonfirmasi.
-                  Pastikan semua data benar.
-                </p>
+          {type === "preview" &&
+            handleRole === "drivers" &&
+            initialData?.status === "pending" && (
+              <div className="flex flex-col gap-5   bottom-1">
+                <div className="flex bg-neutral-100 p-4 gap-5 rounded-md">
+                  <Info className="h-10 w-10" />
+                  <p>
+                    Invoice akan tersedia saat reimburse telah dikonfirmasi.
+                    Pastikan semua data benar.
+                  </p>
+                </div>
+                <Button
+                  onClick={handleOpenRejectModal}
+                  className="w-full bg-red-50 text-red-500 hover:bg-red-50/90"
+                  type="button"
+                >
+                  Tolak Reimburse
+                </Button>
+                <Button
+                  onClick={handleOpenApprovalModal}
+                  className="w-full  bg-main hover:bg-main/90"
+                  type="button"
+                >
+                  Konfirmasi Reimburse
+                </Button>
               </div>
-              <Button
-                onClick={handleOpenRejectModal}
-                className="w-full bg-red-50 text-red-500 hover:bg-red-50/90"
-                type="button"
-              >
-                Tolak Pesanan
-              </Button>
-              <Button
-                onClick={handleOpenApprovalModal}
-                className="w-full  bg-main hover:bg-main/90"
-                type="button"
-              >
-                Konfirmasi Pesanan
-              </Button>
-            </div>
-          )}
+            )}
 
           {type === "create" && (
             <div className="flex flex-col gap-5   bottom-1">
               <div className="flex bg-neutral-100 p-4 gap-5 rounded-md ">
                 <Info className="h-10 w-10" />
                 <p>
-                  Invoice akan tersedia saat pesanan telah dikonfirmasi.
+                  Invoice akan tersedia saat reimburse telah dikonfirmasi.
                   Pastikan semua data benar.
                 </p>
               </div>
@@ -230,45 +234,6 @@ const DriverDetail: React.FC<DriverDetailProps> = ({
               </Button>
             </div>
           )}
-
-          {(type === "detail" || type === "edit") &&
-            initialData?.status !== "pending" &&
-            initialData?.payment_pdf_url &&
-            initialData?.payment_link && (
-              <div className="flex items-center justify-between w-full border border-neutral-200 rounded-lg p-1   bottom-1">
-                <div className="flex gap-4">
-                  <div className="p-2 border border-slate-200 rounded-lg bg-neutral-50">
-                    <Icons.pdf />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-neutral-700">
-                      {initialData?.invoice_number}
-                    </span>
-                    <span className="text-sm font-medium text-neutral-700">
-                      PDF
-                    </span>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-slate-200 p-2">
-                  <a
-                    href={`https://${initialData?.payment_link}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Link2 className="text-[#1F61D9]" />
-                  </a>
-                </div>
-                <div className="p-2 border border-slate-200 rounded-lg">
-                  <a
-                    href={`https://${initialData?.payment_pdf_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <EyeIcon />
-                  </a>
-                </div>
-              </div>
-            )}
         </div>
       </div>
       <PreviewImage

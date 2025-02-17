@@ -72,7 +72,10 @@ export const useEditReimburse = (id: string | number) => {
   const queryClient = useQueryClient();
 
   const editReimburse = (body: any) => {
-    return axiosAuth.patch(`${baseEndpoint}/${id}`, body);
+    return axiosAuth.patch(`${baseEndpoint}/${id}/status`, {
+      body: body,
+      status: "done",
+    });
   };
 
   return useMutation({
@@ -112,17 +115,13 @@ export const useReimburseStatusCount = () => {
   });
 };
 
-export const useDeleteReimburse = (id: number, force: boolean) => {
+export const useDeleteReimburse = (id: number) => {
   const axiosAuth = useAxiosAuth();
 
   const queryClient = useQueryClient();
 
   const deleteReimburse = (id: number) => {
-    return axiosAuth.delete(`${baseEndpoint}/${id}`, {
-      params: {
-        force,
-      },
-    });
+    return axiosAuth.delete(`${baseEndpoint}/${id}`);
   };
 
   return useMutation({
@@ -157,6 +156,7 @@ export const useRejectReimburse = () => {
   const rejectReimburse = ({ reimburseid, reason }: any) => {
     return axiosAuth.patch(`${baseEndpoint}/${reimburseid}/status`, {
       status: "rejected",
+      rejection_reason: reason,
     });
   };
 

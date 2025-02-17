@@ -75,6 +75,11 @@ const ReimburseTableWrapper = () => {
       { enabled: defaultTab === ReimburseStatus.CONFIRMED },
       ReimburseStatus.CONFIRMED,
     );
+
+  // Jika confirmedData adalah string, konversi kembali ke objek
+  // const doneDataObject =
+  //   typeof doneData === "object" ? JSON.stringify(doneData) : doneData;
+
   // const { data: rejectedData, isFetching: isFetchingRejectedData } =
   //   useGetReimburses(
   //     getReimburseParams(ReimburseStatus.REJECTED),

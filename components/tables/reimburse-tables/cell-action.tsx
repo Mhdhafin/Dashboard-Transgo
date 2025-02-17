@@ -1,4 +1,5 @@
 "use client";
+import { AlertModal } from "@/components/modal/alert-modal";
 import { AlertForceModal } from "@/components/modal/alertforce-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { User } from "@/constants/data";
+import { useUser } from "@/context/UserContext";
 import { useDeleteReimburse } from "@/hooks/api/useReimburse";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
@@ -25,12 +27,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
 
   const [force, setForce] = useState(false);
-
+  const { user } = useUser();
   const router = useRouter();
   const id = data?.id;
   const queryClient = useQueryClient();
 
-  const { mutateAsync: deleteReimburse } = useDeleteReimburse(id, force);
+  const { mutateAsync: deleteReimburse } = useDeleteReimburse(id);
 
   const onConfirm = async () => {
     setLoading(true);
@@ -61,15 +63,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   return (
     <>
-      <AlertForceModal
+      <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
         loading={loading}
-        data={data}
-        checked={force}
-        setChecked={setForce}
       />
+
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -77,27 +77,29 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        {user?.role !== "driver" && (
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/dashboard/reimburse/${data?.id}/edit`);
-            }}
-          >
-            <Edit className="mr-2 h-4 w-4" /> Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-red-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen(true);
-            }}
-          >
-            <Trash className="mr-2 h-4 w-4" /> Hapus
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/dashboard/reimburse/${data?.id}/edit`);
+              }}
+            >
+              <Edit className="mr-2 h-4 w-4" /> Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-red-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpen(true);
+              }}
+            >
+              <Trash className="mr-2 h-4 w-4" /> Hapus
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        )}
       </DropdownMenu>
     </>
   );

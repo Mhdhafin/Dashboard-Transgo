@@ -282,7 +282,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
 
   useEffect(() => {
     const payload = {
-      driver_id: +(driverNameField ?? 0), // Nama driver
+      driver_id: driverNameField, // Nama driver
       nominal: isString(nominalField) // Nominal/jumlah reimburse
         ? +nominalField
         : nominalField,
@@ -488,7 +488,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             </div>
           )}
 
-        {initialData?.request_status === "done" && (
+        {initialData?.status === "confirmed" && (
           <div className="flex gap-2">
             {lastPath === "edit" && (
               <>
@@ -955,7 +955,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             <FormControl>
                               <DatePicker
                                 disabledDate={disabledDate}
-                                disabled={loading}
+                                disabled={lastPath === "preview"}
                                 className={cn("p h-[40px] w-full")}
                                 style={
                                   {
@@ -1128,8 +1128,9 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
             data={driverData?.data}
             initialData={initialData}
             handleOpenApprovalModal={() => setOpenApprovalModal(true)}
-            handleOpenRejectModal={() => setOpenRejectModal(tPrue)}
+            handleOpenRejectModal={() => setOpenRejectModal(true)}
             confirmLoading={loading}
+            handleRole={user}
             type={lastPath}
             onClose={() => setOpenDriverDetail(false)}
           />
