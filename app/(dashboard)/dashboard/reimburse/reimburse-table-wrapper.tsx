@@ -43,13 +43,23 @@ const ReimburseTableWrapper = () => {
   const [searchQuery, setSearchQuery] = React.useState<string>(q ?? "");
   const [searchDebounce] = useDebounce(searchQuery, 500);
 
-  const getReimburseParams = (status: string) => ({
+  // const getReimburseParams = (status: string) => ({
+  //   limit: pageLimit,
+  //   page: page,
+  //   q: searchDebounce,
+  //   status: status,
+  //   ...(Date ? { date: Date } : {}),
+  //   // ...(endDate ? { enddate: endDate } : {}),
+  //   ...(reimburseBy ? { reimburse_by: reimburseBy } : {}),
+  //   ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
+  // });
+
+  const getReimburseParams = (status: ReimburseStatus | string) => ({
     limit: pageLimit,
     page: page,
     q: searchDebounce,
-    status: status,
+    status: Array.isArray(status) ? status.join(',') : status,
     ...(Date ? { date: Date } : {}),
-    // ...(endDate ? { enddate: endDate } : {}),
     ...(reimburseBy ? { reimburse_by: reimburseBy } : {}),
     ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
   });
@@ -63,11 +73,17 @@ const ReimburseTableWrapper = () => {
       ReimburseStatus.PENDING,
     );
 
-  const { data: doneData, isFetching: isFetchingDoneData } = useGetReimburses(
-    getReimburseParams(ReimburseStatus.DONE),
+  // const { data: doneData, isFetching: isFetchingDoneData } = useGetReimburses(
+  //   getReimburseParams(ReimburseStatus.DONE),
+  //   { enabled: defaultTab === ReimburseStatus.DONE },
+  //   ReimburseStatus.DONE,
+  // );
+
+  const { data: combinedDoneRejectedData, isFetching: isFetchingCombinedData } = useGetReimburses(
+    getReimburseParams(`${ReimburseStatus.DONE},${ReimburseStatus.REJECTED}`),
     { enabled: defaultTab === ReimburseStatus.DONE },
     ReimburseStatus.DONE,
-  );
+  ); //cek pake ini fin, params nya gua ganti strng di dalam array
 
   const { data: confirmedData, isFetching: isFetchingConfirmedData } =
     useGetReimburses(
@@ -294,16 +310,16 @@ const ReimburseTableWrapper = () => {
         )}
       </TabsContent>
       <TabsContent value={ReimburseStatus.DONE} className="space-y-4">
-        {isFetchingDoneData && <Spinner />}
-        {!isFetchingDoneData && doneData && (
+        {isFetchingCombinedData && <Spinner />}
+        {!isFetchingCombinedData && combinedDoneRejectedData && (
           <ReimburseTable
             columns={completedColumns}
             sorting={sorting}
             setSorting={setSorting}
-            data={doneData}
+            data={combinedDoneRejectedData}
             searchKey="name"
-            totalUsers={doneData.meta?.total_items}
-            pageCount={Math.ceil(doneData.meta?.total_items / pageLimit)}
+            totalUsers={combinedDoneRejectedData.meta?.total_items}
+            pageCount={Math.ceil(combinedDoneRejectedData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
           />
