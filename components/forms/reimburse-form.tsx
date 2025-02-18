@@ -17,6 +17,7 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/context/UserContext";
+
 import {
   useGetDetailDriver,
   useGetInfinityDrivers,
@@ -51,7 +52,11 @@ import { useToast } from "../ui/use-toast";
 import DriverDetail from "./section/driver-detail";
 import { ReimburseFormProps, ReimburseFormValues } from "./types/reimburse";
 import { generateSchema } from "./validation/orderSchema";
-import { formSchema } from "./validation/reimburseSchema";
+import { editSchema, formSchema } from "./validation/reimburseSchema";
+
+import ImagePreview from "../imagePreview";
+import UploadFile from "../uploud-file";
+// import "@uploadthing/react/styles.css";
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -144,27 +149,29 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         noRekening: initialData?.noRekening || "", // Nomor rekening
         date: initialData?.date || "", // Tanggal reimburse
         description: initialData?.description || "", // Keterangan tambahan
+        transaction_proof_url: initialData?.transactionProofUrl || "", // Kolom dari formSchema
       }
     : {
         driver: "", // Nama driver kosong
         nominal: "", // Nominal default 0
-        bank: "", // Nama bank koso
+        bank: "", // Nama bank kosong
         location: "", // Lokasi kosong
         noRekening: "", // Nomor rekening kosong
         date: "", // Tanggal kosong
         description: "", // Keterangan kosong
+        transaction_proof_url: "", // Kolom dari formSchema
       };
 
   const form = useForm<ReimburseFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(!initialData ? formSchema : editSchema),
     defaultValues,
   });
-
   // Reimburse Fields
   const driverNameField = form.watch("driver"); // Nama driver
   const nominalField = form.watch("nominal"); // Nominal/jumlah reimburse
   const bankNameField = form.watch("bank"); // Nama bank
   const locationField = form.watch("location"); // Lokasi reimburse
+  const transactionProofUrlField = form.watch("transaction_proof_url"); // Lokasi reimburse
   const accountNumberField = form.watch("noRekening"); // Nomor rekening
   const dateField = form.watch("date"); // Tanggal reimburse
   const descriptionField = form.watch("description"); // Keterangan tambahan (opsional)
@@ -194,6 +201,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
       bank: data.bank, // Nama bank
       location_id: data.location, // Lokasi reimburse
       noRekening: data.noRekening, // Nomor rekening
+      transaction_proof_url: data.transaction_proof_url, // URL bukti transaksi
       date: data.date, // Format tanggal (YYYY-MM-DD)
       description: data.description || "", // Keterangan opsional
     });
@@ -287,6 +295,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         ? +nominalField
         : nominalField,
       location_id: locationField, // Lokasi reimburse
+      transaction_proof_url: transactionProofUrlField,
       bank: bankNameField, // Nama bank
       noRekening: accountNumberField, // Nomor rekening
       date: dateField, // Tanggal reimburse (format: YYYY-MM-DD)
@@ -301,6 +310,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     //   });
     // }
   }, [
+    transactionProofUrlField,
     driverNameField,
     nominalField,
     locationField,
@@ -373,6 +383,10 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
       driver: generateMessage(driverNameField, defaultValues?.driver), // Nama Driver
       nominal: generateMessage(nominalField, defaultValues?.nominal), // Nominal/Jumlah Reimburse
       location: generateMessage(locationField, defaultValues?.location), // Lokasi Reimburse
+      transaction_proof_url: generateMessage(
+        transactionProofUrlField,
+        defaultValues?.transaction_proof_url,
+      ), // Lokasi Reimburse
       bank: generateMessage(bankNameField, defaultValues?.bank), // Nama Bank
       noRekening: generateMessage(
         accountNumberField,
@@ -388,6 +402,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
       setMessages(newMessages);
     }
   }, [
+    transactionProofUrlField,
     driverNameField,
     nominalField,
     locationField,
@@ -1114,6 +1129,63 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                         </FormItem>
                       )}
                     />
+                  )}
+                </div>
+                <div className="flex items-end">
+                  {isEdit ? (
+                    <FormField
+                      control={form.control}
+                      name="transaction_proof_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="relative label-required">
+                            Bukti Transaction
+                          </FormLabel>
+                          <FormControl className="disabled:opacity-100">
+                            <>
+                              <UploadFile
+                                lastPath={lastPath}
+                                form={form}
+                                name="transaction_proof_url"
+                              />
+                              {lastPath === "preview" || lastPath === "edit" ? (
+                                <img
+                                  width={500}
+                                  height={300}
+                                  src={initialData?.transactionProofUrl ?? ""}
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    <FormItem>
+                      <FormLabel className="relative label-required">
+                        Bukti Transfer
+                      </FormLabel>
+                      <FormControl className="disabled:opacity-100">
+                        <>
+                          <UploadFile
+                            lastPath={lastPath}
+                            form={form}
+                            name="transaction_proof_url"
+                          />
+                          {lastPath === "preview" && (
+                            <img
+                              width={500}
+                              height={300}
+                              src={initialData?.transactionProofUrl ?? ""}
+                            />
+                          )}
+                        </>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 </div>
               </div>

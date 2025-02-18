@@ -125,6 +125,115 @@ export const pendingColumns: ColumnDef<any>[] = [
   },
 ];
 
+export const rejectedColumns: ColumnDef<any>[] = [
+  {
+    accessorKey: "driver",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">
+        Nama Driver
+      </span>
+    ),
+    cell: ({ row }) => <span>{row.original?.driver?.name}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "nominal",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Nominal</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.nominal}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "location",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.location?.name}</span>,
+    enableSorting: false,
+  },
+
+  {
+    accessorKey: "noRekening",
+
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">No.Rek</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.noRekening}</span>,
+    enableSorting: false,
+  },
+
+  {
+    accessorKey: "date",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
+    ),
+    cell: ({ row }) => (
+      <HoverCard>
+        <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
+          {dayjs(row.original?.date).format("DD MMMM YYYY")}
+        </HoverCardTrigger>
+        <HoverCardContent
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="pt-1">
+            <p className="text-[14px] font-semibold leading-5">
+              {dayjs(row.original?.start_date).format("dddd, DD MMMM YYYY")}
+            </p>
+            <p className="text-[14px] font-normal leading-5">
+              Jam {dayjs(row.original?.start_date).format("H:mm")} WIB
+            </p>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex items-center">
+            <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+            <span className="text-muted-foreground font-normal text-[12px] leading-4">
+              Tanggal Pengembilan
+            </span>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: "bank",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Nama Bank</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.bank}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "description",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Keterangan</span>
+    ),
+    cell: ({ row }) => <span>{row.original?.description}</span>,
+    enableSorting: false,
+  },
+  {
+    accessorKey: "status",
+    header: () => (
+      <span className="text-sm font-semibold text-neutral-700">Status</span>
+    ),
+    cell: ({ row }) => (
+      <span className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
+        {row.original?.status}
+      </span>
+    ),
+    enableSorting: false,
+  },
+
+  {
+    id: "actions",
+    cell: ({ row }) => <CellAction data={row.original} />,
+    enableSorting: false,
+  },
+];
+
 export const confirmedColumns: ColumnDef<any>[] = [
   {
     accessorKey: "driver",
@@ -316,7 +425,7 @@ export const completedColumns: ColumnDef<any>[] = [
       <span className="text-sm font-semibold text-neutral-700">Status</span>
     ),
     cell: ({ row }) => (
-      <span className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
+      <span className="bg-red-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
         {row.original?.status}
       </span>
     ),
@@ -329,99 +438,3 @@ export const completedColumns: ColumnDef<any>[] = [
     enableSorting: false,
   },
 ];
-
-// export const completedColumns: ColumnDef<any>[] = [
-//   {
-//     accessorKey: "driver",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">
-//         Nama Driver
-//       </span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.drivers?.name}</span>,
-//     enableSorting: false,
-//   },
-//   {
-//     accessorKey: "nominal",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">Nominal</span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.nominal}</span>,
-//     enableSorting: false,
-//   },
-//   {
-//     accessorKey: "location",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">Lokasi</span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.location}</span>,
-//     enableSorting: false,
-//   },
-//   {
-//     accessorKey: "noRekening",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">No.Rek</span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.noRekening}</span>,
-//     enableSorting: false,
-//   },
-
-//   {
-//     accessorKey: "date",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">Tanggal</span>
-//     ),
-//     cell: ({ row }) => (
-//       <HoverCard>
-//         <HoverCardTrigger className="bg-[#f5f5f5] rounded-full py-1 px-3 text-nowrap">
-//           {row.original?.tanggal}
-//         </HoverCardTrigger>
-//         <HoverCardContent
-//           onClick={(e) => {
-//             e.stopPropagation();
-//           }}
-//         >
-//           <div className="flex items-center">
-//             <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
-//             <span className="text-muted-foreground font-normal text-[12px] leading-4">
-//               Tanggal
-//             </span>
-//           </div>
-//           <div className="pt-1">
-//             <p className="text-[14px] font-semibold leading-5">
-//               {dayjs(row.original?.date).format("dddd, DD MMMM YYYY")}
-//             </p>
-//             <p className="text-[14px] font-normal leading-5">
-//               Jam {dayjs(row.original?.date).format("H:mm")} WIB
-//             </p>
-//           </div>
-//         </HoverCardContent>
-//       </HoverCard>
-//     ),
-//     enableSorting: false,
-//   },
-//   {
-//     accessorKey: "bank",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">Nama Bank</span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.bank}</span>,
-//     enableSorting: false,
-//   },
-//   {
-//     accessorKey: "description",
-//     header: () => (
-//       <span className="text-sm font-semibold text-neutral-700">
-//         Description
-//       </span>
-//     ),
-//     cell: ({ row }) => <span>{row.original?.description}</span>,
-//     enableSorting: false,
-//   },
-
-//   {
-//     id: "actions",
-//     cell: ({ row }) => <CellAction data={row.original} />,
-//     enableSorting: false,
-//   },
-// ];

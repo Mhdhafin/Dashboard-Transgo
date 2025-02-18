@@ -4,7 +4,7 @@
  */
 import { z } from "zod";
 
-import { formSchema } from "../validation/reimburseSchema";
+import { formSchema, editSchema } from "../validation/reimburseSchema";
 
 export type ReimburseFormValues = z.infer<typeof formSchema> & {
   nominal: number;
@@ -14,6 +14,7 @@ export type ReimburseFormValues = z.infer<typeof formSchema> & {
   location: number;
   date: Date;
   description: string;
+  transaction_proof_url: string;
 };
 
 export interface ReimburseFormProps {
@@ -32,4 +33,5 @@ export type Messages = {
   location: number;
   date: Date;
   description: string;
+  transaction_proof_url: string;
 };

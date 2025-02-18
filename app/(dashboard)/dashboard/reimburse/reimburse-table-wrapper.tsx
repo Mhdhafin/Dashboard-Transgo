@@ -5,6 +5,7 @@ import SearchInput from "@/components/search-input";
 import Spinner from "@/components/spinner";
 import {
   completedColumns,
+  rejectedColumns,
   confirmedColumns,
   pendingColumns,
 } from "@/components/tables/reimburse-tables/columns";
@@ -43,23 +44,13 @@ const ReimburseTableWrapper = () => {
   const [searchQuery, setSearchQuery] = React.useState<string>(q ?? "");
   const [searchDebounce] = useDebounce(searchQuery, 500);
 
-  // const getReimburseParams = (status: string) => ({
-  //   limit: pageLimit,
-  //   page: page,
-  //   q: searchDebounce,
-  //   status: status,
-  //   ...(Date ? { date: Date } : {}),
-  //   // ...(endDate ? { enddate: endDate } : {}),
-  //   ...(reimburseBy ? { reimburse_by: reimburseBy } : {}),
-  //   ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
-  // });
-
-  const getReimburseParams = (status: ReimburseStatus | string) => ({
+  const getReimburseParams = (status: string) => ({
     limit: pageLimit,
     page: page,
     q: searchDebounce,
-    status: Array.isArray(status) ? status.join(',') : status,
+    status: status,
     ...(Date ? { date: Date } : {}),
+    // ...(endDate ? { enddate: endDate } : {}),
     ...(reimburseBy ? { reimburse_by: reimburseBy } : {}),
     ...(reimburseColumn ? { reimburse_column: reimburseColumn } : {}),
   });
@@ -79,11 +70,11 @@ const ReimburseTableWrapper = () => {
   //   ReimburseStatus.DONE,
   // );
 
-  const { data: combinedDoneRejectedData, isFetching: isFetchingCombinedData } = useGetReimburses(
-    getReimburseParams(`${ReimburseStatus.DONE},${ReimburseStatus.REJECTED}`),
+  const { data: doneData, isFetching: isFetchingDoneData } = useGetReimburses(
+    getReimburseParams(ReimburseStatus.DONE),
     { enabled: defaultTab === ReimburseStatus.DONE },
     ReimburseStatus.DONE,
-  ); //cek pake ini fin, params nya gua ganti strng di dalam array
+  );
 
   const { data: confirmedData, isFetching: isFetchingConfirmedData } =
     useGetReimburses(
@@ -91,30 +82,13 @@ const ReimburseTableWrapper = () => {
       { enabled: defaultTab === ReimburseStatus.CONFIRMED },
       ReimburseStatus.CONFIRMED,
     );
-  // const { data: rejectedData, isFetching: isFetchingRejectedData } =
-  //   useGetReimburses(
-  //     getReimburseParams(ReimburseStatus.CONFIRMED),
-  //     { enabled: defaultTab === ReimburseStatus.CONFIRMED },
-  //     ReimburseStatus.CONFIRMED,
-  //   );
 
-  // Jika confirmedData adalah string, konversi kembali ke objek
-  // const doneDataObject =
-  //   typeof doneData === "object" ? JSON.stringify(doneData) : doneData;
-
-  // const { data: rejectedData, isFetching: isFetchingRejectedData } =
-  //   useGetReimburses(
-  //     getReimburseParams(ReimburseStatus.REJECTED),
-  //     { enabled: defaultTab === ReimburseStatus.REJECTED },
-  //     ReimburseStatus.REJECTED,
-  //   );
-
-  // const { data: completedData, isFetching: isFetchingCompletedData } =
-  //   useGetReimburses(
-  //     getReimburseParams(ReimburseStatus.DONE),
-  //     { enabled: defaultTab === ReimburseStatus.DONE },
-  //     ReimburseStatus.DONE,
-  //   );
+  const { data: rejectedData, isFetching: isFetchingRejectedData } =
+    useGetReimburses(
+      getReimburseParams(ReimburseStatus.REJECTED),
+      { enabled: defaultTab === ReimburseStatus.REJECTED },
+      ReimburseStatus.REJECTED,
+    );
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null | undefined>) => {
@@ -148,6 +122,10 @@ const ReimburseTableWrapper = () => {
     {
       name: "Menunggu",
       value: ReimburseStatus.PENDING,
+    },
+    {
+      name: "Ditolak",
+      value: ReimburseStatus.REJECTED,
     },
     {
       name: "Terkonfirmasi",
@@ -277,22 +255,22 @@ const ReimburseTableWrapper = () => {
         )}
       </TabsContent>
 
-      {/* <TabsContent value={ReimburseStatus.ON_PROGRESS} className="space-y-4">
-        {isFetchingOnProgressData && <Spinner />}
-        {!isFetchingOnProgressData && onProgressData && (
+      <TabsContent value={ReimburseStatus.REJECTED} className="space-y-4">
+        {isFetchingRejectedData && <Spinner />}
+        {!isFetchingRejectedData && rejectedData && (
           <ReimburseTable
-            columns={onProgressColumns}
+            columns={rejectedColumns}
             sorting={sorting}
             setSorting={setSorting}
-            data={onProgressData.items}
+            data={rejectedData}
             searchKey="name"
-            totalUsers={onProgressData.meta?.total_items}
-            pageCount={Math.ceil(onProgressData.meta?.total_items / pageLimit)}
+            totalUsers={rejectedData.meta?.total_items}
+            pageCount={Math.ceil(rejectedData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
           />
         )}
-      </TabsContent> */}
+      </TabsContent>
       <TabsContent value={ReimburseStatus.CONFIRMED} className="space-y-4">
         {isFetchingConfirmedData && <Spinner />}
         {!isFetchingConfirmedData && confirmedData && (
@@ -310,16 +288,16 @@ const ReimburseTableWrapper = () => {
         )}
       </TabsContent>
       <TabsContent value={ReimburseStatus.DONE} className="space-y-4">
-        {isFetchingCombinedData && <Spinner />}
-        {!isFetchingCombinedData && combinedDoneRejectedData && (
+        {isFetchingDoneData && <Spinner />}
+        {!isFetchingDoneData && doneData && (
           <ReimburseTable
             columns={completedColumns}
             sorting={sorting}
             setSorting={setSorting}
-            data={combinedDoneRejectedData}
+            data={doneData}
             searchKey="name"
-            totalUsers={combinedDoneRejectedData.meta?.total_items}
-            pageCount={Math.ceil(combinedDoneRejectedData.meta?.total_items / pageLimit)}
+            totalUsers={doneData.meta?.total_items}
+            pageCount={Math.ceil(doneData.meta?.total_items / pageLimit)}
             pageNo={page}
             searchQuery={searchQuery}
           />
