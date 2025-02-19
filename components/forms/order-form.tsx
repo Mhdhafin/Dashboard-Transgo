@@ -671,6 +671,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     <>
       {openApprovalModal && (
         <ApprovalModal
+          heading="pesanan"
           isOpen={openApprovalModal}
           onClose={() => setOpenApprovalModal(false)}
           onConfirm={form.handleSubmit(onSubmit)}

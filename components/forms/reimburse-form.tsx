@@ -149,7 +149,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         noRekening: initialData?.noRekening || "", // Nomor rekening
         date: initialData?.date || "", // Tanggal reimburse
         description: initialData?.description || "", // Keterangan tambahan
-        transaction_proof_url: initialData?.transactionProofUrl || "", // Kolom dari formSchema
+        transaction_proof_url: initialData?.transactionProofUrl || null,
+        transfer_proof_url: initialData?.transferProofUrl || null,
       }
     : {
         driver: "", // Nama driver kosong
@@ -159,7 +160,8 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         noRekening: "", // Nomor rekening kosong
         date: "", // Tanggal kosong
         description: "", // Keterangan kosong
-        transaction_proof_url: "", // Kolom dari formSchema
+        transaction_proof_url: null,
+        transfer_proof_url: null,
       };
 
   const form = useForm<ReimburseFormValues>({
@@ -172,6 +174,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const bankNameField = form.watch("bank"); // Nama bank
   const locationField = form.watch("location"); // Lokasi reimburse
   const transactionProofUrlField = form.watch("transaction_proof_url"); // Lokasi reimburse
+  // const transferProofUrlField = form.watch("transfer_proof_url"); // Lokasi reimburse
   const accountNumberField = form.watch("noRekening"); // Nomor rekening
   const dateField = form.watch("date"); // Tanggal reimburse
   const descriptionField = form.watch("description"); // Keterangan tambahan (opsional)
@@ -195,16 +198,32 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
   const onSubmit = async (data: ReimburseFormValues) => {
     setLoading(true);
 
-    const createPayload = (data: ReimburseFormValues) => ({
-      driver_id: data.driver, // Menggunakan nama driver
-      nominal: data.nominal, // Mengubah nominal ke number, menghapus koma jika ada
-      bank: data.bank, // Nama bank
-      location_id: data.location, // Lokasi reimburse
-      noRekening: data.noRekening, // Nomor rekening
-      transaction_proof_url: data.transaction_proof_url, // URL bukti transaksi
-      date: data.date, // Format tanggal (YYYY-MM-DD)
-      description: data.description || "", // Keterangan opsional
-    });
+    const createPayload = (data: ReimburseFormValues) => {
+      const basedPayload = {
+        driver_id: data.driver, // Menggunakan nama driver
+        nominal: data.nominal, // Mengubah nominal ke number, menghapus koma jika ada
+        bank: data.bank, // Nama bank
+        location_id: data.location, // Lokasi reimburse
+        noRekening: data.noRekening, // Nomor rekening
+        date: data.date, // Format tanggal (YYYY-MM-DD)
+        description: data.description || "", // Keterangan opsional
+      };
+
+      const fileFields = {
+        ...(data.transaction_proof_url && {
+          transaction_proof_url: data.transaction_proof_url,
+        }),
+        ...(data.transfer_proof_url && {
+          transfer_proof_url: data.transfer_proof_url,
+        }),
+      };
+
+      // 3. Menggabungkan basePayload dan fileFields
+      return {
+        ...basedPayload,
+        ...fileFields,
+      };
+    };
 
     console.log(createPayload(data));
 
@@ -296,19 +315,12 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         : nominalField,
       location_id: locationField, // Lokasi reimburse
       transaction_proof_url: transactionProofUrlField,
+
       bank: bankNameField, // Nama bank
       noRekening: accountNumberField, // Nomor rekening
       date: dateField, // Tanggal reimburse (format: YYYY-MM-DD)
       description: descriptionField || "",
     };
-
-    // if (driverNameField) {
-    //   createReimburse(payload, {
-    //     onSuccess: (data) => {
-    //       setOpenDriverDetail(data.data);
-    //     },
-    //   });
-    // }
   }, [
     transactionProofUrlField,
     driverNameField,
@@ -387,6 +399,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
         transactionProofUrlField,
         defaultValues?.transaction_proof_url,
       ), // Lokasi Reimburse
+
       bank: generateMessage(bankNameField, defaultValues?.bank), // Nama Bank
       noRekening: generateMessage(
         accountNumberField,
@@ -421,6 +434,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
     <>
       {openApprovalModal && (
         <ApprovalModal
+          heading="reimburse"
           isOpen={openApprovalModal}
           onClose={() => setOpenApprovalModal(false)}
           onConfirm={form.handleSubmit(onSubmit)}
@@ -442,7 +456,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
       >
         <Heading title={title} description={description} />
         {initialData?.status !== "pending" &&
-          initialData?.request_status === "pending" &&
+          initialData?.status === "pending" &&
           lastPath !== "pending" && (
             <div className="flex gap-2">
               {lastPath === "edit" && (
@@ -486,16 +500,6 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               )}
 
               <div className="flex justify-between gap-3.5">
-                {initialData?.reimburse_status != ReimburseStatus.PENDING && (
-                  <div
-                    className={cn(
-                      getStatusVariant(initialData?.payment_status),
-                      "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
-                    )}
-                  >
-                    {getPaymentStatusLabel(initialData?.payment_status)}
-                  </div>
-                )}
                 <div className="bg-red-50 text-red-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
                   Belum kembali
                 </div>
@@ -539,16 +543,16 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
               </Link>
             )}
             <div className="flex justify-between gap-3.5">
-              {initialData?.payment_status !== ReimburseStatus.PENDING && (
+              {/* {initialData?.status !== ReimburseStatus.PENDING && (
                 <div
                   className={cn(
-                    getStatusVariant(initialData?.payment_status),
+                    getStatusVariant(initialData?.status),
                     "text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center",
                   )}
                 >
-                  {getPaymentStatusLabel(initialData?.payment_status)}
+                  {getPaymentStatusLabel(initialData?.status)}
                 </div>
-              )}
+              )} */}
               <div className="bg-green-50 text-green-500 text-xs font-medium flex items-center justify-center px-[10px] py-1 rounded-full text-center">
                 Selesai
               </div>
@@ -666,35 +670,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                             value={initialData?.driver?.name ?? "-"}
                           />
                         </FormControl>
-                        {/* <Button
-                          className={cn(
-                            buttonVariants({ variant: "main" }),
-                            "w-[65px] h-[40px]",
-                          )}
-                          disabled={
-                            !form.getFieldState("driver").isDirty &&
-                            isEmpty(form.getValues("driver"))
-                          }
-                          type="button"
-                          onClick={() => {
-                            setOpenDriverDetail(true);
-                            scrollDetail();
-                          }}
-                        >
-                          {initialData?.driver?.status == "pending"
-                            ? "Tinjau"
-                            : "Lihat"}
-                        </Button> */}
                       </div>
-                      {initialData?.driver?.status == "pending" && (
-                        <p
-                          className={cn(
-                            "text-[0.8rem] font-medium text-destructive",
-                          )}
-                        >
-                          Pengemudi belum verified
-                        </p>
-                      )}
                     </FormItem>
                   )}
                 </div>
@@ -1132,7 +1108,7 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                   )}
                 </div>
                 <div className="flex items-end">
-                  {isEdit ? (
+                  {!initialData || lastPath === "preview" ? (
                     <FormField
                       control={form.control}
                       name="transaction_proof_url"
@@ -1144,19 +1120,18 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                           <FormControl className="disabled:opacity-100">
                             <>
                               <UploadFile
+                                initialData={initialData}
                                 lastPath={lastPath}
                                 form={form}
                                 name="transaction_proof_url"
                               />
-                              {lastPath === "preview" || lastPath === "edit" ? (
+                              {lastPath === "preview" ? (
                                 <img
                                   width={500}
                                   height={300}
                                   src={initialData?.transactionProofUrl ?? ""}
                                 />
-                              ) : (
-                                ""
-                              )}
+                              ) : null}
                             </>
                           </FormControl>
                           <FormMessage />
@@ -1164,28 +1139,37 @@ export const ReimburseForm: React.FC<ReimburseFormProps> = ({
                       )}
                     />
                   ) : (
-                    <FormItem>
-                      <FormLabel className="relative label-required">
-                        Bukti Transfer
-                      </FormLabel>
-                      <FormControl className="disabled:opacity-100">
-                        <>
-                          <UploadFile
-                            lastPath={lastPath}
-                            form={form}
-                            name="transaction_proof_url"
-                          />
-                          {lastPath === "preview" && (
-                            <img
-                              width={500}
-                              height={300}
-                              src={initialData?.transactionProofUrl ?? ""}
-                            />
-                          )}
-                        </>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                    <FormField
+                      control={form.control}
+                      name="transfer_proof_url"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="relative label-required">
+                            Bukti Transfer
+                          </FormLabel>
+                          <FormControl className="disabled:opacity-100">
+                            <>
+                              <UploadFile
+                                initialData={initialData}
+                                lastPath={lastPath}
+                                form={form}
+                                name="transfer_proof_url"
+                              />
+                              {lastPath !== "create" &&
+                                lastPath !== "preview" && (
+                                  <img
+                                    width={500}
+                                    height={300}
+                                    style={{ border: "none" }}
+                                    src={initialData?.transferProofUrl ?? ""}
+                                  />
+                                )}
+                            </>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
                 </div>
               </div>
